@@ -5,6 +5,7 @@ import App from './App';
 import Layout from './layouts/dashboard';
 import DashboardPage from './pages';
 import EmployeesCrudPage from './pages/employees';
+import FormsInput from './pages/formsinput';
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
           {
             path: '',
             Component: DashboardPage,
+          },
+          {
+            path: 'forminputs',
+            Component: FormsInput,
           },
           {
             path: 'employees/:employeeId?/*',
