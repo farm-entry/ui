@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Wheat stalk -->
+  <path d="M16 28V12" stroke="#4CAF50" stroke-width="2"/>
+  <!-- Leaves -->
+  <path d="M16 12C16 12 12 8 8 8C8 12 12 16 16 12Z" fill="#4CAF50"/>
+  <path d="M16 12C16 12 20 8 24 8C24 12 20 16 16 12Z" fill="#4CAF50"/>
+  <path d="M16 16C16 16 12 12 8 12C8 16 12 20 16 16Z" fill="#81C784"/>
+  <path d="M16 16C16 16 20 12 24 12C24 16 20 20 16 16Z" fill="#81C784"/>
+  <!-- Ground -->
+  <path d="M4 28H28" stroke="#795548" stroke-width="2"/>
+</svg>

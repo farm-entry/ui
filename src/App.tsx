@@ -5,6 +5,10 @@ import ClipboardIcon from "@mui/icons-material/DynamicForm";
 import { Outlet } from "react-router";
 import { ReactRouterAppProvider } from "@toolpad/core/react-router";
 import type { Navigation } from "@toolpad/core/AppProvider";
+import { customTheme } from "./theme";
+import frontlineLogo from "./assets/frontlinefarms-logo.svg";
+
+const Logo = () => <img src={frontlineLogo} alt="Frontline Farms Logo" />;
 
 const NAVIGATION: Navigation = [
   {
@@ -30,12 +34,13 @@ const NAVIGATION: Navigation = [
 ];
 
 const BRANDING = {
-  title: "Farm Entry",
+  logo: <Logo />,
+  title: "Frontline Farms",
 };
 
 export default function App() {
   return (
-    <ReactRouterAppProvider navigation={NAVIGATION} branding={BRANDING}>
+    <ReactRouterAppProvider navigation={NAVIGATION} branding={BRANDING} theme={customTheme}>
       <Outlet />
     </ReactRouterAppProvider>
   );
