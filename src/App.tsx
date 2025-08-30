@@ -1,5 +1,4 @@
-import { QrCode } from "@mui/icons-material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
+import { Desk, Home, QrCode } from "@mui/icons-material";
 import ClipboardIcon from "@mui/icons-material/DynamicForm";
 import PersonIcon from "@mui/icons-material/Person";
 import type { Navigation } from "@toolpad/core/AppProvider";
@@ -13,11 +12,25 @@ const Logo = () => <img src={frontlineLogo} alt="Frontline Farms Logo" />;
 const NAVIGATION: Navigation = [
   {
     kind: "header",
-    title: "Main items",
+    title: "Welcome, Sergei!",
   },
   {
-    title: "Dashboard",
-    icon: <DashboardIcon />,
+    segment: "",
+    title: "Home",
+    icon: <Home />,
+    pattern: "/",
+  },
+  {
+    title: "Forms",
+    icon: <Desk />,
+    children: [
+      { segment: "livestock-activity", title: "Livestock Activity" },
+      { segment: "scorecards", title: "Scorecards" },
+      { segment: "fuel", title: "Fuel" },
+      { segment: "maintenance", title: "Maintenance" },
+      { segment: "inventory-consumption", title: "Inventory Consumption" },
+      { segment: "job-header-updates", title: "Job Header Updates" },
+    ],
   },
   {
     segment: "forminputs",
