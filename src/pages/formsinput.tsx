@@ -99,30 +99,30 @@ export default function FormInputs() {
                 <Box>
                   <Typography variant="subtitle1" gutterBottom>Primary Buttons</Typography>
                   <Stack direction="row" spacing={2}>
-                    <Button variant="primary" size="small">Small</Button>
-                    <Button variant="primary">Medium</Button>
-                    <Button variant="primary" size="large">Large</Button>
-                    <Button variant="primary" startIcon={<AddIcon />}>With Icon</Button>
+                    <Button variant="primary">Primary</Button>
+                    <Button variant="primary" startIcon={<AddIcon />}>
+                      With Icon
+                    </Button>
                   </Stack>
                 </Box>
 
                 <Box>
                   <Typography variant="subtitle1" gutterBottom>Secondary Buttons</Typography>
                   <Stack direction="row" spacing={2}>
-                    <Button variant="secondary" size="small">Small</Button>
-                    <Button variant="secondary">Medium</Button>
-                    <Button variant="secondary" size="large">Large</Button>
-                    <Button variant="secondary" startIcon={<SaveIcon />}>With Icon</Button>
+                    <Button variant="secondary">Secondary</Button>
+                    <Button variant="secondary" startIcon={<SaveIcon />}>
+                      With Icon
+                    </Button>
                   </Stack>
                 </Box>
 
                 <Box>
                   <Typography variant="subtitle1" gutterBottom>Tertiary Buttons</Typography>
                   <Stack direction="row" spacing={2}>
-                    <Button variant="tertiary" size="small">Small</Button>
-                    <Button variant="tertiary">Medium</Button>
-                    <Button variant="tertiary" size="large">Large</Button>
-                    <Button variant="tertiary" startIcon={<DeleteIcon />}>With Icon</Button>
+                    <Button variant="tertiary">Tertiary</Button>
+                    <Button variant="tertiary" startIcon={<DeleteIcon />}>
+                      With Icon
+                    </Button>
                   </Stack>
                 </Box>
 

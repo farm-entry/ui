@@ -3,7 +3,6 @@ import { Button as MuiButton, ButtonProps as MuiButtonProps, styled } from '@mui
 
 export interface ButtonProps extends Omit<MuiButtonProps, 'variant'> {
   variant?: 'primary' | 'secondary' | 'tertiary';
-  size?: 'small' | 'medium' | 'large';
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
 }
@@ -13,14 +12,6 @@ const StyledButton = styled(MuiButton)(({ theme }) => ({
   textTransform: 'none',
   fontWeight: 600,
   padding: '8px 16px',
-  '&.size-small': {
-    padding: '6px 12px',
-    fontSize: '0.875rem',
-  },
-  '&.size-large': {
-    padding: '10px 20px',
-    fontSize: '1.125rem',
-  },
   // Primary variant
   '&.variant-primary': {
     backgroundColor: theme.palette.primary.main,
@@ -56,7 +47,6 @@ const StyledButton = styled(MuiButton)(({ theme }) => ({
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
   const { 
     variant = 'primary',
-    size = 'medium',
     children,
     className,
     ...rest
@@ -65,7 +55,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>((props, r
   return (
     <StyledButton
       ref={ref}
-      className={`variant-${variant} size-${size} ${className || ''}`}
+      className={`variant-${variant} ${className || ''}`}
       {...rest}
     >
       {children}
