@@ -5,6 +5,7 @@ import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { TextField, TextArea, Select, DatePicker, Slider, TypeAhead, TypeAheadOption, Button } from "../components/inputs";
+import { StackedButton } from "../components/inputs/StackedButton";
 
 export default function FormInputs() {
   const [values, setValues] = useState({
@@ -96,8 +97,8 @@ export default function FormInputs() {
                     Primary Buttons
                   </Typography>
                   <Stack direction="row" spacing={2}>
-                    <Button variant="primary">Primary</Button>
-                    <Button variant="primary" startIcon={<AddIcon />}>
+                    <Button variant="contained">Primary</Button>
+                    <Button variant="contained" startIcon={<AddIcon />}>
                       With Icon
                     </Button>
                   </Stack>
@@ -108,8 +109,8 @@ export default function FormInputs() {
                     Secondary Buttons
                   </Typography>
                   <Stack direction="row" spacing={2}>
-                    <Button variant="secondary">Secondary</Button>
-                    <Button variant="secondary" startIcon={<SaveIcon />}>
+                    <Button variant="outlined">Secondary</Button>
+                    <Button variant="outlined" startIcon={<SaveIcon />}>
                       With Icon
                     </Button>
                   </Stack>
@@ -120,8 +121,8 @@ export default function FormInputs() {
                     Tertiary Buttons
                   </Typography>
                   <Stack direction="row" spacing={2}>
-                    <Button variant="tertiary">Tertiary</Button>
-                    <Button variant="tertiary" startIcon={<DeleteIcon />}>
+                    <Button variant="text">Tertiary</Button>
+                    <Button variant="text" startIcon={<DeleteIcon />}>
                       With Icon
                     </Button>
                   </Stack>
@@ -132,14 +133,14 @@ export default function FormInputs() {
                     Disabled State
                   </Typography>
                   <Stack direction="row" spacing={2}>
-                    <Button variant="primary" disabled>
-                      Primary
+                    <Button variant="contained" disabled>
+                      Contained
                     </Button>
-                    <Button variant="secondary" disabled>
-                      Secondary
+                    <Button variant="outlined" disabled>
+                      Outlined
                     </Button>
-                    <Button variant="tertiary" disabled>
-                      Tertiary
+                    <Button variant="text" disabled>
+                      Text
                     </Button>
                   </Stack>
                 </Box>
@@ -149,6 +150,47 @@ export default function FormInputs() {
                 Current Values:
               </Typography>
               <pre>{JSON.stringify(values, null, 2)}</pre>
+            </Stack>
+          </Paper>
+
+          <Paper sx={{ p: 3 }}>
+            <Stack spacing={3}>
+              <Typography variant="h6">Stacked Button Examples</Typography>
+
+              <Box>
+                <Typography variant="subtitle1" gutterBottom>
+                  Vertical Stacked Button (6 options, centered)
+                </Typography>
+                <StackedButton
+                  orientation="vertical"
+                  align="centered"
+                  variant="outlined"
+                  options={[
+                    { label: "Option 1", onClick: () => alert("Option 1 clicked") },
+                    { label: "Option 2", onClick: () => alert("Option 2 clicked") },
+                    { label: "Option 3", href: "https://mui.com/", disabled: false },
+                    { label: "Option 4", onClick: () => alert("Option 4 clicked") },
+                    { label: "Option 5", onClick: () => alert("Option 5 clicked") },
+                    { label: "Option 6", onClick: () => alert("Option 6 clicked") },
+                  ]}
+                  width={320}
+                />
+              </Box>
+
+              <Box>
+                <Typography variant="subtitle1" gutterBottom>
+                  Horizontal Stacked Button (Yes/No)
+                </Typography>
+                <StackedButton
+                  orientation="horizontal"
+                  options={[
+                    { label: "Yes", onClick: () => alert("Yes clicked") },
+                    { label: "No", onClick: () => alert("No clicked") },
+                  ]}
+                  width={240}
+                  align="centered"
+                />
+              </Box>
             </Stack>
           </Paper>
         </Stack>

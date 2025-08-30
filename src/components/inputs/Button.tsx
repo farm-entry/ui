@@ -1,64 +1,15 @@
-import * as React from 'react';
-import { Button as MuiButton, ButtonProps as MuiButtonProps, styled } from '@mui/material';
+import * as React from "react";
+import { Button as MuiButton, ButtonProps as MuiButtonProps, styled } from "@mui/material";
 
-export interface ButtonProps extends Omit<MuiButtonProps, 'variant'> {
-  variant?: 'primary' | 'secondary' | 'tertiary';
-  startIcon?: React.ReactNode;
-  endIcon?: React.ReactNode;
-}
+export interface ButtonProps extends MuiButtonProps {}
 
 const StyledButton = styled(MuiButton)(({ theme }) => ({
-  borderRadius: 8,
-  textTransform: 'none',
-  fontWeight: 600,
-  padding: '8px 16px',
-  // Primary variant
-  '&.variant-primary': {
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
-    '&:hover': {
-      backgroundColor: theme.palette.primary.dark,
-    },
-  },
-  // Secondary variant
-  '&.variant-secondary': {
-    backgroundColor: 'transparent',
-    color: theme.palette.primary.main,
-    border: `2px solid ${theme.palette.primary.main}`,
-    '&:hover': {
-      backgroundColor: theme.palette.action.hover,
-    },
-  },
-  // Tertiary variant
-  '&.variant-tertiary': {
-    backgroundColor: 'transparent',
-    color: theme.palette.text.primary,
-    '&:hover': {
-      backgroundColor: theme.palette.action.hover,
-    },
-  },
-  // Disabled state for all variants
-  '&.Mui-disabled': {
-    backgroundColor: theme.palette.action.disabledBackground,
-    color: theme.palette.action.disabled,
-  },
+  // borderRadius: 8,
+  // textTransform: 'none',
+  // fontWeight: 600,
+  // padding: '8px 16px',
 }));
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
-  const { 
-    variant = 'primary',
-    children,
-    className,
-    ...rest
-  } = props;
-
-  return (
-    <StyledButton
-      ref={ref}
-      className={`variant-${variant} ${className || ''}`}
-      {...rest}
-    >
-      {children}
-    </StyledButton>
-  );
+  return <StyledButton ref={ref} {...props} />;
 });
