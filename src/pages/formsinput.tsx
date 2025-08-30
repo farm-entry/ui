@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Stack, Typography, Paper, Container, Box } from "@mui/material";
 import { PageContainer } from "@toolpad/core/PageContainer";
-import AddIcon from '@mui/icons-material/Add';
-import SaveIcon from '@mui/icons-material/Save';
-import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from "@mui/icons-material/Add";
+import SaveIcon from "@mui/icons-material/Save";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { TextField, TextArea, Select, DatePicker, Slider, TypeAhead, TypeAheadOption, Button } from "../components/inputs";
 
 export default function FormInputs() {
@@ -62,12 +62,7 @@ export default function FormInputs() {
                 helperText="Select your department"
               />
 
-              <DatePicker 
-                label="Join Date" 
-                value={values.date} 
-                onChange={(newValue) => setValues({ ...values, date: newValue })} 
-                helperText="Choose your join date" 
-              />
+              <DatePicker label="Join Date" value={values.date} onChange={(newValue) => setValues({ ...values, date: newValue })} helperText="Choose your join date" />
 
               <Slider
                 label="Experience Level"
@@ -94,10 +89,12 @@ export default function FormInputs() {
           <Paper sx={{ p: 3 }}>
             <Stack spacing={3}>
               <Typography variant="h6">Button Variants</Typography>
-              
+
               <Stack spacing={3}>
                 <Box>
-                  <Typography variant="subtitle1" gutterBottom>Primary Buttons</Typography>
+                  <Typography variant="subtitle1" gutterBottom>
+                    Primary Buttons
+                  </Typography>
                   <Stack direction="row" spacing={2}>
                     <Button variant="primary">Primary</Button>
                     <Button variant="primary" startIcon={<AddIcon />}>
@@ -107,7 +104,9 @@ export default function FormInputs() {
                 </Box>
 
                 <Box>
-                  <Typography variant="subtitle1" gutterBottom>Secondary Buttons</Typography>
+                  <Typography variant="subtitle1" gutterBottom>
+                    Secondary Buttons
+                  </Typography>
                   <Stack direction="row" spacing={2}>
                     <Button variant="secondary">Secondary</Button>
                     <Button variant="secondary" startIcon={<SaveIcon />}>
@@ -117,7 +116,9 @@ export default function FormInputs() {
                 </Box>
 
                 <Box>
-                  <Typography variant="subtitle1" gutterBottom>Tertiary Buttons</Typography>
+                  <Typography variant="subtitle1" gutterBottom>
+                    Tertiary Buttons
+                  </Typography>
                   <Stack direction="row" spacing={2}>
                     <Button variant="tertiary">Tertiary</Button>
                     <Button variant="tertiary" startIcon={<DeleteIcon />}>
@@ -127,19 +128,27 @@ export default function FormInputs() {
                 </Box>
 
                 <Box>
-                  <Typography variant="subtitle1" gutterBottom>Disabled State</Typography>
+                  <Typography variant="subtitle1" gutterBottom>
+                    Disabled State
+                  </Typography>
                   <Stack direction="row" spacing={2}>
-                    <Button variant="primary" disabled>Primary</Button>
-                    <Button variant="secondary" disabled>Secondary</Button>
-                    <Button variant="tertiary" disabled>Tertiary</Button>
+                    <Button variant="primary" disabled>
+                      Primary
+                    </Button>
+                    <Button variant="secondary" disabled>
+                      Secondary
+                    </Button>
+                    <Button variant="tertiary" disabled>
+                      Tertiary
+                    </Button>
                   </Stack>
                 </Box>
               </Stack>
 
               <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
                 Current Values:
-                <pre>{JSON.stringify(values, null, 2)}</pre>
               </Typography>
+              <pre>{JSON.stringify(values, null, 2)}</pre>
             </Stack>
           </Paper>
         </Stack>

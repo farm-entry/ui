@@ -1,12 +1,12 @@
-import * as React from "react";
+import { QrCode } from "@mui/icons-material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import PersonIcon from "@mui/icons-material/Person";
 import ClipboardIcon from "@mui/icons-material/DynamicForm";
-import { Outlet } from "react-router";
-import { ReactRouterAppProvider } from "@toolpad/core/react-router";
+import PersonIcon from "@mui/icons-material/Person";
 import type { Navigation } from "@toolpad/core/AppProvider";
+import { ReactRouterAppProvider } from "@toolpad/core/react-router";
+import { Outlet } from "react-router";
+import frontlineLogo from "./assets/frontlinesprout.svg";
 import { customTheme } from "./theme";
-import frontlineLogo from "./assets/frontlinefarms-logo.svg";
 
 const Logo = () => <img src={frontlineLogo} alt="Frontline Farms Logo" />;
 
@@ -30,6 +30,12 @@ const NAVIGATION: Navigation = [
     title: "Employees",
     icon: <PersonIcon />,
     pattern: "employees{/:employeeId}*",
+  },
+  {
+    segment: "qrcode",
+    title: "QR Scanner",
+    icon: <QrCode />,
+    pattern: "qrcode",
   },
 ];
 
