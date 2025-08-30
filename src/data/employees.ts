@@ -1,5 +1,6 @@
 import { DataModel, DataSource, DataSourceCache } from '@toolpad/core/Crud';
 import { z } from 'zod';
+import { useEmployeeStore } from '../store/employeeStore';
 
 type EmployeeRole = 'Market' | 'Finance' | 'Development';
 
@@ -10,39 +11,6 @@ export interface Employee extends DataModel {
   joinDate: string;
   role: EmployeeRole;
 }
-
-const INITIAL_EMPLOYEES_STORE: Employee[] = [
-  {
-    id: 1,
-    name: 'Edward Perry',
-    age: 25,
-    joinDate: new Date().toISOString(),
-    role: 'Finance',
-  },
-  {
-    id: 2,
-    name: 'Josephine Drake',
-    age: 36,
-    joinDate: new Date().toISOString(),
-    role: 'Market',
-  },
-  {
-    id: 3,
-    name: 'Cody Phillips',
-    age: 19,
-    joinDate: new Date().toISOString(),
-    role: 'Development',
-  },
-];
-
-const getEmployeesStore = (): Employee[] => {
-  const value = localStorage.getItem('employees-store');
-  return value ? JSON.parse(value) : INITIAL_EMPLOYEES_STORE;
-};
-
-const setEmployeesStore = (value: Employee[]) => {
-  return localStorage.setItem('employees-store', JSON.stringify(value));
-};
 
 export const employeesDataSource: DataSource<Employee> = {
   fields: [
@@ -70,11 +38,9 @@ export const employeesDataSource: DataSource<Employee> = {
       setTimeout(resolve, 750);
     });
 
-    const employeesStore = getEmployeesStore();
+    let filteredEmployees = [...useEmployeeStore.getState().employees];
 
-    let filteredEmployees = [...employeesStore];
-
-    // Apply filters (example only)
+    // Apply filters
     if (filterModel?.items?.length) {
       filterModel.items.forEach(({ field, value, operator }) => {
         if (!field || value == null) {
@@ -129,56 +95,47 @@ export const employeesDataSource: DataSource<Employee> = {
       itemCount: filteredEmployees.length,
     };
   },
+
   getOne: async (employeeId) => {
-    // Simulate loading delay
     await new Promise((resolve) => {
       setTimeout(resolve, 750);
     });
 
-    const employeesStore = getEmployeesStore();
+    const employee = useEmployeeStore.getState().employees.find(
+      (emp: Employee) => emp.id === Number(employeeId)
+    );
 
-    const employeeToShow = employeesStore.find((employee) => employee.id === Number(employeeId));
-
-    if (!employeeToShow) {
+    if (!employee) {
       throw new Error('Employee not found');
     }
-    return employeeToShow;
+    return employee;
   },
+
   createOne: async (data) => {
-    // Simulate loading delay
     await new Promise((resolve) => {
       setTimeout(resolve, 750);
     });
 
-    const employeesStore = getEmployeesStore();
-
+    const store = useEmployeeStore.getState();
     const newEmployee = {
-      id: employeesStore.reduce((max, employee) => Math.max(max, employee.id), 0) + 1,
+      id: store.getNextId(),
       ...data,
     } as Employee;
 
-    setEmployeesStore([...employeesStore, newEmployee]);
-
+    store.addEmployee(newEmployee);
     return newEmployee;
   },
+
   updateOne: async (employeeId, data) => {
-    // Simulate loading delay
     await new Promise((resolve) => {
       setTimeout(resolve, 750);
     });
 
-    const employeesStore = getEmployeesStore();
-
-    let updatedEmployee: Employee | null = null;
-
-    setEmployeesStore(
-      employeesStore.map((employee) => {
-        if (employee.id === Number(employeeId)) {
-          updatedEmployee = { ...employee, ...data };
-          return updatedEmployee;
-        }
-        return employee;
-      }),
+    const store = useEmployeeStore.getState();
+    store.updateEmployee(Number(employeeId), data);
+    
+    const updatedEmployee = store.employees.find(
+      (emp: Employee) => emp.id === Number(employeeId)
     );
 
     if (!updatedEmployee) {
@@ -186,16 +143,15 @@ export const employeesDataSource: DataSource<Employee> = {
     }
     return updatedEmployee;
   },
+
   deleteOne: async (employeeId) => {
-    // Simulate loading delay
     await new Promise((resolve) => {
       setTimeout(resolve, 750);
     });
 
-    const employeesStore = getEmployeesStore();
-
-    setEmployeesStore(employeesStore.filter((employee) => employee.id !== Number(employeeId)));
+    useEmployeeStore.getState().deleteEmployee(Number(employeeId));
   },
+
   validate: z.object({
     name: z.string({ required_error: 'Name is required' }).nonempty('Name is required'),
     age: z.number({ required_error: 'Age is required' }).min(18, 'Age must be at least 18'),
