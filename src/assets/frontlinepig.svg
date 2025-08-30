@@ -1,0 +1,32 @@
+<svg
+  width="200"
+  height="120"
+  viewBox="0 0 200 120"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  {/* Pig body */}
+  <ellipse cx="100" cy="70" rx="50" ry="30" fill="#F7C6B7" />
+  {/* Pig head */}
+  <ellipse cx="150" cy="60" rx="25" ry="20" fill="#F7C6B7" />
+  {/* Pig snout */}
+  <ellipse cx="165" cy="65" rx="8" ry="5" fill="#E89B8A" />
+  {/* Nostrils */}
+  <ellipse cx="167" cy="65" rx="1" ry="2" fill="#B76E5B" />
+  <ellipse cx="163" cy="65" rx="1" ry="2" fill="#B76E5B" />
+  {/* Pig ears */}
+  <ellipse cx="140" cy="45" rx="5" ry="10" fill="#F7C6B7" transform="rotate(-20 140 45)" />
+  <ellipse cx="160" cy="45" rx="5" ry="10" fill="#F7C6B7" transform="rotate(20 160 45)" />
+  {/* Pig eyes */}
+  <ellipse cx="155" cy="60" rx="2" ry="3" fill="#333" />
+  <ellipse cx="145" cy="60" rx="2" ry="3" fill="#333" />
+  {/* Pig legs */}
+  <rect x="80" y="95" width="8" height="18" rx="4" fill="#E89B8A" />
+  <rect x="112" y="95" width="8" height="18" rx="4" fill="#E89B8A" />
+  <rect x="130" y="95" width="8" height="18" rx="4" fill="#E89B8A" />
+  <rect x="98" y="95" width="8" height="18" rx="4" fill="#E89B8A" />
+  {/* Pig tail */}
+  <path d="M55 70 Q45 65 55 60 Q65 55 55 50" stroke="#E89B8A" strokeWidth="3" fill="none" />
+  {/* Grass for color scheme consistency */}
+  <ellipse cx="100" cy="115" rx="60" ry="8" fill="#B7E4C7" />
+</svg>
