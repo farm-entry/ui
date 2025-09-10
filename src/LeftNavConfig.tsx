@@ -18,12 +18,12 @@ const LEFTNAV_NAVIGATION: Navigation = [
     icon: <Desk />,
     segment: "forms",
     children: [
-      { segment: "livestock-activity", title: "Livestock Activity" },
-      { segment: "scorecards", title: "Scorecards" },
-      { segment: "fuel", title: "Fuel" },
-      { segment: "maintenance", title: "Maintenance" },
-      { segment: "inventory-consumption", title: "Inventory Consumption" },
-      { segment: "job-header-updates", title: "Job Header Updates" },
+      { segment: "forms/livestock-activity", title: "Livestock Activity" },
+      { segment: "forms/scorecards", title: "Scorecards" },
+      { segment: "forms/fuel", title: "Fuel" },
+      { segment: "forms/maintenance", title: "Maintenance" },
+      { segment: "forms/inventory-consumption", title: "Inventory Consumption" },
+      { segment: "forms/job-header-updates", title: "Job Header Updates" },
     ],
   },
   {

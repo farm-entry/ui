@@ -1,10 +1,15 @@
-import React, { useState } from "react";
-import { Stack, Typography, Paper, Container, Box } from "@mui/material";
+import { Box, Container, Paper, Stack, Typography } from "@mui/material";
 import { PageContainer } from "@toolpad/core/PageContainer";
-import AddIcon from "@mui/icons-material/Add";
-import SaveIcon from "@mui/icons-material/Save";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { TextField, TextArea, Select, DatePicker, Slider, TypeAhead, TypeAheadOption, Button } from "../components/inputs";
+import { useState } from "react";
+import {
+  DatePicker,
+  Select,
+  Slider,
+  TextArea,
+  TextField,
+  TypeAhead,
+  TypeAheadOption,
+} from "../components/inputs";
 import { StackedButton } from "../components/inputs/StackedButton";
 
 export default function FormInputs() {
@@ -49,7 +54,9 @@ export default function FormInputs() {
               <TextArea
                 label="Multiline Text Input"
                 value={values.multiline}
-                onChange={(e) => setValues({ ...values, multiline: e.target.value })}
+                onChange={(e) =>
+                  setValues({ ...values, multiline: e.target.value })
+                }
                 helperText="This is a multiline text input field"
                 rows={4}
               />
@@ -58,17 +65,28 @@ export default function FormInputs() {
                 label="Department"
                 options={departments}
                 value={values.select}
-                onChange={(e) => setValues({ ...values, select: e.target.value as string })}
+                onChange={(e) =>
+                  setValues({ ...values, select: e.target.value as string })
+                }
                 onClear={() => setValues({ ...values, select: "" })}
                 helperText="Select your department"
               />
 
-              <DatePicker label="Join Date" value={values.date} onChange={(newValue) => setValues({ ...values, date: newValue })} helperText="Choose your join date" />
+              <DatePicker
+                label="Join Date"
+                value={values.date}
+                onChange={(newValue) =>
+                  setValues({ ...values, date: newValue })
+                }
+                helperText="Choose your join date"
+              />
 
               <Slider
                 label="Experience Level"
                 value={values.slider}
-                onChange={(newValue) => setValues({ ...values, slider: newValue })}
+                onChange={(newValue) =>
+                  setValues({ ...values, slider: newValue })
+                }
                 min={0}
                 max={10}
                 step={0.5}
@@ -79,7 +97,9 @@ export default function FormInputs() {
                 label="Country"
                 options={countries}
                 value={values.typeahead}
-                onChange={(newValue) => setValues({ ...values, typeahead: newValue })}
+                onChange={(newValue) =>
+                  setValues({ ...values, typeahead: newValue })
+                }
                 helperText="Start typing to search for a country"
                 placeholder="Select a country"
                 freeSolo
@@ -89,65 +109,9 @@ export default function FormInputs() {
 
           <Paper sx={{ p: 3 }}>
             <Stack spacing={3}>
-              <Typography variant="h6">Button Variants</Typography>
-
-              <Stack spacing={3}>
-                <Box>
-                  <Typography variant="subtitle1" gutterBottom>
-                    Primary Buttons
-                  </Typography>
-                  <Stack direction="row" spacing={2}>
-                    <Button variant="contained">Primary</Button>
-                    <Button variant="contained" startIcon={<AddIcon />}>
-                      With Icon
-                    </Button>
-                  </Stack>
-                </Box>
-
-                <Box>
-                  <Typography variant="subtitle1" gutterBottom>
-                    Secondary Buttons
-                  </Typography>
-                  <Stack direction="row" spacing={2}>
-                    <Button variant="outlined">Secondary</Button>
-                    <Button variant="outlined" startIcon={<SaveIcon />}>
-                      With Icon
-                    </Button>
-                  </Stack>
-                </Box>
-
-                <Box>
-                  <Typography variant="subtitle1" gutterBottom>
-                    Tertiary Buttons
-                  </Typography>
-                  <Stack direction="row" spacing={2}>
-                    <Button variant="text">Tertiary</Button>
-                    <Button variant="text" startIcon={<DeleteIcon />}>
-                      With Icon
-                    </Button>
-                  </Stack>
-                </Box>
-
-                <Box>
-                  <Typography variant="subtitle1" gutterBottom>
-                    Disabled State
-                  </Typography>
-                  <Stack direction="row" spacing={2}>
-                    <Button variant="contained" disabled>
-                      Contained
-                    </Button>
-                    <Button variant="outlined" disabled>
-                      Outlined
-                    </Button>
-                    <Button variant="text" disabled>
-                      Text
-                    </Button>
-                  </Stack>
-                </Box>
-              </Stack>
-
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+              <Typography variant="body2" color="text.secondary">
                 Current Values:
+                <p>{JSON.stringify(values, null, 2)}</p>
               </Typography>
               <pre>{JSON.stringify(values, null, 2)}</pre>
             </Stack>
