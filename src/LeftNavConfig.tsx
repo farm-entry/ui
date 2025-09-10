@@ -1,9 +1,17 @@
-import { Desk, Home, QrCode } from "@mui/icons-material";
+import { Desk, Home, Lock, QrCode } from "@mui/icons-material";
+import AgricultureIcon from "@mui/icons-material/Agriculture";
+import AssessmentIcon from "@mui/icons-material/Assessment";
+import BuildIcon from "@mui/icons-material/Build";
 import ClipboardIcon from "@mui/icons-material/DynamicForm";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import LocalGasStationIcon from "@mui/icons-material/LocalGasStation";
 import PersonIcon from "@mui/icons-material/Person";
-import type { Navigation } from "@toolpad/core/AppProvider";
+import UpdateIcon from "@mui/icons-material/Update";
+import type { Navigation, NavigationDividerItem, NavigationPageItem, NavigationSubheaderItem } from "@toolpad/core/AppProvider";
 
-const LEFTNAV_NAVIGATION: Navigation = [
+
+
+const LEFTNAV_NAVIGATION: CustomNavigation = [
   {
     kind: "header",
     title: "Welcome, Sergei!",
@@ -18,14 +26,45 @@ const LEFTNAV_NAVIGATION: Navigation = [
     icon: <Desk />,
     segment: "forms",
     children: [
-      { segment: "livestock-activity", title: "Livestock Activity" },
-      { segment: "scorecards", title: "Scorecards" },
-      { segment: "fuel", title: "Fuel" },
-      { segment: "maintenance", title: "Maintenance" },
-      { segment: "inventory-consumption", title: "Inventory Consumption" },
-      { segment: "job-header-updates", title: "Job Header Updates" },
+      {
+        title: "Livestock Activity",
+        icon: <AgricultureIcon color="primary" sx={{ fontSize: 21 }} />,
+        segment: "forms/livestock-activity",
+        description: "Track and manage livestock activities.",
+      },
+      {
+        title: "Scorecards",
+        icon: <AssessmentIcon color="primary" sx={{ fontSize: 21 }} />,
+        segment: "forms/scorecards",
+        description: "View and manage scorecards.",
+      },
+      {
+        title: "Fuel",
+        icon: <LocalGasStationIcon color="primary" sx={{ fontSize: 21 }} />,
+        segment: "forms/fuel",
+        description: "Monitor fuel usage and logs.",
+      },
+      {
+        title: "Maintenance",
+        icon: <BuildIcon color="primary" sx={{ fontSize: 21 }} />,
+        segment: "forms/maintenance",
+        description: "Schedule and review maintenance tasks.",
+      },
+      {
+        title: "Inventory Consumption",
+        icon: <InventoryIcon color="primary" sx={{ fontSize: 21 }} />,
+        segment: "forms/inventory-consumption",
+        description: "Track inventory consumption and usage.",
+      },
+      {
+        title: "Job Header Updates",
+        icon: <UpdateIcon color="primary" sx={{ fontSize: 21 }} />,
+        segment: "forms/job-header-updates",
+        description: "Update job headers and details.",
+      },
     ],
   },
+
   {
     segment: "forminputs",
     title: "Form Inputs",
@@ -35,6 +74,11 @@ const LEFTNAV_NAVIGATION: Navigation = [
     segment: "employees",
     title: "Employees",
     icon: <PersonIcon />,
+  },
+  {
+    segment: "route-protection",
+    title: "Route Protection",
+    icon: <Lock />,
   },
   {
     segment: "qrcode",

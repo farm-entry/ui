@@ -43,7 +43,9 @@ export default function LivestockActivityPage() {
     setValue,
     formState: { errors },
     reset,
-  } = useForm<FormInputs>({ defaultValues: formData });
+  } = useForm<FormInputs>({
+    defaultValues: formData,
+  });
 
   const watchedActivityType = watch("activityType");
   const watchedJob = watch("job");
@@ -167,12 +169,12 @@ export default function LivestockActivityPage() {
               <Controller
                 name="activityType"
                 control={control}
-                rules={{ required: "Activity type is required" }}
+                rules={{ required: 'Activity type is required' }}
                 render={({ field, fieldState }) => (
                   <Select
                     label="Activity Type"
                     options={activityTypeOptions}
-                    value={field.value || ""}
+                    value={field.value || ''}
                     onChange={(e) => field.onChange(e.target.value)}
                     helperText={fieldState.error?.message}
                   />
@@ -185,7 +187,14 @@ export default function LivestockActivityPage() {
             {/* Job Selection and Activity Fields */}
             {watchedActivityType && currentConfig && (
               <>
-                <JobSelection config={currentConfig} control={control} errors={errors} jobs={jobs} selectedJob={selectedJob} watchedJob={watchedJob} />
+                <JobSelection
+                  config={currentConfig}
+                  control={control}
+                  errors={errors}
+                  jobs={jobs}
+                  selectedJob={selectedJob}
+                  watchedJob={watchedJob}
+                />
 
                 <Divider />
 
@@ -197,15 +206,15 @@ export default function LivestockActivityPage() {
                   <Controller
                     name="event"
                     control={control}
-                    rules={{ required: "Event is required" }}
+                    rules={{ required: 'Event is required' }}
                     render={({ field, fieldState }) => (
                       <Select
                         label="Event Type"
-                        options={eventTypes.map((event) => ({
+                        options={eventTypes.map(event => ({
                           value: event.code,
                           label: event.description,
                         }))}
-                        value={field.value || ""}
+                        value={field.value || ''}
                         onChange={(e) => field.onChange(e.target.value)}
                         helperText={fieldState.error?.message}
                       />
@@ -228,11 +237,21 @@ export default function LivestockActivityPage() {
 
                 {/* Submit Buttons */}
                 <Box display="flex" gap={2} justifyContent="flex-end">
-                  <Button variant="outlined" startIcon={<ClearIcon />} onClick={handleClearForm} disabled={isLoading}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<ClearIcon />}
+                    onClick={handleClearForm}
+                    disabled={isLoading}
+                  >
                     Clear Form
                   </Button>
-                  <Button type="submit" variant="contained" startIcon={<SaveIcon />} disabled={isLoading}>
-                    {isLoading ? "Saving..." : "Save Activity"}
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    startIcon={<SaveIcon />}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Saving...' : 'Save Activity'}
                   </Button>
                 </Box>
               </>
