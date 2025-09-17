@@ -14,6 +14,7 @@ import QRScanner from "./pages/qrscanner";
 import ScorecardsPage from "./pages/scorecards";
 import DashboardPage from "./pages";
 import CustomFormsLayout from "./layouts/forms";
+import RouteGuard from "./components/RouteGuard";
 
 const router = createBrowserRouter([
   {
@@ -28,34 +29,52 @@ const router = createBrowserRouter([
             Component: DashboardPage,
           },
           {
-            path: "forms",
-            Component: CustomFormsLayout,
-            children: [
-              {
-                path: "livestock-activity",
-                Component: LivestockActivityPage,
-              },
-              {
-                path: "scorecards",
-                Component: ScorecardsPage,
-              },
-              {
-                path: "fuel",
-                Component: FuelPage,
-              },
-              {
-                path: "maintenance",
-                Component: MaintenancePage,
-              },
-              {
-                path: "inventory-consumption",
-                Component: InventoryConsumptionPage,
-              },
-              {
-                path: "job-header-updates",
-                Component: JobHeaderUpdatesPage,
-              },
-            ],
+            path: "livestock-activity",
+            Component: () => (
+              <RouteGuard requiredRoute="livestock-activity">
+                <LivestockActivityPage />
+              </RouteGuard>
+            ),
+          },
+          {
+            path: "scorecards",
+            Component: () => (
+              <RouteGuard requiredRoute="scorecards">
+                <ScorecardsPage />
+              </RouteGuard>
+            ),
+          },
+          {
+            path: "fuel",
+            Component: () => (
+              <RouteGuard requiredRoute="fuel">
+                <FuelPage />
+              </RouteGuard>
+            ),
+          },
+          {
+            path: "maintenance",
+            Component: () => (
+              <RouteGuard requiredRoute="maintenance">
+                <MaintenancePage />
+              </RouteGuard>
+            ),
+          },
+          {
+            path: "inventory-consumption",
+            Component: () => (
+              <RouteGuard requiredRoute="inventory-consumption">
+                <InventoryConsumptionPage />
+              </RouteGuard>
+            ),
+          },
+          {
+            path: "job-header-updates",
+            Component: () => (
+              <RouteGuard requiredRoute="job-header-updates">
+                <JobHeaderUpdatesPage />
+              </RouteGuard>
+            ),
           },
           {
             path: "forminputs",
