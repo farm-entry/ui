@@ -2,7 +2,7 @@ import { CheckCircle, Code, Person, Router, Security } from "@mui/icons-material
 import { Alert, Box, Button, Divider, List, ListItem, ListItemIcon, ListItemText, Paper, Stack, Typography } from "@mui/material";
 import { PageContainer } from "@toolpad/core";
 import { useState } from "react";
-import UserPermissionDemo from "../components/UserPermissionDemo";
+// import UserPermissionDemo from "../components/UserPermissionDemo";
 
 export const RouteProtectionGuide = () => {
   const [showImplementation, setShowImplementation] = useState(false);
@@ -146,7 +146,7 @@ export const RouteProtectionGuide = () => {
           </Alert>
         </Paper>
       </Box>
-      <UserPermissionDemo />
+      {/* <UserPermissionDemo /> */}
     </PageContainer>
   );
 };

@@ -19,6 +19,6 @@ export type { TypeAheadOption, TypeAheadProps } from './TypeAhead';
 export { Button } from './Button';
 export type { ButtonProps } from './Button';
 
-export { ButtonGroup } from './ButtonGroup';
-export type { ButtonGroupProps } from './ButtonGroup';
+export { StackedButton } from './StackedButton';
+export type { StackedButtonProps } from './StackedButton';
 
