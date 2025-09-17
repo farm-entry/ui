@@ -4,7 +4,7 @@ import { PageContainer } from "@toolpad/core/PageContainer";
 import AddIcon from "@mui/icons-material/Add";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Button, ButtonGroup } from "../components/inputs";
+import { Button, StackedButton } from "../components/inputs";
 
 export default function Navigation() {
   return (
@@ -21,8 +21,8 @@ export default function Navigation() {
                     Primary Buttons
                   </Typography>
                   <Stack direction="row" spacing={2}>
-                    <Button variant="primary">Primary</Button>
-                    <Button variant="primary" startIcon={<AddIcon />}>
+                    <Button variant="contained">Primary</Button>
+                    <Button variant="contained" startIcon={<AddIcon />}>
                       With Icon
                     </Button>
                   </Stack>
@@ -33,8 +33,8 @@ export default function Navigation() {
                     Secondary Buttons
                   </Typography>
                   <Stack direction="row" spacing={2}>
-                    <Button variant="secondary">Secondary</Button>
-                    <Button variant="secondary" startIcon={<SaveIcon />}>
+                    <Button variant="outlined">Secondary</Button>
+                    <Button variant="outlined" startIcon={<SaveIcon />}>
                       With Icon
                     </Button>
                   </Stack>
@@ -45,8 +45,8 @@ export default function Navigation() {
                     Tertiary Buttons
                   </Typography>
                   <Stack direction="row" spacing={2}>
-                    <Button variant="tertiary">Tertiary</Button>
-                    <Button variant="tertiary" startIcon={<DeleteIcon />}>
+                    <Button variant="text">Tertiary</Button>
+                    <Button variant="text" startIcon={<DeleteIcon />}>
                       With Icon
                     </Button>
                   </Stack>
@@ -57,10 +57,10 @@ export default function Navigation() {
                     Disabled State
                   </Typography>
                   <Stack direction="row" spacing={2}>
-                    <Button variant="primary" disabled>
+                    <Button variant="contained" disabled>
                       Disabled
                     </Button>
-                    <Button variant="primary" disabled startIcon={<AddIcon />}>
+                    <Button variant="contained" disabled startIcon={<AddIcon />}>
                       Disabled with Icon
                     </Button>
                   </Stack>
@@ -71,17 +71,21 @@ export default function Navigation() {
                 Farm Activity Navigation
               </Typography>
 
-              <ButtonGroup
+              <StackedButton
+                options={[
+                  { label: 'Livestock Activity', onClick: () => {} },
+                  { label: 'Scorecards', onClick: () => {} },
+                  { label: 'Fuel', onClick: () => {} },
+                  { label: 'Maintenance', onClick: () => {} },
+                  { label: 'Inventory Consumption', onClick: () => {} },
+                  { label: 'Job Header Updates', onClick: () => {} }
+                ]}
                 orientation="vertical"
-                align="center"
-              >
-                <Button variant="secondary">Livestock Activity</Button>
-                <Button variant="secondary">Scorecards</Button>
-                <Button variant="secondary">Fuel</Button>
-                <Button variant="secondary">Maintenance</Button>
-                <Button variant="secondary">Inventory Consumption</Button>
-                <Button variant="secondary">Job Header Updates</Button>
-              </ButtonGroup>
+                width={250}
+                align="centered"
+                variant="contained"
+                color="secondary"
+              />
             </Stack>
           </Paper>
         </Stack>
