@@ -29,63 +29,52 @@ const router = createBrowserRouter([
             Component: DashboardPage,
           },
           {
-            path: "forms",
+            path: "livestock-activity",
             Component: () => (
-              <RouteGuard>
-                {/* <CustomFormsLayout /> */}
-                <Outlet />
+              <RouteGuard requiredRoute="livestock-activity">
+                <LivestockActivityPage />
               </RouteGuard>
             ),
-            children: [
-              {
-                path: "livestock-activity",
-                Component: () => (
-                  <RouteGuard requiredRoute="forms/livestock-activity">
-                    <LivestockActivityPage />
-                  </RouteGuard>
-                ),
-              },
-              {
-                path: "scorecards",
-                Component: () => (
-                  <RouteGuard requiredRoute="forms/scorecards">
-                    <ScorecardsPage />
-                  </RouteGuard>
-                ),
-              },
-              {
-                path: "fuel",
-                Component: () => (
-                  <RouteGuard requiredRoute="forms/fuel">
-                    <FuelPage />
-                  </RouteGuard>
-                ),
-              },
-              {
-                path: "maintenance",
-                Component: () => (
-                  <RouteGuard requiredRoute="forms/maintenance">
-                    <MaintenancePage />
-                  </RouteGuard>
-                ),
-              },
-              {
-                path: "inventory-consumption",
-                Component: () => (
-                  <RouteGuard requiredRoute="forms/inventory-consumption">
-                    <InventoryConsumptionPage />
-                  </RouteGuard>
-                ),
-              },
-              {
-                path: "job-header-updates",
-                Component: () => (
-                  <RouteGuard requiredRoute="forms/job-header-updates">
-                    <JobHeaderUpdatesPage />
-                  </RouteGuard>
-                ),
-              },
-            ],
+          },
+          {
+            path: "scorecards",
+            Component: () => (
+              <RouteGuard requiredRoute="scorecards">
+                <ScorecardsPage />
+              </RouteGuard>
+            ),
+          },
+          {
+            path: "fuel",
+            Component: () => (
+              <RouteGuard requiredRoute="fuel">
+                <FuelPage />
+              </RouteGuard>
+            ),
+          },
+          {
+            path: "maintenance",
+            Component: () => (
+              <RouteGuard requiredRoute="maintenance">
+                <MaintenancePage />
+              </RouteGuard>
+            ),
+          },
+          {
+            path: "inventory-consumption",
+            Component: () => (
+              <RouteGuard requiredRoute="inventory-consumption">
+                <InventoryConsumptionPage />
+              </RouteGuard>
+            ),
+          },
+          {
+            path: "job-header-updates",
+            Component: () => (
+              <RouteGuard requiredRoute="job-header-updates">
+                <JobHeaderUpdatesPage />
+              </RouteGuard>
+            ),
           },
           {
             path: "forminputs",

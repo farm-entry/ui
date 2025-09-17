@@ -5,7 +5,7 @@ export { TextArea } from './TextArea';
 export type { TextAreaProps } from './TextArea';
 
 export { Select } from './Select';
-export type { SelectProps, SelectOption } from './Select';
+export type { SelectOption, SelectProps } from './Select';
 
 export { DatePicker } from './DatePicker';
 export type { CustomDatePickerProps } from './DatePicker';
@@ -14,10 +14,11 @@ export { Slider } from './Slider';
 export type { SliderProps } from './Slider';
 
 export { TypeAhead } from './TypeAhead';
-export type { TypeAheadProps, TypeAheadOption } from './TypeAhead';
+export type { TypeAheadOption, TypeAheadProps } from './TypeAhead';
 
 export { Button } from './Button';
 export type { ButtonProps } from './Button';
 
 export { ButtonGroup } from './ButtonGroup';
 export type { ButtonGroupProps } from './ButtonGroup';
+

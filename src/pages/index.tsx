@@ -13,37 +13,37 @@ const dashboardOptions = [
   {
     label: "Livestock Activity",
     icon: <AgricultureIcon color="primary" sx={{ fontSize: 21 }} />,
-    href: "forms/livestock-activity",
+    href: "livestock-activity",
     description: "Track and manage livestock activities.",
   },
   {
     label: "Scorecards",
     icon: <AssessmentIcon color="primary" sx={{ fontSize: 21 }} />,
-    href: "forms/scorecards",
+    href: "scorecards",
     description: "View and manage scorecards.",
   },
   {
     label: "Fuel",
     icon: <LocalGasStationIcon color="primary" sx={{ fontSize: 21 }} />,
-    href: "forms/fuel",
+    href: "fuel",
     description: "Monitor fuel usage and logs.",
   },
   {
     label: "Maintenance",
     icon: <BuildIcon color="primary" sx={{ fontSize: 21 }} />,
-    href: "forms/maintenance",
+    href: "maintenance",
     description: "Schedule and review maintenance tasks.",
   },
   {
     label: "Inventory Consumption",
     icon: <InventoryIcon color="primary" sx={{ fontSize: 21 }} />,
-    href: "forms/inventory-consumption",
+    href: "inventory-consumption",
     description: "Track inventory consumption and usage.",
   },
   {
     label: "Job Header Updates",
     icon: <UpdateIcon color="primary" sx={{ fontSize: 21 }} />,
-    href: "forms/job-header-updates",
+    href: "job-header-updates",
     description: "Update job headers and details.",
   },
 ];
