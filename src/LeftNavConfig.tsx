@@ -1,4 +1,4 @@
-import { Desk, Home, Lock, QrCode } from "@mui/icons-material";
+import { Home, QrCode } from "@mui/icons-material";
 import AgricultureIcon from "@mui/icons-material/Agriculture";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import BuildIcon from "@mui/icons-material/Build";
@@ -60,11 +60,6 @@ const LEFTNAV_NAVIGATION: Navigation = [
     segment: "employees",
     title: "Employees",
     icon: <PersonIcon />,
-  },
-  {
-    segment: "route-protection",
-    title: "Route Protection",
-    icon: <Lock />,
   },
   {
     segment: "qrcode",

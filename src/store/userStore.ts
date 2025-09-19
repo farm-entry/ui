@@ -1,44 +1,38 @@
-import { create, StateCreator } from "zustand";
+import { create } from "zustand";
 import DEFAULT_USER from "../mock/userOptions.json";
 
 export type DomainType = "moglerfarms" | "sondfarms";
 
-export interface UserData {
-    username: string;
-    domain: DomainType
-}
-
 export interface MenuOption {
     title: string;
-    segment: string; // Add segment property for navigation mapping
-    description?: string; // Optional description field
+    segment: string;
+    description?: string;
     hidden: boolean;
 }
 
-export interface UserInfo {
-    userData: UserData;
+interface UserState {
+    username: string;
+    domain: DomainType;
     menuOptions: MenuOption[];
-}
-
-interface UserInfoState {
-    user: UserInfo;
-    getUser: () => UserInfo;
-    setUser: (user: UserInfo) => void;
+    getUser: () => { username: string; domain: DomainType; menuOptions: MenuOption[] };
+    setUser: (username: string, domain: DomainType) => void;
     setMenuOptions: (menuOptions: MenuOption[]) => void;
 }
 
-type UserStore = StateCreator<UserInfoState>;
+export const useUserStore = create<UserState>((set, get) => ({
+    username: DEFAULT_USER.userData.username,
+    domain: DEFAULT_USER.userData.domain as DomainType,
+    menuOptions: DEFAULT_USER.menuOptions,
 
-export const useUserStore = create<UserInfoState>(
-    ((set: (fn: (state: UserInfoState) => UserInfoState) => void, get: () => UserInfoState) => ({
-        user: DEFAULT_USER as UserInfo,
+    getUser: () => ({
+        username: get().username,
+        domain: get().domain,
+        menuOptions: get().menuOptions
+    }),
 
-        getUser: () => get().user,
+    setUser: (username: string, domain: DomainType) =>
+        set((state) => ({ ...state, username, domain })),
 
-        setUser: (user: UserInfo) =>
-            set((state: UserInfoState) => ({ ...state, user })),
-
-        setMenuOptions: (menuOptions: MenuOption[]) =>
-            set((state: UserInfoState) => ({ ...state, user: { ...state.user, menuOptions } })),
-    })) as UserStore
-);
+    setMenuOptions: (menuOptions: MenuOption[]) =>
+        set((state) => ({ ...state, menuOptions }))
+}));
