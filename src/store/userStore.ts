@@ -15,7 +15,7 @@ interface UserState {
     domain: DomainType;
     menuOptions: MenuOption[];
     getUser: () => { username: string; domain: DomainType; menuOptions: MenuOption[] };
-    setUser: (username: string, domain: DomainType) => void;
+    setUser: (username: string) => void;
     setMenuOptions: (menuOptions: MenuOption[]) => void;
 }
 
@@ -30,8 +30,8 @@ export const useUserStore = create<UserState>((set, get) => ({
         menuOptions: get().menuOptions
     }),
 
-    setUser: (username: string, domain: DomainType) =>
-        set((state) => ({ ...state, username, domain })),
+    setUser: (username: string) =>
+        set((state) => ({ ...state, username })),
 
     setMenuOptions: (menuOptions: MenuOption[]) =>
         set((state) => ({ ...state, menuOptions }))

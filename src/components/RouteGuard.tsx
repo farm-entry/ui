@@ -9,13 +9,10 @@ interface RouteGuardProps {
   requiredRoute?: string;
 }
 
-export const RouteGuard: React.FC<RouteGuardProps> = ({
-  children,
-  requiredRoute,
-}) => {
+export const RouteGuard: React.FC<RouteGuardProps> = ({ children, requiredRoute }) => {
   const [loading, setLoading] = useState(true);
   const [userLoaded, setUserLoaded] = useState(false);
-  const { user, setUser } = useUserStore();
+  const { menuOptions, setUser } = useUserStore();
 
   useEffect(() => {
     const loadUserInfo = async () => {
@@ -41,12 +38,7 @@ export const RouteGuard: React.FC<RouteGuardProps> = ({
 
   if (loading) {
     return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100vh"
-      >
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <CircularProgress />
       </Box>
     );
@@ -55,9 +47,7 @@ export const RouteGuard: React.FC<RouteGuardProps> = ({
   // If a specific route is required, check if user has access
 
   if (requiredRoute) {
-    const hasAccess = user.menuOptions.some(
-      (option) => option.segment === requiredRoute && !option.hidden
-    );
+    const hasAccess = menuOptions.some((option: any) => option.segment === requiredRoute && !option.hidden);
 
     if (!hasAccess) {
       // Redirect to home or show unauthorized message

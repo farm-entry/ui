@@ -1,17 +1,14 @@
-import { Desk, Home, QrCode } from "@mui/icons-material";
-import LockIcon from "@mui/icons-material/Lock";
-import PersonIcon from "@mui/icons-material/Person";
 import type { Navigation } from "@toolpad/core/AppProvider";
-import { UserInfo, useUserStore } from "../store/userStore";
+import { useUserStore } from "../store/userStore";
 
 export const useDynamicNavigation = (nav_config: Navigation): Navigation => {
-  const { user } = useUserStore();
+  const user = useUserStore();
 
   // Start with base navigation items
   const navigation: Navigation = [
     {
       kind: "header",
-      title: `Welcome, ${user.userData.username}!`,
+      title: `Welcome, ${user.username}!`,
     },
     ...nav_config,
   ];
