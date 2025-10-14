@@ -9,6 +9,13 @@ import FuelPage from "./pages/fuel";
 import InventoryConsumptionPage from "./pages/inventory-consumption";
 import JobHeaderUpdatesPage from "./pages/job-header-updates";
 import LivestockActivityPage from "./pages/livestock-activity";
+import LivestockActivityLayout from "./pages/livestock-activity/layout";
+import MovePage from "./pages/livestock-activity/forms/move";
+import WeanPage from "./pages/livestock-activity/forms/wean";
+import GradeOffPage from "./pages/livestock-activity/forms/gradeoff";
+import MortalityPage from "./pages/livestock-activity/forms/mortality";
+import PurchasePage from "./pages/livestock-activity/forms/purchase";
+import QuantityAdjustmentPage from "./pages/livestock-activity/forms/quantityadj";
 import MaintenancePage from "./pages/maintenance";
 import QRScanner from "./pages/qrscanner";
 import ScorecardsPage from "./pages/scorecards";
@@ -32,9 +39,39 @@ const router = createBrowserRouter([
             path: "livestock-activity",
             Component: () => (
               <RouteGuard requiredRoute="livestock-activity">
-                <LivestockActivityPage />
+                <LivestockActivityLayout />
               </RouteGuard>
             ),
+            children: [
+              {
+                path: "",
+                Component: LivestockActivityPage,
+              },
+              {
+                path: "move",
+                Component: MovePage,
+              },
+              {
+                path: "wean",
+                Component: WeanPage,
+              },
+              {
+                path: "gradeoff",
+                Component: GradeOffPage,
+              },
+              {
+                path: "mortality",
+                Component: MortalityPage,
+              },
+              {
+                path: "purchase",
+                Component: PurchasePage,
+              },
+              {
+                path: "quantityadj",
+                Component: QuantityAdjustmentPage,
+              },
+            ],
           },
           {
             path: "scorecards",
