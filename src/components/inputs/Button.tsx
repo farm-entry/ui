@@ -1,22 +1,30 @@
 import * as React from "react";
-import {
-  Button as MuiButton,
-  ButtonProps as MuiButtonProps,
-  styled,
-} from "@mui/material";
+import { Button as MuiButton, ButtonProps as MuiButtonProps, styled } from "@mui/material";
 
 export interface ButtonProps extends MuiButtonProps {
   // variant?: "primary" | "secondary" | "tertiary";
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
+  center?: boolean;
+  fullWidth?: boolean;
 }
 
-const StyledButton = styled(MuiButton)(({ theme }) => ({
-  borderRadius: 8,
+const StyledButton = styled(MuiButton)<{ center?: boolean; fullWidth?: boolean }>(({ theme, center, fullWidth }) => ({
+  // borderRadius: 8,
   textTransform: "none",
   fontWeight: 600,
   padding: "8px 16px",
   fontSize: "1rem",
+  // Center styling
+  ...(center && {
+    display: "block",
+    marginLeft: "auto",
+    marginRight: "auto",
+  }),
+  // Full width styling
+  ...(fullWidth && {
+    width: "100%",
+  }),
   // Primary variant
   "&.variant-contained": {
     backgroundColor: theme.palette.primary.main,
@@ -49,18 +57,12 @@ const StyledButton = styled(MuiButton)(({ theme }) => ({
   },
 }));
 
-export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (props, ref) => {
-    const { variant = "primary", children, className, ...rest } = props;
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>((props, ref) => {
+  const { variant = "primary", children, className, center, fullWidth, ...rest } = props;
 
-    return (
-      <StyledButton
-        ref={ref}
-        className={`variant-${variant} ${className || ""}`}
-        {...rest}
-      >
-        {children}
-      </StyledButton>
-    );
-  }
-);
+  return (
+    <StyledButton ref={ref} className={`variant-${variant} ${className || ""}`} center={center} fullWidth={fullWidth} {...rest}>
+      {children}
+    </StyledButton>
+  );
+});

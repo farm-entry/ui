@@ -10,9 +10,6 @@ export default function MovePage() {
       <Typography variant="h4" gutterBottom>
         Move Livestock
       </Typography>
-      <Typography variant="body1">
-        Transfer livestock between locations or pens.
-      </Typography>
     </CustomFormsLayout>
   );
 }

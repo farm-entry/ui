@@ -1,15 +1,7 @@
 import { Box, Container, Paper, Stack, Typography } from "@mui/material";
 import { PageContainer } from "@toolpad/core/PageContainer";
 import { useState } from "react";
-import {
-  DatePicker,
-  Select,
-  Slider,
-  TextArea,
-  TextField,
-  TypeAhead,
-  TypeAheadOption,
-} from "../components/inputs";
+import { Button, DatePicker, Select, Slider, TextArea, TextField, TypeAhead, TypeAheadOption } from "../components/inputs";
 import { StackedButton } from "../components/inputs/StackedButton";
 
 export default function FormInputs() {
@@ -54,9 +46,7 @@ export default function FormInputs() {
               <TextArea
                 label="Multiline Text Input"
                 value={values.multiline}
-                onChange={(e) =>
-                  setValues({ ...values, multiline: e.target.value })
-                }
+                onChange={(e) => setValues({ ...values, multiline: e.target.value })}
                 helperText="This is a multiline text input field"
                 rows={4}
               />
@@ -65,28 +55,17 @@ export default function FormInputs() {
                 label="Department"
                 options={departments}
                 value={values.select}
-                onChange={(e) =>
-                  setValues({ ...values, select: e.target.value as string })
-                }
+                onChange={(e) => setValues({ ...values, select: e.target.value as string })}
                 onClear={() => setValues({ ...values, select: "" })}
                 helperText="Select your department"
               />
 
-              <DatePicker
-                label="Join Date"
-                value={values.date}
-                onChange={(newValue) =>
-                  setValues({ ...values, date: newValue })
-                }
-                helperText="Choose your join date"
-              />
+              <DatePicker label="Join Date" value={values.date} onChange={(newValue) => setValues({ ...values, date: newValue })} helperText="Choose your join date" />
 
               <Slider
                 label="Experience Level"
                 value={values.slider}
-                onChange={(newValue) =>
-                  setValues({ ...values, slider: newValue })
-                }
+                onChange={(newValue) => setValues({ ...values, slider: newValue })}
                 min={0}
                 max={10}
                 step={0.5}
@@ -97,9 +76,7 @@ export default function FormInputs() {
                 label="Country"
                 options={countries}
                 value={values.typeahead}
-                onChange={(newValue) =>
-                  setValues({ ...values, typeahead: newValue })
-                }
+                onChange={(newValue) => setValues({ ...values, typeahead: newValue })}
                 helperText="Start typing to search for a country"
                 placeholder="Select a country"
                 freeSolo
@@ -154,6 +131,26 @@ export default function FormInputs() {
                   width={240}
                   align="centered"
                 />
+              </Box>
+              <Box>
+                <Typography variant="subtitle1" gutterBottom>
+                  Centered button
+                </Typography>
+                <Button variant="contained" center>
+                  Sign In
+                </Button>
+                <Typography variant="subtitle1" gutterBottom>
+                  Full width button
+                </Typography>
+                <Button variant="outlined" fullWidth>
+                  Submit
+                </Button>
+                <Typography variant="subtitle1" gutterBottom>
+                  Both centered and full width
+                </Typography>
+                <Button variant="text" center fullWidth>
+                  Login
+                </Button>
               </Box>
             </Stack>
           </Paper>

@@ -1,6 +1,6 @@
 import type { Navigation } from "@toolpad/core/AppProvider";
+import { unionBy } from "lodash";
 import { useUserStore } from "../store/userStore";
-
 export const useDynamicNavigation = (nav_config: Navigation): Navigation => {
   const user = useUserStore();
 
@@ -15,9 +15,8 @@ export const useDynamicNavigation = (nav_config: Navigation): Navigation => {
 
   // show only forms that the user has requested to see
   const allowedForms = user.menuOptions.filter((option) => !option.hidden);
-  navigation.push(allowedForms as Navigation[number]);
 
-  return navigation;
+  return unionBy(navigation, allowedForms, "segment");
 };
 
 export default useDynamicNavigation;

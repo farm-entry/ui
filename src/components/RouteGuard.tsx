@@ -1,7 +1,7 @@
 import { Box, CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router";
-import { userOptionsApi } from "../services/userOptionsApi";
+// import { userOptionsApi } from "../services/userApi";
 import { useUserStore } from "../store/userStore";
 
 interface RouteGuardProps {
@@ -18,8 +18,8 @@ export const RouteGuard: React.FC<RouteGuardProps> = ({ children, requiredRoute 
     const loadUserInfo = async () => {
       try {
         setLoading(true);
-        const userInfo = await userOptionsApi.fetchUserInfo();
-        setUser(userInfo);
+        // const userInfo = await userOptionsApi.fetchUserInfo();
+        // setUser(userInfo);
         setUserLoaded(true);
       } catch (error) {
         console.error("Failed to load user info:", error);
