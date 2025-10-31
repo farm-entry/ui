@@ -37,49 +37,20 @@ const mockJobs: Job[] = [
     },
 ];
 
-const mockEventTypes: Record<ActivityType, EventType[]> = {
-    WEAN: [
-        { code: 'WEAN_STD', description: 'Standard Wean' },
-        { code: 'WEAN_EARLY', description: 'Early Wean' },
-    ],
-    MORTALITY: [
-        {
-            code: 'MORT_STD',
-            description: 'Standard Mortality',
-            reasons: [
-                { code: 'DISEASE', description: 'Disease' },
-                { code: 'INJURY', description: 'Injury' },
-                { code: 'OTHER', description: 'Other' },
-            ],
-        },
-    ],
-    MOVE: [
-        { code: 'MOVE_STD', description: 'Standard Move' },
-        { code: 'MOVE_TREATMENT', description: 'Move to Treatment' },
-    ],
-    GRADEOFF: [
-        {
-            code: 'GRADE_MARKET',
-            description: 'Grade to Market',
-            reasons: [
-                { code: 'WEIGHT', description: 'Weight Grade' },
-                { code: 'QUALITY', description: 'Quality Grade' },
-            ],
-        },
-    ],
-    QTYADJ: [
-        { code: 'ADJ_POS', description: 'Positive Adjustment' },
-        { code: 'ADJ_NEG', description: 'Negative Adjustment' },
-    ],
-    PURCHASE: [
-        { code: 'PURCH_STD', description: 'Standard Purchase' },
-        { code: 'PURCH_REPLACEMENT', description: 'Replacement Purchase' },
-    ],
-    SHIPMENT: [
-        { code: 'SHIP_MARKET', description: 'Ship to Market' },
-        { code: 'SHIP_PROCESSOR', description: 'Ship to Processor' },
-    ],
-};
+const mockEventTypes: EventType[] = [
+    { code: 'WEAN_STD', description: 'Standard Wean' },
+    { code: 'WEAN_EARLY', description: 'Early Wean' },
+    { code: 'MORT_STD', description: 'Standard Mortality' },
+    { code: 'MOVE_STD', description: 'Standard Move' },
+    { code: 'MOVE_TREATMENT', description: 'Move to Treatment' },
+    { code: 'GRADE_MARKET', description: 'Grade to Market' },
+    { code: 'ADJ_POS', description: 'Positive Adjustment' },
+    { code: 'ADJ_NEG', description: 'Negative Adjustment' },
+    { code: 'PURCH_STD', description: 'Standard Purchase' },
+    { code: 'PURCH_REPLACEMENT', description: 'Replacement Purchase' },
+    { code: 'SHIP_MARKET', description: 'Ship to Market' },
+    { code: 'SHIP_PROCESSOR', description: 'Ship to Processor' },
+];
 
 const mockHealthStatuses: HealthStatus[] = [
     { code: 'HEALTHY', description: 'Healthy', color: 'green' },
@@ -101,9 +72,9 @@ class LivestockActivityApi {
         return mockJobs;
     }
 
-    async fetchEventTypes(activityType: ActivityType): Promise<EventType[]> {
+    async fetchEventTypes(): Promise<EventType[]> {
         await delay(300);
-        return mockEventTypes[activityType] || [];
+        return mockEventTypes;
     }
 
     async fetchHealthStatuses(): Promise<HealthStatus[]> {

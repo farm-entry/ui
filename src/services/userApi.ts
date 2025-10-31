@@ -46,6 +46,8 @@ class AuthApi {
                 body: JSON.stringify(credentials),
             });
 
+            console.log({ response })
+
             if (!response.ok) {
                 const errorData: ApiErrorResponse = await response.json();
                 throw new Error(errorData.message || `Login failed: ${response.status}`);
@@ -82,6 +84,8 @@ class AuthApi {
                 throw new Error(`Logout failed: ${error.message}`);
             }
             throw new Error('Logout failed: Unknown error occurred');
+        } finally {
+            window.location.assign("/login");
         }
     }
 

@@ -21,6 +21,7 @@ export interface UserType {
 interface UserState extends UserType {
     getUser: () => UserType;
     setUser: (user: UserType) => void;
+    resetUser: () => void;
     setUsername: (username: string) => void;
     setUserDomain: (domain: DomainType) => void;
     setMenuOptions: (menuOptions: MenuOption[]) => void;
@@ -32,7 +33,6 @@ export const useUserStore = create<UserState>((set, get) => ({
     menuOptions: DEFAULT_USER.menuOptions,
     name: DEFAULT_USER.userData.username,
     loginTime: "now",
-
     getUser: () => ({
         username: get().username,
         domain: get().domain,
@@ -40,7 +40,13 @@ export const useUserStore = create<UserState>((set, get) => ({
         name: get().name,
         loginTime: get().loginTime
     }),
-
+    resetUser: () => ({
+        username: '',
+        domain: '',
+        menuOptions: '',
+        name: '',
+        loginTime: ''
+    }),
     setUser: (user: UserType) =>
         set((state) => ({ ...state, ...user })),
     setUsername: (username: string) =>

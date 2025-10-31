@@ -12,14 +12,12 @@ export default function SignIn() {
   const { setUser } = useUserStore();
 
   const handleSignIn = async (provider: any, formData: FormData) => {
-    console.log({ formData });
     const username = formData.get("username") as string;
     const password = formData.get("password") as string;
 
     try {
       const creds = await login({ username, password })
         .then((c) => {
-          console.log({ c });
           setUser({ domain: "moglerfarms", menuOptions: [], ...c.user });
           navigate("/");
         })
