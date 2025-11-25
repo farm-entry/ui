@@ -17,9 +17,9 @@ export interface Job {
 }
 
 export interface EventType {
-  code: string;
-  description: string;
-  reasons?: Reason[];
+  Code: string;
+  Description: string;
+  // reasons?: Reason[];
 }
 
 export interface Reason {
@@ -100,11 +100,11 @@ interface LivestockActivityStore {
   clearForm: () => void;
 
   //get data
-  getEventTypes: () => EventType[];
+  getEventTypes: (template: string) => EventType[];
 
   //fetch api data
   // fetchPostingGroups: () => Promise<void>;
-  fetchEventTypes: () => Promise<void>;
+  fetchEventTypes: (template: string) => Promise<void>;
   // fetchHealthStatuses: () => Promise<void>;
   // fetchDimensionPackers: () => Promise<void>;
 
@@ -139,9 +139,9 @@ export const useLivestockActivityStore = create<LivestockActivityStore>((set, ge
     })),
 
   //get data
-  getEventTypes: () => {
+  getEventTypes: (template: string) => {
     if (get().eventTypes.length === 0) {
-      get().fetchEventTypes();
+      get().fetchEventTypes(template);
     }
     return get().eventTypes;
   },
@@ -173,13 +173,13 @@ export const useLivestockActivityStore = create<LivestockActivityStore>((set, ge
     }),
 
   //fetch from API
-  fetchEventTypes: async () => {
+  fetchEventTypes: async (template: string) => {
     try {
       // Set loading state
       set({ isLoading: true, error: null });
 
       // Make API call
-      const eventTypes = await api.fetchEventTypes();
+      const eventTypes = await api.fetchEventTypes(template);
 
       // Update state with fetched data
       set((state) => ({

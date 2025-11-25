@@ -5,7 +5,7 @@ interface PostingGroupsDataState {
     postingGroups: PostingGroup[];
     isLoading: boolean;
     error: string | null;
-    getPostingGroups: () => PostingGroup[];
+    getPostingGroups: () => Promise<PostingGroup[]>;
     setPostingGroups: (postingGroups: PostingGroup[]) => void;
     clearPostingGroups: () => void;
     fetchPostingGroups: () => Promise<void>;
@@ -16,9 +16,9 @@ export const usePostingGroupsStore = create<PostingGroupsDataState>((set, get) =
     isLoading: false,
     error: null,
 
-    getPostingGroups: () => {
+    getPostingGroups: async () => {
         if (get().postingGroups.length === 0) {
-            get().fetchPostingGroups();
+            await get().fetchPostingGroups();
         }
         return get().postingGroups;
     },
@@ -31,11 +31,8 @@ export const usePostingGroupsStore = create<PostingGroupsDataState>((set, get) =
 
     fetchPostingGroups: async () => {
         try {
-            // Set loading state
-            set({ isLoading: true, error: null });
-
             // Make API call
-            const postingGroups = await api.fetchActivePostingGroups();
+            const postingGroups = await api.fetchActivePostingGroups()
 
             // Update state with fetched data
             set((state) => ({
@@ -45,6 +42,7 @@ export const usePostingGroupsStore = create<PostingGroupsDataState>((set, get) =
             }));
 
         } catch (error) {
+            console.log('Caught error while fetching posting groups:', error);
             // Handle error
             set((state) => ({
                 ...state,

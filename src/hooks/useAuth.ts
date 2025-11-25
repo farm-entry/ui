@@ -22,7 +22,7 @@ export function useAuth(): UseLoginResult {
     const login = useCallback(async (credentials: LoginCredentials): Promise<LoginResponse> => {
         setIsLoading(true);
         setError(null);
-
+        console.log('Attempting login with credentials:', credentials);
         try {
             const response = await authApi.login(credentials);
             setIsAuthenticated(true);

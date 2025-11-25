@@ -1,5 +1,5 @@
 import { SwapVert } from "@mui/icons-material";
-import { Button, Divider, Stack, Typography } from "@mui/material";
+import { Button, Divider, FormHelperText, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import CustomHeader from "../../../components/framework/CustomHeader";
@@ -7,8 +7,8 @@ import { DatePicker, TextArea, TextField, TypeAhead, TypeAheadOption } from "../
 import DenseTable from "../../../components/table/DenseTable";
 import CustomFormsLayout from "../../../layouts/forms";
 import { PostingGroup } from "../../../services/postingGroupsApi";
-import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
+import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 
 interface MoveFormData {
   fromJob: string | number | null;
@@ -43,7 +43,7 @@ export default function MovePage() {
   const { getEventTypes, eventTypes } = useLivestockActivityStore();
   const [deads, setDeads] = useState<{ toJob: number; fromJob: number }>({ toJob: 0, fromJob: 0 });
   const [inventory, setInventory] = useState<{ toJob: number; fromJob: number }>({ toJob: 0, fromJob: 0 });
-
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
@@ -54,84 +54,144 @@ export default function MovePage() {
     formState: { errors },
   } = useForm<MoveFormData>({
     defaultValues: defaultValues,
+    mode: "onSubmit",
   });
 
   useEffect(() => {
-    getPostingGroups();
-    getEventTypes();
+    setLoading(!(postingGroups && eventTypes));
+    Promise.all([getPostingGroups(), getEventTypes("move")]).then((x) => {
+      console.log("Fetched posting groups and event types:", x);
+      setLoading(false);
+    });
   }, []);
 
   const onSubmit = (data: MoveFormData) => {
     console.log("Form submitted:", data);
+    console.log("All required fields validated successfully!");
   };
 
   const setJob = (value: any, label: "fromJob" | "toJob") => {
-    const job = postingGroups.find((pg) => pg.No === value?.value);
+    const job = postingGroups.find((pg) => pg.number === value?.value);
     if (job && value && value.value) {
       setValue(label, value.value);
-      setDeads({ ...deads, [label]: job.Dead_Quantity } as any);
-      setInventory({ ...inventory, [label]: job.Inventory_Left } as any);
+      setDeads({ ...deads, [label]: job.deadQuantity } as any);
+      setInventory({ ...inventory, [label]: job.inventory } as any);
     }
   };
 
-  const formatLabel = (job: PostingGroup) => `${job.No} ${job.Description}`;
+  const formatLabel = (job: PostingGroup) => `${job.number} ${job.description}`;
   return (
     <CustomFormsLayout>
       <CustomHeader icon={SwapVert} title="Move " />
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={2}>
-          <TypeAhead
-            {...register("fromJob")}
-            onChange={(v) => setJob(v, "fromJob")}
-            options={postingGroups.map((job) => ({ label: formatLabel(job), value: job.No, deads: job.Dead_Quantity, inventory: job.Inventory_Left }) as TypeAheadOption)}
-            label="From"
-          />
-          <TypeAhead
-            {...register("toJob")}
-            onChange={(v) => setJob(v, "toJob")}
-            options={postingGroups.map((job) => ({ label: formatLabel(job), value: job.No, deads: job.Dead_Quantity, inventory: job.Inventory_Left }) as TypeAheadOption)}
-            label="To"
-          />
-          {watch("fromJob") && watch("toJob") && (
-            <DenseTable
-              rows={[
-                { name: "fromJob", postingGroup: watch("fromJob"), inventory: inventory.fromJob, deads: deads.fromJob },
-                { name: "toJob", postingGroup: watch("toJob"), inventory: inventory.toJob, deads: deads.toJob },
-              ]}
-              columns={columns}
-            />
-          )}
-          <Divider />
-          <Typography>Event Details</Typography>
-          <TypeAhead
-            {...register("event")}
-            onChange={(v) => v && v.value && setValue("event", v.value)}
-            options={eventTypes.map((event) => ({ label: event.description, value: event.code }))}
-            label="Event Name"
-          />
-          <DatePicker {...register("postingDate")} onChange={(v) => setValue("postingDate", v)} label="Posting Date" />
-          <Divider />
-          <Typography>Quantity</Typography>
-          <Stack spacing={2} direction="row">
-            <TextField label="Total" type="number" {...register("quantity")} />
-            <TextField label="Smalls" type="number" {...register("smallLivestockQuantity")} />
-          </Stack>
-          <TextField {...register("totalWeight")} label="Total Weight" type="number" />
-          <Divider />
-          <TextArea {...register("comments")} label="Comments" type="text" />
-          <Button variant="text" color="primary" fullWidth onClick={() => reset(defaultValues)}>
-            Reset
-          </Button>
-          <Stack direction="row" spacing={2} justifyContent="flex-end">
-            <Button variant="outlined" color="primary" fullWidth>
-              Save
+      {loading && <h1>loading ... </h1>}
+      {!loading && (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Stack spacing={2}>
+            <Stack>
+              <TypeAhead
+                {...register("fromJob", { required: "From Job is required" })}
+                onChange={(v) => setJob(v, "fromJob")}
+                options={postingGroups.map((job) => ({ label: formatLabel(job), value: job.number, deads: job.deadQuantity, inventory: job.inventory }) as TypeAheadOption)}
+                label="From"
+              />
+              {errors.fromJob && <FormHelperText error>{errors.fromJob.message}</FormHelperText>}
+            </Stack>
+
+            <Stack>
+              <TypeAhead
+                {...register("toJob", { required: "To Job is required" })}
+                onChange={(v) => setJob(v, "toJob")}
+                options={postingGroups.map((job) => ({ label: formatLabel(job), value: job.number, deads: job.deadQuantity, inventory: job.inventory }) as TypeAheadOption)}
+                label="To"
+              />
+              {errors.toJob && <FormHelperText error>{errors.toJob.message}</FormHelperText>}
+            </Stack>
+            {watch("fromJob") && watch("toJob") && (
+              <DenseTable
+                rows={[
+                  { name: "fromJob", postingGroup: watch("fromJob"), inventory: inventory.fromJob, deads: deads.fromJob },
+                  { name: "toJob", postingGroup: watch("toJob"), inventory: inventory.toJob, deads: deads.toJob },
+                ]}
+                columns={columns}
+              />
+            )}
+            <Divider />
+            <Typography>Event Details</Typography>
+            <Stack>
+              <TypeAhead
+                {...register("event", { required: "Event is required" })}
+                onChange={(v) => v && v.value && setValue("event", v.value)}
+                options={eventTypes.map((event) => ({ label: event.Description, value: event.Code }))}
+                label="Event Name"
+              />
+              {errors.event && <FormHelperText error>{errors.event.message}</FormHelperText>}
+            </Stack>
+
+            <Stack>
+              <DatePicker
+                {...register("postingDate", { required: "Posting Date is required" })}
+                onChange={(v) => setValue("postingDate", v)}
+                label="Posting Date"
+                helperText={errors.postingDate?.message}
+              />
+            </Stack>
+            <Divider />
+            <Typography>Quantity</Typography>
+            <Stack spacing={2} direction="row">
+              <Stack sx={{ width: "100%" }}>
+                <TextField
+                  label="Total"
+                  type="number"
+                  {...register("quantity", {
+                    required: "Total quantity is required",
+                    min: { value: 1, message: "Quantity must be greater than 0" },
+                  })}
+                  error={!!errors.quantity}
+                  helperText={errors.quantity?.message}
+                />
+              </Stack>
+              <Stack sx={{ width: "100%" }}>
+                <TextField
+                  label="Smalls"
+                  type="number"
+                  {...register("smallLivestockQuantity", {
+                    required: "Small livestock quantity is required",
+                    min: { value: 0, message: "Quantity cannot be negative" },
+                  })}
+                  error={!!errors.smallLivestockQuantity}
+                  helperText={errors.smallLivestockQuantity?.message}
+                />
+              </Stack>
+            </Stack>
+
+            <Stack>
+              <TextField
+                {...register("totalWeight", {
+                  required: "Total weight is required",
+                  min: { value: 1, message: "Weight must be greater than 0" },
+                })}
+                label="Total Weight"
+                type="number"
+                error={!!errors.totalWeight}
+                helperText={errors.totalWeight?.message}
+              />
+            </Stack>
+            <Divider />
+            <TextArea {...register("comments")} label="Comments" type="text" />
+            <Button variant="text" color="primary" fullWidth onClick={() => reset(defaultValues)}>
+              Reset
             </Button>
-            <Button variant="contained" color="primary" fullWidth type="submit">
-              Submit
-            </Button>
+            <Stack direction="row" spacing={2} justifyContent="flex-end">
+              <Button variant="outlined" color="primary" fullWidth>
+                Save
+              </Button>
+              <Button variant="contained" color="primary" fullWidth type="submit">
+                Submit
+              </Button>
+            </Stack>
           </Stack>
-        </Stack>
-      </form>
+        </form>
+      )}
     </CustomFormsLayout>
   );
 }

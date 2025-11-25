@@ -1,4 +1,5 @@
 import { ActivityType, DimensionPacker, EventType, FormData, HealthStatus, Job } from '../store/livestockActivityStore';
+import { HandleError } from './handleError';
 import { delay } from './localConfig';
 
 // Mock data based on farm-entry GraphQL schema
@@ -38,18 +39,18 @@ const mockJobs: Job[] = [
 ];
 
 const mockEventTypes: EventType[] = [
-    { code: 'WEAN_STD', description: 'Standard Wean' },
-    { code: 'WEAN_EARLY', description: 'Early Wean' },
-    { code: 'MORT_STD', description: 'Standard Mortality' },
-    { code: 'MOVE_STD', description: 'Standard Move' },
-    { code: 'MOVE_TREATMENT', description: 'Move to Treatment' },
-    { code: 'GRADE_MARKET', description: 'Grade to Market' },
-    { code: 'ADJ_POS', description: 'Positive Adjustment' },
-    { code: 'ADJ_NEG', description: 'Negative Adjustment' },
-    { code: 'PURCH_STD', description: 'Standard Purchase' },
-    { code: 'PURCH_REPLACEMENT', description: 'Replacement Purchase' },
-    { code: 'SHIP_MARKET', description: 'Ship to Market' },
-    { code: 'SHIP_PROCESSOR', description: 'Ship to Processor' },
+    { Code: 'WEAN_STD', Description: 'Standard Wean' },
+    { Code: 'WEAN_EARLY', Description: 'Early Wean' },
+    { Code: 'MORT_STD', Description: 'Standard Mortality' },
+    { Code: 'MOVE_STD', Description: 'Standard Move' },
+    { Code: 'MOVE_TREATMENT', Description: 'Move to Treatment' },
+    { Code: 'GRADE_MARKET', Description: 'Grade to Market' },
+    { Code: 'ADJ_POS', Description: 'Positive Adjustment' },
+    { Code: 'ADJ_NEG', Description: 'Negative Adjustment' },
+    { Code: 'PURCH_STD', Description: 'Standard Purchase' },
+    { Code: 'PURCH_REPLACEMENT', Description: 'Replacement Purchase' },
+    { Code: 'SHIP_MARKET', Description: 'Ship to Market' },
+    { Code: 'SHIP_PROCESSOR', Description: 'Ship to Processor' },
 ];
 
 const mockHealthStatuses: HealthStatus[] = [
@@ -72,9 +73,40 @@ class LivestockActivityApi {
         return mockJobs;
     }
 
-    async fetchEventTypes(): Promise<EventType[]> {
-        await delay(300);
-        return mockEventTypes;
+    async fetchEventTypes(template: string): Promise<EventType[]> {
+        try {
+            console.log('Fetching event types from API...');
+
+            const response = await fetch(`/api/livestock/events?template=${template}`, {
+                method: 'GET',
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                await new HandleError().handleApiError(response, 'LivestockActivityApi.fetchEventTypes');
+            }
+
+            const data: any[] = await response.json();
+
+            return data;
+
+
+        } catch (error) {
+            if (error && typeof error === 'object' && 'code' in error) {
+                // Re-throw API errors as-is
+                throw error;
+            }
+
+            // Handle unexpected errors
+            const apiError = new HandleError().createError(
+                'FETCH_ERROR',
+                'Failed to fetch posting groups',
+                error instanceof Error ? error.message : 'Unknown error occurred'
+            );
+
+            console.error('Unexpected error fetching posting groups:', error);
+            throw apiError;
+        }
     }
 
     async fetchHealthStatuses(): Promise<HealthStatus[]> {

@@ -37,7 +37,7 @@ class AuthApi {
      */
     async login(credentials: LoginCredentials): Promise<LoginResponse> {
         try {
-            const response = await fetch(`/api/auth/login`, {
+            const response = await fetch(`/api/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -45,8 +45,6 @@ class AuthApi {
                 credentials: 'include', // Important for session cookies
                 body: JSON.stringify(credentials),
             });
-
-            console.log({ response })
 
             if (!response.ok) {
                 const errorData: ApiErrorResponse = await response.json();
