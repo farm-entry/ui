@@ -2,13 +2,18 @@ import { SwapVert } from "@mui/icons-material";
 import { Button, Divider, FormHelperText, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import CustomConfirmation from "../../../components/framework/CustomConfirmation";
 import CustomHeader from "../../../components/framework/CustomHeader";
+import CustomNotice from "../../../components/framework/CustomNotice";
+import LoadingSpinner from "../../../components/framework/LoadingSpinner";
 import { DatePicker, TextArea, TextField, TypeAhead, TypeAheadOption } from "../../../components/inputs";
 import DenseTable from "../../../components/table/DenseTable";
 import CustomFormsLayout from "../../../layouts/forms";
 import { PostingGroup } from "../../../services/postingGroupsApi";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { useConfirmationStore } from "../../../store/confirmationStore";
+import { saveWithTTL } from "../../../utils/localStorage";
 
 interface MoveFormData {
   fromJob: string | number | null;
@@ -41,6 +46,7 @@ const columns = [
 export default function MovePage() {
   const { getPostingGroups, postingGroups } = usePostingGroupsStore();
   const { getEventTypes, eventTypes } = useLivestockActivityStore();
+  const showConfirmation = useConfirmationStore(state => state.showConfirmation);
   const [deads, setDeads] = useState<{ toJob: number; fromJob: number }>({ toJob: 0, fromJob: 0 });
   const [inventory, setInventory] = useState<{ toJob: number; fromJob: number }>({ toJob: 0, fromJob: 0 });
   const [loading, setLoading] = useState(false);
@@ -70,6 +76,20 @@ export default function MovePage() {
     console.log("All required fields validated successfully!");
   };
 
+  const onSave = () => {
+    const formData = getValues();
+    saveWithTTL('livestock-move-form', formData, 48);
+    console.log("Form saved to localStorage with 48-hour TTL:", formData);
+  };
+
+  const handleReset = () => {
+    showConfirmation(
+      "Are you sure?",
+      "This will reset all form fields to their default values.",
+      () => reset(defaultValues)
+    );
+  };
+
   const setJob = (value: any, label: "fromJob" | "toJob") => {
     const job = postingGroups.find((pg) => pg.number === value?.value);
     if (job && value && value.value) {
@@ -83,7 +103,13 @@ export default function MovePage() {
   return (
     <CustomFormsLayout>
       <CustomHeader icon={SwapVert} title="Move " />
-      {loading && <h1>loading ... </h1>}
+      
+      <CustomNotice<MoveFormData>
+        storageKey="livestock-move-form"
+        onLoad={(data) => reset(data)}
+      />
+
+      {loading && <LoadingSpinner />}
       {!loading && (
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2}>
@@ -178,11 +204,11 @@ export default function MovePage() {
             </Stack>
             <Divider />
             <TextArea {...register("comments")} label="Comments" type="text" />
-            <Button variant="text" color="primary" fullWidth onClick={() => reset(defaultValues)}>
+            <Button variant="text" color="primary" fullWidth onClick={handleReset}>
               Reset
             </Button>
             <Stack direction="row" spacing={2} justifyContent="flex-end">
-              <Button variant="outlined" color="primary" fullWidth>
+              <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
                 Save
               </Button>
               <Button variant="contained" color="primary" fullWidth type="submit">
@@ -192,6 +218,8 @@ export default function MovePage() {
           </Stack>
         </form>
       )}
+
+      <CustomConfirmation />
     </CustomFormsLayout>
   );
 }
