@@ -1,7 +1,6 @@
 import { Box, CircularProgress } from "@mui/material";
-import { useEffect, useState } from "react";
 import { Navigate } from "react-router";
-// import { userOptionsApi } from "../services/userApi";
+import { useAuth } from "../hooks/useAuth";
 import { useUserStore } from "../store/userStore";
 
 interface RouteGuardProps {
@@ -10,33 +9,11 @@ interface RouteGuardProps {
 }
 
 export const RouteGuard: React.FC<RouteGuardProps> = ({ children, requiredRoute }) => {
-  const [loading, setLoading] = useState(true);
-  const [userLoaded, setUserLoaded] = useState(false);
-  const { menuOptions, setUser } = useUserStore();
+  const { isAuthenticated } = useAuth();
+  const { menuOptions } = useUserStore();
 
-  useEffect(() => {
-    const loadUserInfo = async () => {
-      try {
-        setLoading(true);
-        // const userInfo = await userOptionsApi.fetchUserInfo();
-        // setUser(userInfo);
-        setUserLoaded(true);
-      } catch (error) {
-        console.error("Failed to load user info:", error);
-        // Handle error - could redirect to login or show error
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (!userLoaded) {
-      loadUserInfo();
-    } else {
-      setLoading(false);
-    }
-  }, [setUser, userLoaded]);
-
-  if (loading) {
+  // Still checking authentication status
+  if (isAuthenticated === null) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
         <CircularProgress />
@@ -44,8 +21,12 @@ export const RouteGuard: React.FC<RouteGuardProps> = ({ children, requiredRoute 
     );
   }
 
-  // If a specific route is required, check if user has access
+  // Not authenticated - redirect to login
+  if (isAuthenticated === false) {
+    return <Navigate to="/login" replace />;
+  }
 
+  // If a specific route is required, check if user has access
   if (requiredRoute) {
     const hasAccess = menuOptions.some((option: any) => option.segment === requiredRoute && !option.hidden);
 

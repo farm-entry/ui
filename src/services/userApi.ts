@@ -34,15 +34,16 @@ export interface ApiErrorResponse {
 class AuthApi {
     /**
      * Login user with username and password
+     * The API should set a httpOnly session cookie named 'sessionId' in the response
      */
     async login(credentials: LoginCredentials): Promise<LoginResponse> {
         try {
-            const response = await fetch(`/api/login`, {
+            const response = await fetch(`/api/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                credentials: 'include', // Important for session cookies
+                credentials: 'include', // This ensures cookies are sent and received
                 body: JSON.stringify(credentials),
             });
 

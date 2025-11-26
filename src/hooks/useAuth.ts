@@ -57,9 +57,11 @@ export function useAuth(): UseLoginResult {
     useEffect(() => {
         const checkAuthStatus = async () => {
             try {
+                // This will check if the sessionId cookie exists and is valid
                 const authenticated = await authApi.isAuthenticated();
                 setIsAuthenticated(authenticated);
             } catch (err) {
+                console.error('Auth check failed:', err);
                 setIsAuthenticated(false);
             }
         };

@@ -30,11 +30,11 @@ export default defineConfig({
           });
         },
       },
-      '/api/login': {
+      '/api/auth': {
         target: 'https://frontline-farms-api-ed6c8a0f0ca0.herokuapp.com',
-        rewrite: (path) => path.replace(/^\/api/, ''),
+        rewrite: (path) => path.replace(/^\/api\/auth/, ''),
         changeOrigin: true,
-        // secure: true,
+        cookieDomainRewrite: 'localhost', // Rewrite cookie domain for localhost
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('proxy error', err);
@@ -44,26 +44,28 @@ export default defineConfig({
           });
           proxy.on('proxyRes', (proxyRes, req, _res) => {
             console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
+            // Log cookies being set
+            if (proxyRes.headers['set-cookie']) {
+              console.log('Cookies being set:', proxyRes.headers['set-cookie']);
+            }
           });
         },
       },
       '/api': {
         target: 'https://frontline-farms-api-ed6c8a0f0ca0.herokuapp.com',
-        // rewrite: (path) => path.replace(/^\/api/, ''),
         changeOrigin: true,
+        cookieDomainRewrite: 'localhost', // Rewrite cookie domain for localhost
         secure: true,
         configure: (proxy, _options) => {
           proxy.on('error', (err, _req, _res) => {
             console.log('proxy error', err);
           });
           proxy.on('proxyReq', (proxyReq, req, _res) => {
-            // Set the session cookie
-            const sessionId = "s%3AlWgMMABGIjPfMKg_BkmFDYO90XoZuVW_.imsf0JBUuXgkucOBbxWgW2MomUgDfYi4ZS0Rf6nhxQ4"
-
-            const existingCookies = req.headers.cookie;
-            proxyReq.setHeader('Cookie', `${existingCookies}; sessionId=${sessionId}`);
-
+            // Forward cookies from the browser to the API
             console.log('Sending Request to the Target:', req.method, req.url);
+            if (req.headers.cookie) {
+              console.log('Forwarding cookies:', req.headers.cookie);
+            }
           });
           proxy.on('proxyRes', (proxyRes, req, _res) => {
             console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
