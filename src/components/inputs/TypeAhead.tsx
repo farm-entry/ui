@@ -4,12 +4,14 @@ import * as React from "react";
 export interface TypeAheadOption {
   label: string;
   value: string | number;
+  disabled?: boolean;
 }
 
 export interface TypeAheadProps {
   label: string;
   options: TypeAheadOption[];
   // value: TypeAheadOption | null;
+  disabled?: boolean;
   onChange: (value: TypeAheadOption | null) => void;
   helperText?: string;
   placeholder?: string;
@@ -37,6 +39,7 @@ export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props
         options={options}
         onChange={handleChange}
         freeSolo={freeSolo}
+        disabled={props.disabled}
         renderInput={(params) => <TextField {...params} label={label} placeholder={placeholder} variant="outlined" />}
       />
       {helperText && <FormHelperText>{helperText}</FormHelperText>}

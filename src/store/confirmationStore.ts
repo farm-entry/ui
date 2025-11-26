@@ -1,14 +1,5 @@
 import { create } from "zustand";
-
-interface ConfirmationState {
-  open: boolean;
-  title: string;
-  message: string;
-  onConfirm: (() => void) | null;
-  showConfirmation: (title: string, message: string, onConfirm: () => void) => void;
-  handleConfirm: () => void;
-  handleCancel: () => void;
-}
+import type { ConfirmationState } from "./types/confirmation";
 
 export const useConfirmationStore = create<ConfirmationState>((set, get) => ({
   open: false,

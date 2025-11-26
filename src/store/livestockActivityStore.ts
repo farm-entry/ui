@@ -1,80 +1,19 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 import { livestockActivityApi as api } from "../services/livestockActivityApi";
-
-export type ActivityType = 'WEAN' | 'MORTALITY' | 'MOVE' | 'GRADEOFF' | 'QTYADJ' | 'PURCHASE' | 'SHIPMENT';
-
-export interface Job {
-  number: string;
-  description: string;
-  healthStatus?: {
-    code: string;
-    description: string;
-    color?: string;
-  };
-  inventory?: number;
-  deadQuantity?: number;
-  startQuantity?: number;
-}
-
-export interface EventType {
-  Code: string;
-  Description: string;
-  // reasons?: Reason[];
-}
-
-export interface Reason {
-  code: string;
-  description: string;
-}
-
-export interface HealthStatus {
-  code: string;
-  description: string;
-  color?: string;
-}
-
-export interface DimensionPacker {
-  code: string;
-  description: string;
-}
-
-export interface FormData {
-  // Activity type selection
-  activityType: ActivityType | null;
-
-  // Job selection
-  job: string;
-  fromJob: string;
-  toJob: string;
-
-  // Event selection
-  event: string;
-
-  // Date
-  postingDate: Date | null;
-
-  // Quantities
-  quantity: number | null;
-  smallLivestockQuantity: number | null;
-  totalWeight: number | null;
-  livestockWeight: number | null;
-  deadsOnArrivalQuantity: number | null;
-
-  // Dynamic quantities for MORTALITY/GRADEOFF
-  quantities: { [reasonCode: string]: number };
-
-  // Shipment specific
-  dimensionPacker: string;
-
-  // Comments
-  comments: string;
-}
+import type {
+  ActivityType,
+  Job,
+  EventType,
+  Reason,
+  HealthStatus,
+  DimensionPacker,
+  FormData,
+} from "./types/livestockActivity";
 
 interface LivestockActivityStore {
   // Form data
   formData: FormData;
   updateFormData: (data: Partial<FormData>) => void;
-
 
   // Reference data
   jobs: Job[];
@@ -100,24 +39,16 @@ interface LivestockActivityStore {
   clearForm: () => void;
 
   //get data
-  getEventTypes: (template: string) => EventType[];
-
-  //fetch api data
-  // fetchPostingGroups: () => Promise<void>;
-  fetchEventTypes: (template: string) => Promise<void>;
-  // fetchHealthStatuses: () => Promise<void>;
-  // fetchDimensionPackers: () => Promise<void>;
-
-  // Validation
-  validateForm: () => { isValid: boolean; errors: string[] };
+  getEventTypes: (template: string) => Promise<EventType[] | undefined>;
+  getHealthStatuses: (job: string) => Promise<HealthStatus[] | undefined>;
 }
 
 const initialFormData: FormData = {
   activityType: null,
-  job: '',
-  fromJob: '',
-  toJob: '',
-  event: '',
+  job: "",
+  fromJob: "",
+  toJob: "",
+  event: "",
   postingDate: null,
   quantity: null,
   smallLivestockQuantity: null,
@@ -125,134 +56,98 @@ const initialFormData: FormData = {
   livestockWeight: null,
   deadsOnArrivalQuantity: null,
   quantities: {},
-  dimensionPacker: '',
-  comments: '',
+  dimensionPacker: "",
+  comments: "",
 };
 
-export const useLivestockActivityStore = create<LivestockActivityStore>((set, get) => ({
-  // Form data
-  formData: initialFormData,
+export const useLivestockActivityStore = create<LivestockActivityStore>(
+  (set, get) => ({
+    // Form data
+    formData: initialFormData,
 
-  updateFormData: (data) =>
-    set((state) => ({
-      formData: { ...state.formData, ...data },
-    })),
-
-  //get data
-  getEventTypes: (template: string) => {
-    if (get().eventTypes.length === 0) {
-      get().fetchEventTypes(template);
-    }
-    return get().eventTypes;
-  },
-
-  // Reference data
-  jobs: [],
-  eventTypes: [],
-  healthStatuses: [],
-  dimensionPackers: [],
-
-  setJobs: (jobs) => set({ jobs }),
-  setEventTypes: (eventTypes) => set({ eventTypes }),
-  setHealthStatuses: (healthStatuses) => set({ healthStatuses }),
-  setDimensionPackers: (dimensionPackers) => set({ dimensionPackers }),
-
-  // Loading states
-  isLoading: false,
-  setLoading: (loading) => set({ isLoading: loading }),
-
-  // Error handling
-  error: null,
-  setError: (error) => set({ error }),
-
-  // Clear form
-  clearForm: () =>
-    set({
-      formData: initialFormData,
-      error: null,
-    }),
-
-  //fetch from API
-  fetchEventTypes: async (template: string) => {
-    try {
-      // Set loading state
-      set({ isLoading: true, error: null });
-
-      // Make API call
-      const eventTypes = await api.fetchEventTypes(template);
-
-      // Update state with fetched data
+    updateFormData: (data) =>
       set((state) => ({
-        ...state,
-        eventTypes,
-        isLoading: false
-      }));
+        formData: { ...state.formData, ...data },
+      })),
 
-    } catch (error) {
-      // Handle error
-      set((state) => ({
-        ...state,
-        error: error instanceof Error ? error.message : 'An error occurred',
-        isLoading: false
-      }));
-    }
-  },
+    //get data
+    getEventTypes: async (template: string) => {
+      try {
+        if (get().eventTypes.length === 0) {
+          // Set loading state
+          set({ isLoading: true, error: null });
 
-  // Validation
-  validateForm: () => {
-    const { formData } = get();
-    const errors: string[] = [];
+          // Make API call
+          const eventTypes = await api.fetchEventTypes(template);
 
-    if (!formData.activityType) {
-      errors.push('Activity type is required');
-    }
-
-    if (!formData.job && formData.activityType !== 'MOVE') {
-      errors.push('Job is required');
-    }
-
-    if (formData.activityType === 'MOVE') {
-      if (!formData.fromJob) errors.push('From job is required');
-      if (!formData.toJob) errors.push('To job is required');
-    }
-
-    if (!formData.event) {
-      errors.push('Event is required');
-    }
-
-    if (!formData.postingDate) {
-      errors.push('Posting date is required');
-    }
-
-    if (!formData.quantity || formData.quantity <= 0) {
-      errors.push('Quantity must be a positive number');
-    }
-
-    if (formData.smallLivestockQuantity && formData.quantity &&
-      formData.smallLivestockQuantity > formData.quantity) {
-      errors.push('Small livestock quantity cannot exceed total quantity');
-    }
-
-    // Activity-specific validations
-    if (['WEAN', 'PURCHASE', 'SHIPMENT', 'MOVE'].includes(formData.activityType || '')) {
-      if (!formData.totalWeight || formData.totalWeight <= 0) {
-        errors.push('Total weight is required and must be positive');
+          // Update state with fetched data
+          set((state) => ({
+            ...state,
+            eventTypes,
+            isLoading: false,
+          }));
+        }
+        return get().eventTypes;
+      } catch (error) {
+        // Handle error
+        set((state) => ({
+          ...state,
+          error: error instanceof Error ? error.message : "An error occurred",
+          isLoading: false,
+        }));
       }
-    }
+    },
+    getHealthStatuses: async (job: string) => {
+      try {
+        if (get().healthStatuses.length === 0) {
+          // Set loading state
+          set({ isLoading: true, error: null });
 
-    if (formData.activityType === 'GRADEOFF') {
-      if (!formData.livestockWeight || formData.livestockWeight <= 0) {
-        errors.push('Livestock weight is required and must be positive');
+          // Make API call
+          const healthStatuses = await api.fetchHealthStatuses(job);
+
+          // Update state with fetched data
+          set((state) => ({
+            ...state,
+            healthStatuses,
+            isLoading: false,
+          }));
+        }
+        return get().healthStatuses;
+      } catch (error) {
+        // Handle error
+        set((state) => ({
+          ...state,
+          error: error instanceof Error ? error.message : "An error occurred",
+          isLoading: false,
+        }));
       }
-    }
+    },
 
-    if (formData.activityType === 'SHIPMENT' && !formData.dimensionPacker) {
-      errors.push('Dimension packer is required for shipments');
-    }
+    // Reference data
+    jobs: [],
+    eventTypes: [],
+    healthStatuses: [],
+    dimensionPackers: [],
 
-    return {
-      isValid: errors.length === 0,
-      errors,
-    };
-  },
-}));
+    setJobs: (jobs) => set({ jobs }),
+    setEventTypes: (eventTypes) => set({ eventTypes }),
+    setHealthStatuses: (healthStatuses) => set({ healthStatuses }),
+    setDimensionPackers: (dimensionPackers) => set({ dimensionPackers }),
+
+    // Loading states
+    isLoading: false,
+    setLoading: (loading) => set({ isLoading: loading }),
+
+    // Error handling
+    error: null,
+    setError: (error) => set({ error }),
+
+    // Clear form
+    clearForm: () =>
+      set({
+        formData: initialFormData,
+        error: null,
+      }),
+  })
+);

@@ -28,7 +28,7 @@ import { useConfirmationStore } from "../../../store/confirmationStore";
 import { saveWithTTL } from "../../../utils/localStorage";
 
 interface WeanFormData {
-  fromJob: string | number | null;
+  group: string | number | null;
   toJob: string | number | null;
   healthStatus: string | null;
   event: string | number | null;
@@ -40,7 +40,7 @@ interface WeanFormData {
 }
 
 const defaultValues: WeanFormData = {
-  fromJob: null,
+  group: null,
   toJob: null,
   healthStatus: null,
   event: null,
@@ -59,20 +59,15 @@ const columns = [
 
 export default function WeanPage() {
   const { getPostingGroups, postingGroups } = usePostingGroupsStore();
-  const { getEventTypes, eventTypes, healthStatuses } = useLivestockActivityStore();
+  const { getEventTypes, eventTypes, healthStatuses } =
+    useLivestockActivityStore();
   const showConfirmation = useConfirmationStore(
     (state) => state.showConfirmation
   );
-  const [deads, setDeads] = useState<{ toJob: number; fromJob: number }>({
-    toJob: 0,
-    fromJob: 0,
-  });
-  const [inventory, setInventory] = useState<{
-    toJob: number;
-    fromJob: number;
-  }>({ toJob: 0, fromJob: 0 });
+  const [deads, setDeads] = useState<{ group: number }>({ group: 0 });
+  const [inventory, setInventory] = useState<{ group: number }>({ group: 0 });
   const [loading, setLoading] = useState(false);
-  const [filteredEvents, setFilteredEvents] = useState<typeof eventTypes>([]);
+
   const {
     register,
     handleSubmit,
@@ -86,26 +81,13 @@ export default function WeanPage() {
     mode: "onSubmit",
   });
 
-  const selectedHealthStatus = watch("healthStatus");
-
   useEffect(() => {
-    setLoading(!(postingGroups && eventTypes));
+    setLoading(!(postingGroups.length && eventTypes.length));
     Promise.all([getPostingGroups(), getEventTypes("wean")]).then((x) => {
       console.log("Fetched posting groups and event types:", x);
       setLoading(false);
     });
   }, []);
-
-  // Filter events based on health status
-  useEffect(() => {
-    if (selectedHealthStatus) {
-      // Filter events based on health status
-      // For now, showing all events, but you can add filtering logic here
-      setFilteredEvents(eventTypes);
-    } else {
-      setFilteredEvents([]);
-    }
-  }, [selectedHealthStatus, eventTypes]);
 
   const onSubmit = (data: WeanFormData) => {
     console.log("Form submitted:", data);
@@ -126,7 +108,7 @@ export default function WeanPage() {
     );
   };
 
-  const setJob = (value: any, label: "fromJob" | "toJob") => {
+  const setJob = (value: any, label: "group" | "toJob") => {
     const job = postingGroups.find((pg) => pg.number === value?.value);
     if (job && value && value.value) {
       setValue(label, value.value);
@@ -151,8 +133,8 @@ export default function WeanPage() {
             <Stack spacing={2}>
               <Stack>
                 <TypeAhead
-                  {...register("fromJob", { required: "From Job is required" })}
-                  onChange={(v) => setJob(v, "fromJob")}
+                  {...register("group", { required: "Group is required" })}
+                  onChange={(v) => setJob(v, "group")}
                   options={postingGroups.map(
                     (job) =>
                       ({
@@ -162,48 +144,21 @@ export default function WeanPage() {
                         inventory: job.inventory,
                       }) as TypeAheadOption
                   )}
-                  label="From"
+                  label="Group"
                 />
-                {errors.fromJob && (
-                  <FormHelperText error>
-                    {errors.fromJob.message}
-                  </FormHelperText>
+                {errors.group && (
+                  <FormHelperText error>{errors.group.message}</FormHelperText>
                 )}
               </Stack>
 
-              <Stack>
-                <TypeAhead
-                  {...register("toJob", { required: "To Job is required" })}
-                  onChange={(v) => setJob(v, "toJob")}
-                  options={postingGroups.map(
-                    (job) =>
-                      ({
-                        label: formatLabel(job),
-                        value: job.number,
-                        deads: job.deadQuantity,
-                        inventory: job.inventory,
-                      }) as TypeAheadOption
-                  )}
-                  label="To"
-                />
-                {errors.toJob && (
-                  <FormHelperText error>{errors.toJob.message}</FormHelperText>
-                )}
-              </Stack>
-              {watch("fromJob") && watch("toJob") && (
+              {watch("group") && (
                 <DenseTable
                   rows={[
                     {
-                      name: "fromJob",
-                      postingGroup: watch("fromJob"),
-                      inventory: inventory.fromJob,
-                      deads: deads.fromJob,
-                    },
-                    {
-                      name: "toJob",
-                      postingGroup: watch("toJob"),
-                      inventory: inventory.toJob,
-                      deads: deads.toJob,
+                      name: "group",
+                      postingGroup: watch("group"),
+                      inventory: inventory.group,
+                      deads: deads.group,
                     },
                   ]}
                   columns={columns}
@@ -212,16 +167,27 @@ export default function WeanPage() {
 
               <Stack>
                 <TypeAhead
-                  {...register("healthStatus", { required: "Health Status is required" })}
-                  onChange={(v) => v && v.value && setValue("healthStatus", String(v.value))}
+                  {...register("healthStatus", {
+                    required: "Health Status is required",
+                  })}
+                  onChange={(v) =>
+                    v && v.value && setValue("healthStatus", String(v.value))
+                  }
                   options={healthStatuses.map((status) => ({
                     label: status.description,
                     value: status.code,
                   }))}
-                  label="Health Status"
+                  label={
+                    healthStatuses.length
+                      ? "Health Status"
+                      : "Please select a group"
+                  }
+                  disabled={healthStatuses.length === 0}
                 />
                 {errors.healthStatus && (
-                  <FormHelperText error>{errors.healthStatus.message}</FormHelperText>
+                  <FormHelperText error>
+                    {errors.healthStatus.message}
+                  </FormHelperText>
                 )}
               </Stack>
 
@@ -231,7 +197,7 @@ export default function WeanPage() {
                 <TypeAhead
                   {...register("event", { required: "Event is required" })}
                   onChange={(v) => v && v.value && setValue("event", v.value)}
-                  options={filteredEvents.map((event) => ({
+                  options={eventTypes.map((event) => ({
                     label: event.Description,
                     value: event.Code,
                   }))}
