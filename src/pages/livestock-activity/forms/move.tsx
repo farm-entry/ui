@@ -1,12 +1,24 @@
 import { SwapVert } from "@mui/icons-material";
-import { Button, Divider, FormHelperText, Stack, Typography } from "@mui/material";
+import {
+  Button,
+  Divider,
+  FormHelperText,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import CustomConfirmation from "../../../components/framework/CustomConfirmation";
 import CustomHeader from "../../../components/framework/CustomHeader";
 import CustomNotice from "../../../components/framework/CustomNotice";
 import LoadingSpinner from "../../../components/framework/LoadingSpinner";
-import { DatePicker, TextArea, TextField, TypeAhead, TypeAheadOption } from "../../../components/inputs";
+import {
+  DatePicker,
+  TextArea,
+  TextField,
+  TypeAhead,
+  TypeAheadOption,
+} from "../../../components/inputs";
 import DenseTable from "../../../components/table/DenseTable";
 import CustomFormsLayout from "../../../layouts/forms";
 import { PostingGroup } from "../../../services/postingGroupsApi";
@@ -46,9 +58,17 @@ const columns = [
 export default function MovePage() {
   const { getPostingGroups, postingGroups } = usePostingGroupsStore();
   const { getEventTypes, eventTypes } = useLivestockActivityStore();
-  const showConfirmation = useConfirmationStore(state => state.showConfirmation);
-  const [deads, setDeads] = useState<{ toJob: number; fromJob: number }>({ toJob: 0, fromJob: 0 });
-  const [inventory, setInventory] = useState<{ toJob: number; fromJob: number }>({ toJob: 0, fromJob: 0 });
+  const showConfirmation = useConfirmationStore(
+    (state) => state.showConfirmation
+  );
+  const [deads, setDeads] = useState<{ toJob: number; fromJob: number }>({
+    toJob: 0,
+    fromJob: 0,
+  });
+  const [inventory, setInventory] = useState<{
+    toJob: number;
+    fromJob: number;
+  }>({ toJob: 0, fromJob: 0 });
   const [loading, setLoading] = useState(false);
   const {
     register,
@@ -78,7 +98,7 @@ export default function MovePage() {
 
   const onSave = () => {
     const formData = getValues();
-    saveWithTTL('livestock-move-form', formData, 48);
+    saveWithTTL("livestock-move-form", formData, 48);
     console.log("Form saved to localStorage with 48-hour TTL:", formData);
   };
 
@@ -101,125 +121,187 @@ export default function MovePage() {
 
   const formatLabel = (job: PostingGroup) => `${job.number} ${job.description}`;
   return (
-    <CustomFormsLayout>
-      <CustomHeader icon={SwapVert} title="Move " />
-      
+    <>
       <CustomNotice<MoveFormData>
         storageKey="livestock-move-form"
         onLoad={(data) => reset(data)}
       />
+      <CustomFormsLayout>
+        <CustomHeader icon={SwapVert} title="Move " />
 
-      {loading && <LoadingSpinner />}
-      {!loading && (
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack spacing={2}>
-            <Stack>
-              <TypeAhead
-                {...register("fromJob", { required: "From Job is required" })}
-                onChange={(v) => setJob(v, "fromJob")}
-                options={postingGroups.map((job) => ({ label: formatLabel(job), value: job.number, deads: job.deadQuantity, inventory: job.inventory }) as TypeAheadOption)}
-                label="From"
-              />
-              {errors.fromJob && <FormHelperText error>{errors.fromJob.message}</FormHelperText>}
-            </Stack>
+        {loading && <LoadingSpinner />}
+        {!loading && (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Stack spacing={2}>
+              <Stack>
+                <TypeAhead
+                  {...register("fromJob", { required: "From Job is required" })}
+                  onChange={(v) => setJob(v, "fromJob")}
+                  options={postingGroups.map(
+                    (job) =>
+                      ({
+                        label: formatLabel(job),
+                        value: job.number,
+                        deads: job.deadQuantity,
+                        inventory: job.inventory,
+                      }) as TypeAheadOption
+                  )}
+                  label="From"
+                />
+                {errors.fromJob && (
+                  <FormHelperText error>
+                    {errors.fromJob.message}
+                  </FormHelperText>
+                )}
+              </Stack>
 
-            <Stack>
-              <TypeAhead
-                {...register("toJob", { required: "To Job is required" })}
-                onChange={(v) => setJob(v, "toJob")}
-                options={postingGroups.map((job) => ({ label: formatLabel(job), value: job.number, deads: job.deadQuantity, inventory: job.inventory }) as TypeAheadOption)}
-                label="To"
-              />
-              {errors.toJob && <FormHelperText error>{errors.toJob.message}</FormHelperText>}
-            </Stack>
-            {watch("fromJob") && watch("toJob") && (
-              <DenseTable
-                rows={[
-                  { name: "fromJob", postingGroup: watch("fromJob"), inventory: inventory.fromJob, deads: deads.fromJob },
-                  { name: "toJob", postingGroup: watch("toJob"), inventory: inventory.toJob, deads: deads.toJob },
-                ]}
-                columns={columns}
-              />
-            )}
-            <Divider />
-            <Typography>Event Details</Typography>
-            <Stack>
-              <TypeAhead
-                {...register("event", { required: "Event is required" })}
-                onChange={(v) => v && v.value && setValue("event", v.value)}
-                options={eventTypes.map((event) => ({ label: event.Description, value: event.Code }))}
-                label="Event Name"
-              />
-              {errors.event && <FormHelperText error>{errors.event.message}</FormHelperText>}
-            </Stack>
+              <Stack>
+                <TypeAhead
+                  {...register("toJob", { required: "To Job is required" })}
+                  onChange={(v) => setJob(v, "toJob")}
+                  options={postingGroups.map(
+                    (job) =>
+                      ({
+                        label: formatLabel(job),
+                        value: job.number,
+                        deads: job.deadQuantity,
+                        inventory: job.inventory,
+                      }) as TypeAheadOption
+                  )}
+                  label="To"
+                />
+                {errors.toJob && (
+                  <FormHelperText error>{errors.toJob.message}</FormHelperText>
+                )}
+              </Stack>
+              {watch("fromJob") && watch("toJob") && (
+                <DenseTable
+                  rows={[
+                    {
+                      name: "fromJob",
+                      postingGroup: watch("fromJob"),
+                      inventory: inventory.fromJob,
+                      deads: deads.fromJob,
+                    },
+                    {
+                      name: "toJob",
+                      postingGroup: watch("toJob"),
+                      inventory: inventory.toJob,
+                      deads: deads.toJob,
+                    },
+                  ]}
+                  columns={columns}
+                />
+              )}
+              <Divider />
+              <Typography>Event Details</Typography>
+              <Stack>
+                <TypeAhead
+                  {...register("event", { required: "Event is required" })}
+                  onChange={(v) => v && v.value && setValue("event", v.value)}
+                  options={eventTypes.map((event) => ({
+                    label: event.Description,
+                    value: event.Code,
+                  }))}
+                  label="Event Name"
+                />
+                {errors.event && (
+                  <FormHelperText error>{errors.event.message}</FormHelperText>
+                )}
+              </Stack>
 
-            <Stack>
-              <DatePicker
-                {...register("postingDate", { required: "Posting Date is required" })}
-                onChange={(v) => setValue("postingDate", v)}
-                label="Posting Date"
-                helperText={errors.postingDate?.message}
-              />
-            </Stack>
-            <Divider />
-            <Typography>Quantity</Typography>
-            <Stack spacing={2} direction="row">
-              <Stack sx={{ width: "100%" }}>
-                <TextField
-                  label="Total"
-                  type="number"
-                  {...register("quantity", {
-                    required: "Total quantity is required",
-                    min: { value: 1, message: "Quantity must be greater than 0" },
+              <Stack>
+                <DatePicker
+                  {...register("postingDate", {
+                    required: "Posting Date is required",
                   })}
-                  error={!!errors.quantity}
-                  helperText={errors.quantity?.message}
+                  onChange={(v) => setValue("postingDate", v)}
+                  label="Posting Date"
+                  helperText={errors.postingDate?.message}
                 />
               </Stack>
-              <Stack sx={{ width: "100%" }}>
+              <Divider />
+              <Typography>Quantity</Typography>
+              <Stack spacing={2} direction="row">
+                <Stack sx={{ width: "100%" }}>
+                  <TextField
+                    label="Total"
+                    type="number"
+                    {...register("quantity", {
+                      required: "Total quantity is required",
+                      min: {
+                        value: 1,
+                        message: "Quantity must be greater than 0",
+                      },
+                    })}
+                    error={!!errors.quantity}
+                    helperText={errors.quantity?.message}
+                  />
+                </Stack>
+                <Stack sx={{ width: "100%" }}>
+                  <TextField
+                    label="Smalls"
+                    type="number"
+                    {...register("smallLivestockQuantity", {
+                      required: "Small livestock quantity is required",
+                      min: { value: 0, message: "Quantity cannot be negative" },
+                    })}
+                    error={!!errors.smallLivestockQuantity}
+                    helperText={errors.smallLivestockQuantity?.message}
+                  />
+                </Stack>
+              </Stack>
+
+              <Stack>
                 <TextField
-                  label="Smalls"
-                  type="number"
-                  {...register("smallLivestockQuantity", {
-                    required: "Small livestock quantity is required",
-                    min: { value: 0, message: "Quantity cannot be negative" },
+                  {...register("totalWeight", {
+                    required: "Total weight is required",
+                    min: { value: 1, message: "Weight must be greater than 0" },
                   })}
-                  error={!!errors.smallLivestockQuantity}
-                  helperText={errors.smallLivestockQuantity?.message}
+                  label="Total Weight"
+                  type="number"
+                  error={!!errors.totalWeight}
+                  helperText={errors.totalWeight?.message}
                 />
               </Stack>
-            </Stack>
-
-            <Stack>
-              <TextField
-                {...register("totalWeight", {
-                  required: "Total weight is required",
-                  min: { value: 1, message: "Weight must be greater than 0" },
-                })}
-                label="Total Weight"
-                type="number"
-                error={!!errors.totalWeight}
-                helperText={errors.totalWeight?.message}
+              <Divider />
+              <TextArea
+                {...register("comments")}
+                label="Comments"
+                type="text"
               />
-            </Stack>
-            <Divider />
-            <TextArea {...register("comments")} label="Comments" type="text" />
-            <Button variant="text" color="primary" fullWidth onClick={handleReset}>
-              Reset
-            </Button>
-            <Stack direction="row" spacing={2} justifyContent="flex-end">
-              <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
-                Save
+              <Button
+                variant="text"
+                color="primary"
+                fullWidth
+                onClick={handleReset}
+              >
+                Reset
               </Button>
-              <Button variant="contained" color="primary" fullWidth type="submit">
-                Submit
-              </Button>
+              <Stack direction="row" spacing={2} justifyContent="flex-end">
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  fullWidth
+                  onClick={onSave}
+                >
+                  Save
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  type="submit"
+                >
+                  Submit
+                </Button>
+              </Stack>
             </Stack>
-          </Stack>
-        </form>
-      )}
+          </form>
+        )}
 
-      <CustomConfirmation />
-    </CustomFormsLayout>
+        <CustomConfirmation />
+      </CustomFormsLayout>
+    </>
   );
 }
