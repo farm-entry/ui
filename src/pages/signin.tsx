@@ -16,19 +16,21 @@ export default function SignIn() {
     const password = formData.get("password") as string;
 
     try {
-      const creds = await login({ username, password })
-        .then((c) => {
-          setUser({ domain: "moglerfarms", menuOptions: [], ...c.user });
-          navigate("/");
-        })
-        .catch((e) => {
-          throw new Error(e.message || "Unsuccessful Login.");
-        });
-      return { type: "CredentialsSignin" as const, creds };
+      const response = await login({ username, password });
+      // Session cookie is automatically set by the browser from the response
+      setUser({
+        username: response.user.username,
+        name: response.user.name,
+        loginTime: response.user.loginTime,
+        domain: "moglerfarms",
+        menuOptions: [],
+      });
+      navigate("/");
+      return { type: "CredentialsSignin" as const };
     } catch (error) {
       return {
         type: "CredentialsSignin" as const,
-        error: "Invalid credentials",
+        error: error instanceof Error ? error.message : "Invalid credentials",
       };
     }
   };

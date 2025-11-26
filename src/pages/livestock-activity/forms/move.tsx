@@ -69,7 +69,7 @@ export default function MovePage() {
     toJob: number;
     fromJob: number;
   }>({ toJob: 0, fromJob: 0 });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const {
     register,
     handleSubmit,
@@ -84,7 +84,7 @@ export default function MovePage() {
   });
 
   useEffect(() => {
-    setLoading(!(postingGroups && eventTypes));
+    setLoading(!(postingGroups.length && eventTypes.length));
     Promise.all([getPostingGroups(), getEventTypes("move")]).then((x) => {
       console.log("Fetched posting groups and event types:", x);
       setLoading(false);
