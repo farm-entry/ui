@@ -26,7 +26,7 @@ import { useLivestockActivityStore } from "../../../store/livestockActivityStore
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { saveWithTTL } from "../../../utils/localStorage";
-
+import { MOVE_STORAGE_KEY } from "./constants-livestock.json";
 interface MoveFormData {
   fromJob: string | number | null;
   toJob: string | number | null;
@@ -84,9 +84,15 @@ export default function MovePage() {
   });
 
   useEffect(() => {
-    setLoading(!(postingGroups.length && eventTypes.length));
-    Promise.all([getPostingGroups(), getEventTypes("move")]).then((x) => {
-      console.log("Fetched posting groups and event types:", x);
+    setLoading(true);
+    const promises = [];
+    if (
+      !(eventTypes.length > 0 && eventTypes[0].Journal_Template_Name == "MOVE")
+    )
+      promises.push(getEventTypes("MOVE"));
+    if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
+
+    Promise.all(promises).then(() => {
       setLoading(false);
     });
   }, []);
@@ -98,7 +104,7 @@ export default function MovePage() {
 
   const onSave = () => {
     const formData = getValues();
-    saveWithTTL("livestock-move-form", formData, 48);
+    saveWithTTL(MOVE_STORAGE_KEY, formData, 48);
     console.log("Form saved to localStorage with 48-hour TTL:", formData);
   };
 
@@ -111,19 +117,19 @@ export default function MovePage() {
   };
 
   const setJob = (value: any, label: "fromJob" | "toJob") => {
-    const job = postingGroups.find((pg) => pg.number === value?.value);
+    const job = postingGroups.find((pg) => pg.No === value?.value);
     if (job && value && value.value) {
       setValue(label, value.value);
-      setDeads({ ...deads, [label]: job.deadQuantity } as any);
-      setInventory({ ...inventory, [label]: job.inventory } as any);
+      setDeads({ ...deads, [label]: job.Dead_Quantity } as any);
+      setInventory({ ...inventory, [label]: job.Inventory_Left } as any);
     }
   };
 
-  const formatLabel = (job: PostingGroup) => `${job.number} ${job.description}`;
+  const formatLabel = (job: PostingGroup) => `${job.No} ${job.Description}`;
   return (
     <>
       <CustomNotice<MoveFormData>
-        storageKey="livestock-move-form"
+        storageKey={MOVE_STORAGE_KEY}
         onLoad={(data) => reset(data)}
       />
       <CustomFormsLayout>
@@ -141,9 +147,9 @@ export default function MovePage() {
                     (job) =>
                       ({
                         label: formatLabel(job),
-                        value: job.number,
-                        deads: job.deadQuantity,
-                        inventory: job.inventory,
+                        value: job.No,
+                        deads: job.Dead_Quantity,
+                        inventory: job.Inventory_Left,
                       }) as TypeAheadOption
                   )}
                   label="From"
@@ -163,9 +169,9 @@ export default function MovePage() {
                     (job) =>
                       ({
                         label: formatLabel(job),
-                        value: job.number,
-                        deads: job.deadQuantity,
-                        inventory: job.inventory,
+                        value: job.No,
+                        deads: job.Dead_Quantity,
+                        inventory: job.Inventory_Left,
                       }) as TypeAheadOption
                   )}
                   label="To"

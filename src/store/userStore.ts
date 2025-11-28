@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 import DEFAULT_USER from "../mock/userOptions.json";
 import type { DomainType, MenuOption, UserType } from "./types/user";
 
@@ -11,7 +12,8 @@ interface UserState extends UserType {
   setMenuOptions: (menuOptions: MenuOption[]) => void;
 }
 
-export const useUserStore = create<UserState>((set, get) => ({
+export const useUserStore = create<UserState>()(
+  devtools((set, get) => ({
   username: DEFAULT_USER.userData.username,
   domain: DEFAULT_USER.userData.domain as DomainType,
   menuOptions: DEFAULT_USER.menuOptions,
@@ -36,4 +38,5 @@ export const useUserStore = create<UserState>((set, get) => ({
   setUserDomain: (domain: DomainType) => set((state) => ({ ...state, domain })),
   setMenuOptions: (menuOptions: MenuOption[]) =>
     set((state) => ({ ...state, menuOptions })),
-}));
+}), { name: "UserStore" })
+);

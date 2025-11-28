@@ -21,24 +21,14 @@ export interface Job {
 }
 
 export interface EventType {
+  Journal_Template_Name: ActivityType;
   Code: string;
   Description: string;
 }
 
-export interface Reason {
-  code: string;
-  description: string;
-}
-
 export interface HealthStatus {
-  code: string;
-  description: string;
-  color?: string;
-}
-
-export interface DimensionPacker {
-  code: string;
-  description: string;
+  Code: string;
+  Description: string;
 }
 
 export interface FormData {
@@ -65,9 +55,6 @@ export interface FormData {
 
   // Dynamic quantities for MORTALITY/GRADEOFF
   quantities: { [reasonCode: string]: number };
-
-  // Shipment specific
-  dimensionPacker: string;
 
   // Comments
   comments: string;

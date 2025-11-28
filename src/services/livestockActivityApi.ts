@@ -1,6 +1,5 @@
 import {
   ActivityType,
-  DimensionPacker,
   EventType,
   FormData,
   HealthStatus,
@@ -71,13 +70,6 @@ const mockHealthStatuses: HealthStatus[] = [
   { code: "QUARANTINE", description: "Quarantine", color: "orange" },
 ];
 
-const mockDimensionPackers: DimensionPacker[] = [
-  { code: "TYSON", description: "Tyson Foods" },
-  { code: "JBS", description: "JBS USA" },
-  { code: "SMITHFIELD", description: "Smithfield Foods" },
-  { code: "HORMEL", description: "Hormel Foods" },
-];
-
 class LivestockActivityApi {
   async fetchJobs(): Promise<Job[]> {
     await delay(500); // Simulate API delay
@@ -127,11 +119,6 @@ class LivestockActivityApi {
   async fetchHealthStatuses(job: string): Promise<HealthStatus[]> {
     await delay(200);
     return mockHealthStatuses;
-  }
-
-  async fetchDimensionPackers(): Promise<DimensionPacker[]> {
-    await delay(200);
-    return mockDimensionPackers;
   }
 
   async saveFormData(

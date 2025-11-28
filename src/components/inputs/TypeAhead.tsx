@@ -16,6 +16,7 @@ export interface TypeAheadProps {
   helperText?: string;
   placeholder?: string;
   freeSolo?: boolean /* Allow custom text input */;
+  loading?: boolean;
 }
 
 export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props, ref) => {
@@ -36,10 +37,11 @@ export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props
       <Autocomplete
         {...props}
         ref={ref}
-        options={options}
+        // options={options}
         onChange={handleChange}
         freeSolo={freeSolo}
         disabled={props.disabled}
+        loading={props.loading}
         renderInput={(params) => <TextField {...params} label={label} placeholder={placeholder} variant="outlined" />}
       />
       {helperText && <FormHelperText>{helperText}</FormHelperText>}

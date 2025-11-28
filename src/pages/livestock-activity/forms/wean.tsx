@@ -26,10 +26,9 @@ import { useLivestockActivityStore } from "../../../store/livestockActivityStore
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { saveWithTTL } from "../../../utils/localStorage";
-
+import { WEAN_STORAGE_KEY } from "./constants-livestock.json";
 interface WeanFormData {
-  group: string | number | null;
-  toJob: string | number | null;
+  group: string | null;
   healthStatus: string | null;
   event: string | number | null;
   postingDate: Date | null;
@@ -41,7 +40,6 @@ interface WeanFormData {
 
 const defaultValues: WeanFormData = {
   group: null,
-  toJob: null,
   healthStatus: null,
   event: null,
   postingDate: null,
@@ -58,8 +56,14 @@ const columns = [
 ];
 
 export default function WeanPage() {
-  const { getPostingGroups, postingGroups } = usePostingGroupsStore();
-  const { getEventTypes, eventTypes, healthStatuses } =
+  const {
+    isLoading: postingGroupsLoading,
+    getPostingGroups,
+    getPostingGroupDetails,
+    postingGroups,
+    postingGroupDetails,
+  } = usePostingGroupsStore();
+  const { getEventTypes, eventTypes, healthStatuses, getHealthStatuses } =
     useLivestockActivityStore();
   const showConfirmation = useConfirmationStore(
     (state) => state.showConfirmation
@@ -82,12 +86,26 @@ export default function WeanPage() {
   });
 
   useEffect(() => {
-    setLoading(!(postingGroups.length && eventTypes.length));
-    Promise.all([getPostingGroups(), getEventTypes("wean")]).then((x) => {
-      console.log("Fetched posting groups and event types:", x);
+    setLoading(true);
+    const promises = [];
+    if (
+      !(eventTypes.length > 0 && eventTypes[0].Journal_Template_Name === "WEAN")
+    ) {
+      console.log("Fetching event types for WEAN");
+      promises.push(getEventTypes("WEAN"));
+    }
+    if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
+
+    Promise.all(promises).then(() => {
       setLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    const group = watch("group");
+    if (group) getHealthStatuses(group);
+    if (group) getPostingGroupDetails(group);
+  }, [watch("group")]);
 
   const onSubmit = (data: WeanFormData) => {
     console.log("Form submitted:", data);
@@ -96,7 +114,7 @@ export default function WeanPage() {
 
   const onSave = () => {
     const formData = getValues();
-    saveWithTTL("livestock-wean-form", formData, 48);
+    saveWithTTL(WEAN_STORAGE_KEY, formData, 48);
     console.log("Form saved to localStorage with 48-hour TTL:", formData);
   };
 
@@ -108,40 +126,42 @@ export default function WeanPage() {
     );
   };
 
-  const setJob = (value: any, label: "group" | "toJob") => {
-    const job = postingGroups.find((pg) => pg.number === value?.value);
+  const setJob = (value: any, label: "group") => {
+    const job = postingGroups.find((pg) => pg.No === value?.value);
     if (job && value && value.value) {
       setValue(label, value.value);
-      setDeads({ ...deads, [label]: job.deadQuantity } as any);
-      setInventory({ ...inventory, [label]: job.inventory } as any);
+      setDeads({ ...deads, [label]: job.Dead_Quantity } as any);
+      setInventory({ ...inventory, [label]: job.Inventory_Left } as any);
     }
   };
 
-  const formatLabel = (job: PostingGroup) => `${job.number} ${job.description}`;
+  const formatLabel = (job: PostingGroup) => `${job.No} ${job.Description}`;
+
   return (
     <>
       <CustomNotice<WeanFormData>
-        storageKey="livestock-wean-form"
+        storageKey={WEAN_STORAGE_KEY}
         onLoad={(data) => reset(data)}
       />
       <CustomFormsLayout>
         <CustomHeader icon={Celebration} title="Wean" />
 
-        {loading && <LoadingSpinner />}
-        {!loading && (
+        {postingGroupsLoading && <LoadingSpinner />}
+        {!postingGroupsLoading && (
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={2}>
               <Stack>
                 <TypeAhead
                   {...register("group", { required: "Group is required" })}
                   onChange={(v) => setJob(v, "group")}
+                  loading={postingGroupsLoading}
                   options={postingGroups.map(
                     (job) =>
                       ({
                         label: formatLabel(job),
-                        value: job.number,
-                        deads: job.deadQuantity,
-                        inventory: job.inventory,
+                        value: job.No,
+                        deads: job.Dead_Quantity,
+                        inventory: job.Inventory_Left,
                       }) as TypeAheadOption
                   )}
                   label="Group"
@@ -173,14 +193,16 @@ export default function WeanPage() {
                   onChange={(v) =>
                     v && v.value && setValue("healthStatus", String(v.value))
                   }
+                  value={postingGroupDetails.healthStatus?.Code}
+                  loading={postingGroupsLoading}
                   options={healthStatuses.map((status) => ({
-                    label: status.description,
-                    value: status.code,
+                    label: status.Description,
+                    value: status.Code,
                   }))}
                   label={
                     healthStatuses.length
                       ? "Health Status"
-                      : "Please select a group"
+                      : "Select a valid group"
                   }
                   disabled={healthStatuses.length === 0}
                 />
