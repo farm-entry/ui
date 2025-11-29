@@ -76,6 +76,16 @@ export default function WeanPage() {
     Promise.all(promises).then(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    const group = watch("group");
+    group &&
+      getPostingGroupDetails(group).then((details) => {
+        console.log({ details });
+        setInventory({ group: details?.inventory ?? 0 });
+        setDeads({ group: details?.deadQuantity ?? 0 });
+      });
+  }, [watch("group")]);
+
   const onSubmit = (data: WeanFormData) => {
     console.log("Form submitted:", data);
     console.log("All required fields validated successfully!");
