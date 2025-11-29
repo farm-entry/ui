@@ -1,7 +1,7 @@
 import { Celebration } from "@mui/icons-material";
 import { Button, Divider, FormHelperText, Stack, Typography } from "@mui/material";
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
 import CustomConfirmation from "../../../components/framework/CustomConfirmation";
 import CustomHeader from "../../../components/framework/CustomHeader";
 import CustomNotice from "../../../components/framework/CustomNotice";
@@ -10,12 +10,12 @@ import { DatePicker, TextArea, TextField, TypeAhead, TypeAheadOption } from "../
 import DenseTable from "../../../components/table/DenseTable";
 import CustomFormsLayout from "../../../layouts/forms";
 import { PostingGroup } from "../../../services/postingGroupsApi";
+import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
-import { useConfirmationStore } from "../../../store/confirmationStore";
 import { saveWithTTL } from "../../../utils/localStorage";
 import { WEAN_STORAGE_KEY } from "./constants-livestock.json";
-import { get } from "lodash";
+import useTypeAheadValue from "../../../hooks/useMemoTypeahead";
 
 interface WeanFormData {
   group: string | number | null;
@@ -46,7 +46,6 @@ const columns = [
 ];
 
 export default function WeanPage() {
-  const [formData, setFormData] = useState<WeanFormData>(defaultValues);
   const { isLoading: postingGroupsLoading, getPostingGroups, getPostingGroupDetails, postingGroups, postingGroupDetails } = usePostingGroupsStore();
   const { getEventTypes, eventTypes, healthStatuses, getHealthStatuses } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
@@ -58,7 +57,6 @@ export default function WeanPage() {
     register,
     handleSubmit,
     reset,
-    control,
     watch,
     setValue,
     getValues,
@@ -93,17 +91,23 @@ export default function WeanPage() {
     showConfirmation("Are you sure?", "This will reset all form fields to their default values.", () => reset(defaultValues));
   };
 
-  const setGroup = (value: any) => {
-    console.log("Selected group value:", value);
-    const group = postingGroups.find((pg) => pg.No === value?.value);
-    if (group && value && value.value) {
-      setValue("group", value.value);
-      setDeads({ group: group.Dead_Quantity } as any);
-      setInventory({ group: group.Inventory_Left } as any);
-    }
-  };
-
   const formatLabel = (group: PostingGroup) => `${group.No} ${group.Description}`;
+
+  const selectedEventValue = useTypeAheadValue(watch, "event", eventTypes, "Description", "Code");
+  const selectedGroupValue = useTypeAheadValue(watch, "group", postingGroups, "Description", "No");
+  const selectedHealthStatusValue = useTypeAheadValue(
+    watch,
+    "healthStatus",
+    healthStatuses,
+    "description",
+    "code",
+    postingGroupDetails?.healthStatus?.Code
+      ? {
+          label: postingGroupDetails.healthStatus.Description,
+          value: postingGroupDetails.healthStatus.Code,
+        }
+      : null
+  );
 
   return (
     <>
@@ -121,17 +125,10 @@ export default function WeanPage() {
                   <Stack>
                     <TypeAhead
                       {...register("group", { required: "Group is required" })}
-                      handleChange={(v) => setGroup(v)}
+                      value={selectedGroupValue}
+                      handleChange={(v) => v && v.value && setValue("group", String(v.value))}
                       loading={postingGroupsLoading}
-                      options={postingGroups.map(
-                        (job) =>
-                          ({
-                            label: formatLabel(job),
-                            value: job.No,
-                            deads: job.Dead_Quantity,
-                            inventory: job.Inventory_Left,
-                          }) as TypeAheadOption
-                      )}
+                      options={postingGroups.map((job) => ({ label: formatLabel(job), value: job.No }) as TypeAheadOption)}
                       placeholder="Group"
                     />
                     {errors.group && <FormHelperText error>{errors.group.message}</FormHelperText>}
@@ -158,12 +155,7 @@ export default function WeanPage() {
                       })}
                       handleChange={(v) => v && v.value && setValue("healthStatus", String(v.value))}
                       loading={postingGroupsLoading}
-                      onOpen={() => getHealthStatuses()}
-                      defaultValue={
-                        postingGroupDetails &&
-                        postingGroupDetails.healthStatus &&
-                        ({ label: postingGroupDetails.healthStatus.Description, value: postingGroupDetails.healthStatus.Code } as TypeAheadOption)
-                      }
+                      value={selectedHealthStatusValue}
                       options={healthStatuses.map(
                         (status) =>
                           ({
@@ -183,6 +175,7 @@ export default function WeanPage() {
                     <TypeAhead
                       {...register("event", { required: "Event is required" })}
                       handleChange={(v) => v && v.value && setValue("event", v.value)}
+                      value={selectedEventValue}
                       options={eventTypes.map((event) => ({
                         label: event.Description,
                         value: event.Code,
