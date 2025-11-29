@@ -11,7 +11,15 @@ interface CustomNoticeProps<T> {
 
 export default function CustomNotice<T>({ storageKey, onLoad, message = "You have a saved form. Would you like to load it?" }: CustomNoticeProps<T>) {
   const [showAlert, setShowAlert] = useState(false);
-  const showConfirmation = useConfirmationStore(state => state.showConfirmation);
+
+  const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
+
+  useEffect(() => {
+    const savedData = getWithTTL<T>(storageKey);
+    if (savedData) {
+      setShowAlert(true);
+    }
+  }, []);
 
   useEffect(() => {
     const savedData = getWithTTL<T>(storageKey);
@@ -24,19 +32,15 @@ export default function CustomNotice<T>({ storageKey, onLoad, message = "You hav
     const savedData = getWithTTL<T>(storageKey);
     if (savedData) {
       onLoad(savedData);
-    //   setShowAlert(false);
+      //   setShowAlert(false);
     }
   };
 
   const handleDelete = () => {
-    showConfirmation(
-      "Are you sure?",
-      "This will permanently delete your saved form data.",
-      () => {
-        localStorage.removeItem(storageKey);
-        setShowAlert(false);
-      }
-    );
+    showConfirmation("Are you sure?", "This will permanently delete your saved form data.", () => {
+      localStorage.removeItem(storageKey);
+      setShowAlert(false);
+    });
   };
 
   if (!showAlert) return null;

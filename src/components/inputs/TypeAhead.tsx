@@ -1,4 +1,4 @@
-import { Autocomplete, FormControl, FormHelperText, TextField } from "@mui/material";
+import { Autocomplete, AutocompleteProps, FormControl, FormHelperText, TextField } from "@mui/material";
 import * as React from "react";
 
 export interface TypeAheadOption {
@@ -7,44 +7,35 @@ export interface TypeAheadOption {
   disabled?: boolean;
 }
 
-export interface TypeAheadProps {
-  label: string;
-  options: TypeAheadOption[];
-  // value: TypeAheadOption | null;
-  disabled?: boolean;
-  onChange: (value: TypeAheadOption | null) => void;
-  helperText?: string;
+export interface TypeAheadProps extends Omit<AutocompleteProps<TypeAheadOption, false, false, false>, "onChange" | "renderInput"> {
+  label?: string;
+  handleChange: (value: TypeAheadOption | null) => void;
   placeholder?: string;
-  freeSolo?: boolean /* Allow custom text input */;
-  loading?: boolean;
 }
 
 export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props, ref) => {
-  const { label, options, onChange, helperText, placeholder, freeSolo = false } = props;
+  // const { label, defaultValue, onChange, helperText, placeholder, freeSolo = false } = props;
+  const { handleChange, placeholder, ...other } = props;
 
-  const handleChange = (_: any, newValue: string | TypeAheadOption | null) => {
+  const customChange = (_: any, newValue: TypeAheadOption | string | null) => {
     if (typeof newValue === "string") {
       // Handle free solo text input
-      onChange({ label: newValue, value: newValue });
+      console.log("Free solo input:", newValue);
+      handleChange({ label: newValue, value: newValue });
     } else {
       // Handle option selection
-      onChange(newValue);
+      handleChange(newValue);
     }
   };
 
   return (
     <FormControl fullWidth>
       <Autocomplete
-        {...props}
+        {...other}
         ref={ref}
-        // options={options}
-        onChange={handleChange}
-        freeSolo={freeSolo}
-        disabled={props.disabled}
-        loading={props.loading}
-        renderInput={(params) => <TextField {...params} label={label} placeholder={placeholder} variant="outlined" />}
+        onChange={customChange}
+        renderInput={(params) => <TextField placeholder={placeholder} {...params} variant="outlined" label={props.label} />}
       />
-      {helperText && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
   );
 });

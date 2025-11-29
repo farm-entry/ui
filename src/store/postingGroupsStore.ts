@@ -11,7 +11,7 @@ interface PostingGroupsDataState {
   postingGroups: PostingGroup[];
   isLoading: boolean;
   error: string | null;
-  getPostingGroupDetails: (group: string) => Promise<PostingGroupDetails | undefined>;
+  getPostingGroupDetails: (group: string | number) => Promise<PostingGroupDetails | undefined>;
   getPostingGroups: () => Promise<PostingGroup[] | undefined>;
   setPostingGroups: (postingGroups: PostingGroup[]) => void;
   setPostingGroupDetails: (postingGroupDetails: PostingGroupDetails) => void;

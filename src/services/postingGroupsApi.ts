@@ -97,7 +97,7 @@ class PostingGroupsApi {
   /* Fetch single posting group */
   async fetchPostingGroup(group: string): Promise<PostingGroupDetails> {
     try {
-      console.log("Fetching all posting groups from API...");
+      console.log("Fetching posting group from API:", group);
 
       const response = await fetch(`/api/livestock/jobs/${group}`, {
         method: "GET",

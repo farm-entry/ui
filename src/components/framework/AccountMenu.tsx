@@ -52,7 +52,7 @@ export default function AccountMenu() {
         }}
       >
         <MenuItem disabled>
-          <ListItemText primary={name || username} secondary={username} />
+          <ListItemText primary={name || username} />
         </MenuItem>
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>

@@ -33,7 +33,7 @@ interface LivestockActivityStore {
 
   //get data
   getEventTypes: (template: ActivityType) => Promise<EventType[] | undefined>;
-  getHealthStatuses: (group: string) => Promise<HealthStatus[] | undefined>;
+  getHealthStatuses: () => Promise<HealthStatus[] | undefined>;
 }
 
 export const useLivestockActivityStore = create<LivestockActivityStore>()(
@@ -74,14 +74,14 @@ export const useLivestockActivityStore = create<LivestockActivityStore>()(
           }));
         }
       },
-      getHealthStatuses: async (group: string) => {
+      getHealthStatuses: async () => {
         try {
           if (get().healthStatuses.length === 0) {
             // Set loading state
             set({ isLoading: true, error: null });
 
             // Make API call
-            const healthStatuses = await api.fetchHealthStatuses(group);
+            const healthStatuses = await api.fetchHealthStatuses();
 
             // Update state with fetched data
             set((state) => ({

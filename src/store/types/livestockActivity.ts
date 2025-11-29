@@ -27,8 +27,9 @@ export interface EventType {
 }
 
 export interface HealthStatus {
-  Code: string;
-  Description: string;
+  code: string;
+  description: string;
+  color?: string | null;
 }
 
 export interface FormData {
