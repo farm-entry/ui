@@ -1,25 +1,14 @@
 import { HandleError } from "./handleError";
 
-// Types for Posting Groups based on NAV data
 export interface PostingGroup {
-  Job_Posting_Group: string;
-  Status: string;
-  No: string;
-  Description: string;
-  Person_Responsible: string;
-  Barn_Type: string;
-  Barn_Code: string;
-  Location_Code: string;
-  Entity: string;
-  Cost_Center: string;
-  Project_Manager: string;
-  Starting_Date: string;
-  HealthStatus: string;
-  Inventory_Left: number;
-  Dead_Quantity: number;
-  Start_Quantity: number;
-  Start_Weight: number;
-  Start_Date: string;
+  number: string;
+  description: string;
+  inventory: number;
+  deadQuantity: number;
+  startDate: string;
+  location: string;
+  status: string;
+  startQuantity: number;
 }
 
 // Detailed Posting Group with nested objects

@@ -97,15 +97,15 @@ export default function MovePage() {
   };
 
   const setJob = (value: any, label: "fromJob" | "toJob") => {
-    const job = postingGroups.find((pg) => pg.No === value?.value);
+    const job = postingGroups.find((pg) => pg.number === value?.value);
     if (job && value && value.value) {
       setValue(label, value.value);
-      setDeads({ ...deads, [label]: job.Dead_Quantity } as any);
-      setInventory({ ...inventory, [label]: job.Inventory_Left } as any);
+      setDeads({ ...deads, [label]: job.deadQuantity } as any);
+      setInventory({ ...inventory, [label]: job.inventory } as any);
     }
   };
 
-  const formatLabel = (job: PostingGroup) => `${job.No} ${job.Description}`;
+  const formatLabel = (job: PostingGroup) => `${job.number} ${job.description}`;
   return (
     <>
       {loading && <LoadingSpinner />}
@@ -125,9 +125,9 @@ export default function MovePage() {
                       (job) =>
                         ({
                           label: formatLabel(job),
-                          value: job.No,
-                          deads: job.Dead_Quantity,
-                          inventory: job.Inventory_Left,
+                          value: job.number,
+                          deads: job.deadQuantity,
+                          inventory: job.inventory,
                         }) as TypeAheadOption
                     )}
                     placeholder="From"
@@ -143,9 +143,9 @@ export default function MovePage() {
                       (job) =>
                         ({
                           label: formatLabel(job),
-                          value: job.No,
-                          deads: job.Dead_Quantity,
-                          inventory: job.Inventory_Left,
+                          value: job.number,
+                          deads: job.deadQuantity,
+                          inventory: job.inventory,
                         }) as TypeAheadOption
                     )}
                     placeholder="To"

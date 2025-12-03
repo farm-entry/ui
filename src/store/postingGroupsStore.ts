@@ -31,6 +31,8 @@ export const usePostingGroupsStore = create<PostingGroupsDataState>()(
         try {
           if (group != get().postingGroupDetails.number) {
             // Make API call
+            set((state) => ({ ...state, isLoading: true }));
+
             const postingGroupDetails = await api.fetchPostingGroup(group);
 
             // Update state with fetched data
@@ -55,6 +57,7 @@ export const usePostingGroupsStore = create<PostingGroupsDataState>()(
         try {
           if (get().postingGroups.length === 0) {
             // Make API call
+            set((state) => ({ ...state, isLoading: true }));
             const postingGroups = await api.fetchAllPostingGroups();
 
             // Update state with fetched data
@@ -85,6 +88,7 @@ export const usePostingGroupsStore = create<PostingGroupsDataState>()(
       fetchPostingGroups: async () => {
         try {
           // Make API call
+          set((state) => ({ ...state, isLoading: true }));
           const postingGroups = await api.fetchAllPostingGroups();
 
           // Update state with fetched data

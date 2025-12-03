@@ -47,7 +47,7 @@ const columns = [
 
 export default function WeanPage() {
   const { isLoading: postingGroupsLoading, getPostingGroups, getPostingGroupDetails, postingGroups, postingGroupDetails } = usePostingGroupsStore();
-  const { getEventTypes, eventTypes, healthStatuses, getHealthStatuses } = useLivestockActivityStore();
+  const { getEventTypes, eventTypes, healthStatuses, getHealthStatuses, isLoading: livestockActivityLoading } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const [deads, setDeads] = useState<{ group: number }>({ group: 0 });
   const [inventory, setInventory] = useState<{ group: number }>({ group: 0 });
@@ -65,6 +65,10 @@ export default function WeanPage() {
     defaultValues: defaultValues,
     mode: "onSubmit",
   });
+
+  useEffect(() => {
+    setLoading(postingGroupsLoading || livestockActivityLoading);
+  }, [postingGroupsLoading, livestockActivityLoading]);
 
   useEffect(() => {
     setLoading(true);
@@ -101,10 +105,10 @@ export default function WeanPage() {
     showConfirmation("Are you sure?", "This will reset all form fields to their default values.", () => reset(defaultValues));
   };
 
-  const formatLabel = (group: PostingGroup) => `${group.No} ${group.Description}`;
+  const formatLabel = (group: PostingGroup) => `${group.number} ${group.description}`;
 
   const selectedEventValue = useTypeAheadValue(watch, "event", eventTypes, "Description", "Code");
-  const selectedGroupValue = useTypeAheadValue(watch, "group", postingGroups, "Description", "No");
+  const selectedGroupValue = useTypeAheadValue(watch, "group", postingGroups, "description", "number");
   const selectedHealthStatusValue = useTypeAheadValue(
     watch,
     "healthStatus",
@@ -138,7 +142,7 @@ export default function WeanPage() {
                       value={selectedGroupValue}
                       handleChange={(v) => v && v.value && setValue("group", String(v.value))}
                       loading={postingGroupsLoading}
-                      options={postingGroups.map((job) => ({ label: formatLabel(job), value: job.No }) as TypeAheadOption)}
+                      options={postingGroups.map((job) => ({ label: formatLabel(job), value: job.number }) as TypeAheadOption)}
                       placeholder="Group"
                     />
                     {errors.group && <FormHelperText error>{errors.group.message}</FormHelperText>}
