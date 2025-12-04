@@ -1,44 +1,37 @@
 import { Alert, Button, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useConfirmationStore } from "../../store/confirmationStore";
-import { getWithTTL } from "../../utils/localStorage";
+import { useFormStorageStore } from "../../store/formStorageStore";
 
 interface CustomNoticeProps<T> {
-  storageKey: string;
+  formType: string;
   onLoad: (data: T) => void;
   message?: string;
 }
 
-export default function CustomNotice<T>({ storageKey, onLoad, message = "You have a saved form. Would you like to load it?" }: CustomNoticeProps<T>) {
+export default function CustomNotice<T>({ formType, onLoad, message = "You have a saved form. Would you like to load it?" }: CustomNoticeProps<T>) {
   const [showAlert, setShowAlert] = useState(false);
-
+  const { forms, getForm, removeForm } = useFormStorageStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
 
   useEffect(() => {
-    const savedData = getWithTTL<T>(storageKey);
+    console.log("Checking for saved form data...");
+    const savedData = getForm<T>(formType);
     if (savedData) {
       setShowAlert(true);
     }
-  }, []);
-
-  useEffect(() => {
-    const savedData = getWithTTL<T>(storageKey);
-    if (savedData) {
-      setShowAlert(true);
-    }
-  }, [storageKey]);
+  }, [forms, formType, getForm]);
 
   const handleLoad = () => {
-    const savedData = getWithTTL<T>(storageKey);
+    const savedData = getForm<T>(formType);
     if (savedData) {
       onLoad(savedData);
-      //   setShowAlert(false);
     }
   };
 
   const handleDelete = () => {
     showConfirmation("Are you sure?", "This will permanently delete your saved form data.", () => {
-      localStorage.removeItem(storageKey);
+      removeForm(formType);
       setShowAlert(false);
     });
   };

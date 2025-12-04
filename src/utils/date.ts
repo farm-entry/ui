@@ -20,10 +20,7 @@ export const formatDateToYYYYMMDD = (date: Date | null | undefined): string => {
  */
 export const formatDateToYYYYMMDDNoTimestamp = (date: Date | null | undefined): string => {
     if (!date) return '';
-
     const dateOnly = new Date(date);
-    dateOnly.setHours(0, 0, 0, 0);
-
     return formatDateToYYYYMMDD(dateOnly);
 };
 
@@ -32,9 +29,10 @@ export const formatDateToYYYYMMDDNoTimestamp = (date: Date | null | undefined): 
  * @param dateString - String in yyyy-MM-dd format
  * @returns Date object or null if invalid
  */
-export const parseYYYYMMDDToDate = (dateString: string): Date | null => {
+export const parseYYYYMMDDToLocalDate = (dateString: string): Date | null => {
     if (!dateString) return null;
 
-    const date = new Date(dateString + 'T00:00:00.000Z');
-    return isNaN(date.getTime()) ? null : date;
+    // Create date in local timezone, not UTC
+    const [year, month, day] = dateString.split('-').map(Number);
+    return new Date(year, month - 1, day); // month is 0-indexed
 };

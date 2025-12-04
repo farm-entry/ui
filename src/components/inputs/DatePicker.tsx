@@ -20,12 +20,7 @@ export const DatePicker = React.forwardRef<HTMLDivElement, CustomDatePickerProps
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <MuiDatePicker
-        {...other}
-        ref={ref}
-        format="yyyy-MM-dd"
-        // ...rest of your existing props
-      />
+      <MuiDatePicker {...other} ref={ref} />
     </LocalizationProvider>
   );
 });

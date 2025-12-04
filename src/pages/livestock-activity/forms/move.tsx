@@ -13,14 +13,15 @@ import { PostingGroup } from "../../../services/postingGroupsApi";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { useConfirmationStore } from "../../../store/confirmationStore";
-import { saveWithTTL } from "../../../utils/localStorage";
+import { useFormStorageStore } from "../../../store/formStorageStore";
+import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { MOVE_STORAGE_KEY } from "./constants-livestock.json";
 
 interface MoveFormData {
   fromJob: string | number | null;
   toJob: string | number | null;
   event: string | number | null;
-  postingDate: Date | null;
+  postingDate: string;
   quantity: number | "";
   smallLivestockQuantity: number | "";
   totalWeight: number | "";
@@ -31,7 +32,7 @@ const defaultValues: MoveFormData = {
   fromJob: null,
   toJob: null,
   event: null,
-  postingDate: null,
+  postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
   quantity: "",
   smallLivestockQuantity: "",
   totalWeight: "",
@@ -48,6 +49,7 @@ export default function MovePage() {
   const { getPostingGroups, postingGroups } = usePostingGroupsStore();
   const { getEventTypes, eventTypes } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
+  const { saveForm } = useFormStorageStore();
   const [deads, setDeads] = useState<{ toJob: number; fromJob: number }>({
     toJob: 0,
     fromJob: 0,
@@ -56,7 +58,8 @@ export default function MovePage() {
     toJob: number;
     fromJob: number;
   }>({ toJob: 0, fromJob: 0 });
-  const [loading, setLoading] = useState(true);
+  const [initLoading, setInitLoading] = useState(true);
+
   const {
     register,
     handleSubmit,
@@ -71,13 +74,13 @@ export default function MovePage() {
   });
 
   useEffect(() => {
-    setLoading(true);
+    setInitLoading(true);
     const promises = [];
     if (!(eventTypes.length > 0 && eventTypes[0].Journal_Template_Name == "MOVE")) promises.push(getEventTypes("MOVE"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
 
     Promise.all(promises).then(() => {
-      setLoading(false);
+      setInitLoading(false);
     });
   }, []);
 
@@ -88,8 +91,7 @@ export default function MovePage() {
 
   const onSave = () => {
     const formData = getValues();
-    saveWithTTL(MOVE_STORAGE_KEY, formData, 48);
-    console.log("Form saved to localStorage with 48-hour TTL:", formData);
+    saveForm(MOVE_STORAGE_KEY, formData, 48);
   };
 
   const handleReset = () => {
@@ -106,12 +108,13 @@ export default function MovePage() {
   };
 
   const formatLabel = (job: PostingGroup) => `${job.number} ${job.description}`;
+
   return (
     <>
-      {loading && <LoadingSpinner />}
-      {!loading && (
+      {initLoading && <LoadingSpinner />}
+      {!initLoading && (
         <>
-          <CustomNotice<MoveFormData> storageKey={MOVE_STORAGE_KEY} onLoad={(data) => reset(data)} />
+          <CustomNotice<MoveFormData> formType={MOVE_STORAGE_KEY} onLoad={(data) => reset(data)} />
           <CustomFormsLayout>
             <CustomHeader icon={SwapVert} title="Move" button={{ label: "reset", onClick: handleReset }} />
 
@@ -121,6 +124,11 @@ export default function MovePage() {
                   <TypeAhead
                     {...register("fromJob", { required: "From Job is required" })}
                     handleChange={(v) => setJob(v, "fromJob")}
+                    watch={watch}
+                    fieldName={"fromJob"}
+                    labelKey={"description"}
+                    valueKey={"number"}
+                    valueList={postingGroups}
                     options={postingGroups.map(
                       (job) =>
                         ({
@@ -139,6 +147,11 @@ export default function MovePage() {
                   <TypeAhead
                     {...register("toJob", { required: "To Job is required" })}
                     handleChange={(v) => setJob(v, "toJob")}
+                    watch={watch}
+                    fieldName={"toJob"}
+                    labelKey={"description"}
+                    valueKey={"number"}
+                    valueList={postingGroups}
                     options={postingGroups.map(
                       (job) =>
                         ({
@@ -177,6 +190,11 @@ export default function MovePage() {
                   <TypeAhead
                     {...register("event", { required: "Event is required" })}
                     handleChange={(v) => v && v.value && setValue("event", v.value)}
+                    watch={watch}
+                    fieldName={"event"}
+                    labelKey={"Description"}
+                    valueKey={"Code"}
+                    valueList={eventTypes}
                     options={eventTypes.map((event) => ({
                       label: event.Description,
                       value: event.Code,
@@ -191,8 +209,10 @@ export default function MovePage() {
                     {...register("postingDate", {
                       required: "Posting Date is required",
                     })}
-                    onChange={(v) => setValue("postingDate", v)}
+                    value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
+                    onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
                     label="Posting Date"
+                    error={!!errors.postingDate}
                     helperText={errors.postingDate?.message}
                   />
                 </Stack>

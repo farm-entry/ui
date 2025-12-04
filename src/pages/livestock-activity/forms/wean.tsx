@@ -1,6 +1,6 @@
 import { Celebration } from "@mui/icons-material";
 import { Button, Divider, FormHelperText, Stack, Typography } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import CustomConfirmation from "../../../components/framework/CustomConfirmation";
 import CustomHeader from "../../../components/framework/CustomHeader";
@@ -13,10 +13,9 @@ import { PostingGroup } from "../../../services/postingGroupsApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
-import { saveWithTTL } from "../../../utils/localStorage";
+import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { WEAN_STORAGE_KEY } from "./constants-livestock.json";
-import useTypeAheadValue from "../../../hooks/useMemoTypeahead";
-import { formatDateToYYYYMMDDNoTimestamp } from "../../../utils/date";
+import { useFormStorageStore } from "../../../store/formStorageStore";
 
 interface WeanFormData {
   group: string | number | null;
@@ -55,6 +54,7 @@ export default function WeanPage() {
   const [deads, setDeads] = useState<{ group: number }>({ group: 0 });
   const [inventory, setInventory] = useState<{ group: number }>({ group: 0 });
   const [initLoading, setInitLoading] = useState(false);
+  const { saveForm } = useFormStorageStore();
 
   const {
     register,
@@ -96,9 +96,7 @@ export default function WeanPage() {
 
   const onSave = () => {
     const formData = getValues();
-    console.log("Form submitted:", formData);
-    saveWithTTL(WEAN_STORAGE_KEY, formData, 48);
-    console.log("Form saved to localStorage with 48-hour TTL:", formData);
+    saveForm(WEAN_STORAGE_KEY, formData, 48);
   };
 
   const handleReset = () => {
@@ -107,25 +105,9 @@ export default function WeanPage() {
 
   const formatLabel = (group: PostingGroup) => `${group.number} ${group.description}`;
 
-  const selectedEventValue = useTypeAheadValue(watch, "event", eventTypes, "Description", "Code");
-  const selectedGroupValue = useTypeAheadValue(watch, "group", postingGroups, "description", "number");
-  const selectedHealthStatusValue = useTypeAheadValue(
-    watch,
-    "healthStatus",
-    healthStatuses,
-    "description",
-    "code",
-    postingGroupDetails?.healthStatus?.Code
-      ? {
-          label: postingGroupDetails.healthStatus.Description,
-          value: postingGroupDetails.healthStatus.Code,
-        }
-      : null
-  );
-
   return (
     <>
-      <CustomNotice<WeanFormData> storageKey={WEAN_STORAGE_KEY} onLoad={(data) => reset({ ...getValues(), ...data })} />
+      <CustomNotice<WeanFormData> formType={WEAN_STORAGE_KEY} onLoad={(data) => reset({ ...getValues(), ...data })} />
       <CustomFormsLayout>
         <CustomHeader icon={Celebration} title="Wean" button={{ label: "reset", onClick: handleReset }} />
         {initLoading && <LoadingSpinner />}
@@ -135,8 +117,12 @@ export default function WeanPage() {
               <Stack>
                 <TypeAhead
                   {...register("group", { required: "Group is required" })}
-                  value={selectedGroupValue}
                   handleChange={(v) => v && v.value && setValue("group", String(v.value))}
+                  watch={watch}
+                  fieldName={"group"}
+                  labelKey={"description"}
+                  valueKey={"number"}
+                  valueList={postingGroups}
                   loading={postingGroupsLoading}
                   options={postingGroups.map((job) => ({ label: formatLabel(job), value: job.number }) as TypeAheadOption)}
                   placeholder="Group"
@@ -166,7 +152,19 @@ export default function WeanPage() {
                   })}
                   handleChange={(v) => v && v.value && setValue("healthStatus", String(v.value))}
                   loading={postingGroupsLoading}
-                  value={selectedHealthStatusValue}
+                  watch={watch}
+                  valueList={healthStatuses}
+                  fieldName={"healthStatus"}
+                  labelKey={"description"}
+                  valueKey={"code"}
+                  defaultValue={
+                    postingGroupDetails?.healthStatus?.Code
+                      ? {
+                          label: postingGroupDetails.healthStatus.Description,
+                          value: postingGroupDetails.healthStatus.Code,
+                        }
+                      : null
+                  }
                   options={healthStatuses.map(
                     (status) =>
                       ({
@@ -185,7 +183,11 @@ export default function WeanPage() {
                 <TypeAhead
                   {...register("event", { required: "Event is required" })}
                   handleChange={(v) => v && v.value && setValue("event", v.value)}
-                  value={selectedEventValue}
+                  watch={watch}
+                  fieldName={"event"}
+                  labelKey={"Description"}
+                  valueKey={"Code"}
+                  valueList={eventTypes}
                   loading={livestockActivityLoading}
                   options={eventTypes.map((event) => ({
                     label: event.Description,
@@ -201,7 +203,7 @@ export default function WeanPage() {
                   {...register("postingDate", {
                     required: "Posting Date is required",
                   })}
-                  value={new Date(watch("postingDate") || "")}
+                  value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
                   onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
                   label="Posting Date"
                   error={!!errors.postingDate}
