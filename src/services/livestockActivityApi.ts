@@ -1,5 +1,6 @@
 import {
   EventType,
+  FormData,
   HealthStatus
 } from "../store/types/livestockActivity";
 import { HandleError } from "./handleError";
@@ -60,6 +61,24 @@ const mockHealthStatuses: HealthStatus[] = [
 ];
 
 class LivestockActivityApi {
+  async postLivestockEvent(data: FormData): Promise<void> {
+    const response = await fetch(
+      `/api/livestock`,
+      {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(data)
+      }
+    );
+
+    if (!response.ok) {
+      await new HandleError().handleApiError(
+        response,
+        "LivestockActivityApi.postLivestockEvent"
+      );
+    }
+  }
+
   async fetchEventTypes(template: string): Promise<EventType[]> {
     try {
       console.log("Fetching event types from API...");

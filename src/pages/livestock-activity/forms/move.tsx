@@ -6,18 +6,18 @@ import CustomConfirmation from "../../../components/framework/CustomConfirmation
 import CustomHeader from "../../../components/framework/CustomHeader";
 import CustomNotice from "../../../components/framework/CustomNotice";
 import LoadingSpinner from "../../../components/framework/LoadingSpinner";
-import { DatePicker, TextArea, TextField, TypeAhead, TypeAheadOption } from "../../../components/inputs";
+import { DatePicker, TextArea, TextField, TypeAhead } from "../../../components/inputs";
 import DenseTable from "../../../components/table/DenseTable";
 import CustomFormsLayout from "../../../layouts/forms";
 import { PostingGroup } from "../../../services/postingGroupsApi";
-import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
-import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
+import { FormData, useLivestockActivityStore } from "../../../store/livestockActivityStore";
+import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { MOVE_STORAGE_KEY } from "./constants-livestock.json";
 
-interface MoveFormData {
+interface MoveFormData extends FormData {
   fromJob: string | number | null;
   toJob: string | number | null;
   event: string | number | null;
@@ -29,6 +29,7 @@ interface MoveFormData {
 }
 
 const defaultValues: MoveFormData = {
+  form: "MOVE",
   fromJob: null,
   toJob: null,
   event: null,

@@ -6,18 +6,18 @@ import CustomConfirmation from "../../../components/framework/CustomConfirmation
 import CustomHeader from "../../../components/framework/CustomHeader";
 import CustomNotice from "../../../components/framework/CustomNotice";
 import LoadingSpinner from "../../../components/framework/LoadingSpinner";
-import { DatePicker, TextArea, TextField, TypeAhead, TypeAheadOption } from "../../../components/inputs";
+import { DatePicker, TextArea, TextField, TypeAhead } from "../../../components/inputs";
 import DenseTable from "../../../components/table/DenseTable";
 import CustomFormsLayout from "../../../layouts/forms";
 import { PostingGroup } from "../../../services/postingGroupsApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
-import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
+import { useFormStorageStore } from "../../../store/formStorageStore";
+import { FormData, useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { WEAN_STORAGE_KEY } from "./constants-livestock.json";
-import { useFormStorageStore } from "../../../store/formStorageStore";
 
-interface WeanFormData {
+interface WeanFormData extends FormData {
   group: string | number | null;
   healthStatus: string | number | null;
   event: string | number | null;
@@ -26,11 +26,10 @@ interface WeanFormData {
   smallLivestockQuantity: number | "";
   totalWeight: number | "";
   comments: string;
-  form: "wean";
 }
 
 const defaultValues: WeanFormData = {
-  form: "wean",
+  form: "WEAN",
   group: null,
   healthStatus: null,
   event: null,

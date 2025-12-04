@@ -1,3 +1,7 @@
+export interface FormData {
+  form: ActivityType
+}
+
 export type ActivityType =
   | "WEAN"
   | "MORTALITY"
@@ -30,33 +34,4 @@ export interface HealthStatus {
   code: string;
   description: string;
   color?: string | null;
-}
-
-export interface FormData {
-  // Activity type selection
-  activityType: ActivityType | null;
-
-  // Job selection
-  job: string;
-  fromJob: string;
-  toJob: string;
-
-  // Event selection
-  event: string;
-
-  // Date
-  postingDate: Date | null;
-
-  // Quantities
-  quantity: number | null;
-  smallLivestockQuantity: number | null;
-  totalWeight: number | null;
-  livestockWeight: number | null;
-  deadsOnArrivalQuantity: number | null;
-
-  // Dynamic quantities for MORTALITY/GRADEOFF
-  quantities: { [reasonCode: string]: number };
-
-  // Comments
-  comments: string;
 }
