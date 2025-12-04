@@ -1,7 +1,7 @@
 import { Autocomplete, AutocompleteProps, FormControl, TextField } from "@mui/material";
 import * as React from "react";
+import { useMemo } from "react";
 import { UseFormWatch } from "react-hook-form";
-import useTypeAheadValue from "../../hooks/useMemoTypeahead";
 
 export interface TypeAheadOption {
   label: string;
@@ -23,8 +23,27 @@ export interface TypeAheadProps<T = any> extends Omit<AutocompleteProps<TypeAhea
   labelFormatter?: (item: T) => string;
 }
 
+// Memoize the selected group value
+const useTypeAheadValue = (props: TypeAheadProps): TypeAheadOption | null => {
+  const { watch, fieldName, valueList, labelKey, valueKey, defaultValue, labelFormatter } = props;
+  return useMemo(() => {
+    const fieldValue = watch(fieldName);
+
+    if (!fieldValue) {
+      return defaultValue || null;
+    }
+
+    const option = valueList.find((item) => item[valueKey] === fieldValue);
+    return option
+      ? ({
+          label: labelFormatter ? labelFormatter(option) : String(option[labelKey]),
+          value: option[valueKey],
+        } as TypeAheadOption)
+      : null;
+  }, [watch(fieldName), valueList, defaultValue]);
+};
+
 export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props, ref) => {
-  // const { label, defaultValue, onChange, helperText, placeholder, freeSolo = false } = props;
   const { watch, fieldName, valueList, options, labelKey, valueKey, defaultValue, handleChange, placeholder, labelFormatter, ...other } = props;
 
   const customChange = (_: any, newValue: TypeAheadOption | string | null) => {
@@ -38,7 +57,7 @@ export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props
     }
   };
 
-  const useValue = useTypeAheadValue(watch, fieldName, valueList, labelKey, valueKey, defaultValue);
+  const useValue = useTypeAheadValue(props);
 
   return (
     <FormControl fullWidth>
