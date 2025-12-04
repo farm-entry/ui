@@ -16,23 +16,26 @@ import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { saveWithTTL } from "../../../utils/localStorage";
 import { WEAN_STORAGE_KEY } from "./constants-livestock.json";
 import useTypeAheadValue from "../../../hooks/useMemoTypeahead";
+import { formatDateToYYYYMMDDNoTimestamp } from "../../../utils/date";
 
 interface WeanFormData {
   group: string | number | null;
   healthStatus: string | number | null;
   event: string | number | null;
-  postingDate: Date | null;
+  postingDate: string | null;
   quantity: number | "";
   smallLivestockQuantity: number | "";
   totalWeight: number | "";
   comments: string;
+  form: "wean";
 }
 
 const defaultValues: WeanFormData = {
+  form: "wean",
   group: null,
   healthStatus: null,
   event: null,
-  postingDate: null,
+  postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
   quantity: "",
   smallLivestockQuantity: "",
   totalWeight: "",
@@ -51,7 +54,7 @@ export default function WeanPage() {
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const [deads, setDeads] = useState<{ group: number }>({ group: 0 });
   const [inventory, setInventory] = useState<{ group: number }>({ group: 0 });
-  const [loading, setLoading] = useState(false);
+  const [initLoading, setInitLoading] = useState(false);
 
   const {
     register,
@@ -67,17 +70,13 @@ export default function WeanPage() {
   });
 
   useEffect(() => {
-    setLoading(postingGroupsLoading || livestockActivityLoading);
-  }, [postingGroupsLoading, livestockActivityLoading]);
-
-  useEffect(() => {
-    setLoading(true);
+    setInitLoading(true);
     const promises = [];
     if (!(eventTypes.length > 0 && eventTypes[0].Journal_Template_Name === "WEAN")) promises.push(getEventTypes("WEAN"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
     if (!(healthStatuses.length > 0)) promises.push(getHealthStatuses());
 
-    Promise.all(promises).then(() => setLoading(false));
+    Promise.all(promises).then(() => setInitLoading(false));
   }, []);
 
   useEffect(() => {
@@ -97,6 +96,7 @@ export default function WeanPage() {
 
   const onSave = () => {
     const formData = getValues();
+    console.log("Form submitted:", formData);
     saveWithTTL(WEAN_STORAGE_KEY, formData, 48);
     console.log("Form saved to localStorage with 48-hour TTL:", formData);
   };
@@ -125,160 +125,155 @@ export default function WeanPage() {
 
   return (
     <>
-      {loading && <LoadingSpinner />}
-      {!loading && (
-        <>
-          <CustomNotice<WeanFormData> storageKey={WEAN_STORAGE_KEY} onLoad={(data) => reset({ ...getValues(), ...data })} />
-          <CustomFormsLayout>
-            <CustomHeader icon={Celebration} title="Wean" button={{ label: "reset", onClick: handleReset }} />
+      <CustomNotice<WeanFormData> storageKey={WEAN_STORAGE_KEY} onLoad={(data) => reset({ ...getValues(), ...data })} />
+      <CustomFormsLayout>
+        <CustomHeader icon={Celebration} title="Wean" button={{ label: "reset", onClick: handleReset }} />
+        {initLoading && <LoadingSpinner />}
+        {!initLoading && (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Stack spacing={2}>
+              <Stack>
+                <TypeAhead
+                  {...register("group", { required: "Group is required" })}
+                  value={selectedGroupValue}
+                  handleChange={(v) => v && v.value && setValue("group", String(v.value))}
+                  loading={postingGroupsLoading}
+                  options={postingGroups.map((job) => ({ label: formatLabel(job), value: job.number }) as TypeAheadOption)}
+                  placeholder="Group"
+                />
+                {errors.group && <FormHelperText error>{errors.group.message}</FormHelperText>}
+              </Stack>
 
-            {postingGroupsLoading && <LoadingSpinner />}
-            {!postingGroupsLoading && (
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <Stack spacing={2}>
-                  <Stack>
-                    <TypeAhead
-                      {...register("group", { required: "Group is required" })}
-                      value={selectedGroupValue}
-                      handleChange={(v) => v && v.value && setValue("group", String(v.value))}
-                      loading={postingGroupsLoading}
-                      options={postingGroups.map((job) => ({ label: formatLabel(job), value: job.number }) as TypeAheadOption)}
-                      placeholder="Group"
-                    />
-                    {errors.group && <FormHelperText error>{errors.group.message}</FormHelperText>}
-                  </Stack>
+              {watch("group") && (
+                <DenseTable
+                  loading={postingGroupsLoading}
+                  rows={[
+                    {
+                      name: "group",
+                      postingGroup: watch("group"),
+                      inventory: inventory.group,
+                      deads: deads.group,
+                    },
+                  ]}
+                  columns={columns}
+                />
+              )}
 
-                  {watch("group") && (
-                    <DenseTable
-                      rows={[
-                        {
-                          name: "group",
-                          postingGroup: watch("group"),
-                          inventory: inventory.group,
-                          deads: deads.group,
-                        },
-                      ]}
-                      columns={columns}
-                    />
+              <Stack>
+                <TypeAhead
+                  {...register("healthStatus", {
+                    required: "Health Status is required",
+                  })}
+                  handleChange={(v) => v && v.value && setValue("healthStatus", String(v.value))}
+                  loading={postingGroupsLoading}
+                  value={selectedHealthStatusValue}
+                  options={healthStatuses.map(
+                    (status) =>
+                      ({
+                        label: status.description,
+                        value: status.code,
+                      }) as TypeAheadOption
                   )}
+                  placeholder={(postingGroupDetails && postingGroupDetails.healthStatus?.Description) || healthStatuses.length ? "Health Status" : "Select a valid group"}
+                />
+                {errors.healthStatus && <FormHelperText error>{errors.healthStatus.message}</FormHelperText>}
+              </Stack>
 
-                  <Stack>
-                    <TypeAhead
-                      {...register("healthStatus", {
-                        required: "Health Status is required",
-                      })}
-                      handleChange={(v) => v && v.value && setValue("healthStatus", String(v.value))}
-                      loading={postingGroupsLoading}
-                      value={selectedHealthStatusValue}
-                      options={healthStatuses.map(
-                        (status) =>
-                          ({
-                            label: status.description,
-                            value: status.code,
-                          }) as TypeAheadOption
-                      )}
-                      placeholder={(postingGroupDetails && postingGroupDetails.healthStatus?.Description) || healthStatuses.length ? "Health Status" : "Select a valid group"}
-                      // disabled={healthStatuses.length === 0}
-                    />
-                    {errors.healthStatus && <FormHelperText error>{errors.healthStatus.message}</FormHelperText>}
-                  </Stack>
+              <Divider />
+              <Typography>Event Details</Typography>
+              <Stack>
+                <TypeAhead
+                  {...register("event", { required: "Event is required" })}
+                  handleChange={(v) => v && v.value && setValue("event", v.value)}
+                  value={selectedEventValue}
+                  loading={livestockActivityLoading}
+                  options={eventTypes.map((event) => ({
+                    label: event.Description,
+                    value: event.Code,
+                  }))}
+                  placeholder="Event Name"
+                />
+                {errors.event && <FormHelperText error>{errors.event.message}</FormHelperText>}
+              </Stack>
 
-                  <Divider />
-                  <Typography>Event Details</Typography>
-                  <Stack>
-                    <TypeAhead
-                      {...register("event", { required: "Event is required" })}
-                      handleChange={(v) => v && v.value && setValue("event", v.value)}
-                      value={selectedEventValue}
-                      options={eventTypes.map((event) => ({
-                        label: event.Description,
-                        value: event.Code,
-                      }))}
-                      placeholder="Event Name"
-                    />
-                    {errors.event && <FormHelperText error>{errors.event.message}</FormHelperText>}
-                  </Stack>
-
-                  <Stack>
-                    <DatePicker
-                      {...register("postingDate", {
-                        required: "Posting Date is required",
-                      })}
-                      defaultValue={new Date()}
-                      onChange={(v) => setValue("postingDate", v)}
-                      label="Posting Date"
-                      error={!!errors.postingDate}
-                      helperText={errors.postingDate?.message}
-                    />
-                  </Stack>
-                  <Divider />
-                  <Typography>Quantity</Typography>
-                  <Stack spacing={2} direction="row">
-                    <Stack sx={{ width: "100%" }}>
-                      <TextField
-                        placeholder="Total"
-                        type="number"
-                        {...register("quantity", {
-                          required: "Total quantity is required",
-                          min: {
-                            value: 1,
-                            message: "Quantity must be greater than 0",
-                          },
-                        })}
-                        error={!!errors.quantity}
-                        helperText={errors.quantity?.message}
-                      />
-                    </Stack>
-                    <Stack sx={{ width: "100%" }}>
-                      <TextField
-                        placeholder="Smalls"
-                        type="number"
-                        {...register("smallLivestockQuantity", {
-                          required: "Small livestock quantity is required",
-                          min: { value: 0, message: "Quantity cannot be negative" },
-                        })}
-                        error={!!errors.smallLivestockQuantity}
-                        helperText={errors.smallLivestockQuantity?.message}
-                      />
-                    </Stack>
-                  </Stack>
-
-                  <Stack>
-                    <TextField
-                      {...register("totalWeight", {
-                        required: "Total weight is required",
-                        min: { value: 1, message: "Weight must be greater than 0" },
-                      })}
-                      placeholder="Total Weight"
-                      type="number"
-                      error={!!errors.totalWeight}
-                      helperText={errors.totalWeight?.message}
-                    />
-                  </Stack>
-                  <Divider />
-                  <TextArea
-                    {...register("comments", { maxLength: { value: 50, message: "Comments cannot exceed 50 characters" } })}
-                    placeholder="Comments"
-                    type="text"
-                    error={!!errors.comments}
-                    helperText={errors.comments?.message}
+              <Stack>
+                <DatePicker
+                  {...register("postingDate", {
+                    required: "Posting Date is required",
+                  })}
+                  value={new Date(watch("postingDate") || "")}
+                  onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
+                  label="Posting Date"
+                  error={!!errors.postingDate}
+                  helperText={errors.postingDate?.message}
+                />
+              </Stack>
+              <Divider />
+              <Typography>Quantity</Typography>
+              <Stack spacing={2} direction="row">
+                <Stack sx={{ width: "100%" }}>
+                  <TextField
+                    placeholder="Total"
+                    type="number"
+                    {...register("quantity", {
+                      required: "Total quantity is required",
+                      min: {
+                        value: 1,
+                        message: "Quantity must be greater than 0",
+                      },
+                    })}
+                    error={!!errors.quantity}
+                    helperText={errors.quantity?.message}
                   />
-                  <Stack direction="row" spacing={2} justifyContent="flex-end">
-                    <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
-                      Save
-                    </Button>
-                    <Button variant="contained" color="primary" fullWidth type="submit">
-                      Submit
-                    </Button>
-                  </Stack>
                 </Stack>
-              </form>
-            )}
+                <Stack sx={{ width: "100%" }}>
+                  <TextField
+                    placeholder="Smalls"
+                    type="number"
+                    {...register("smallLivestockQuantity", {
+                      required: "Small livestock quantity is required",
+                      min: { value: 0, message: "Quantity cannot be negative" },
+                    })}
+                    error={!!errors.smallLivestockQuantity}
+                    helperText={errors.smallLivestockQuantity?.message}
+                  />
+                </Stack>
+              </Stack>
 
-            <CustomConfirmation />
-          </CustomFormsLayout>
-        </>
-      )}
+              <Stack>
+                <TextField
+                  {...register("totalWeight", {
+                    required: "Total weight is required",
+                    min: { value: 1, message: "Weight must be greater than 0" },
+                  })}
+                  placeholder="Total Weight"
+                  type="number"
+                  error={!!errors.totalWeight}
+                  helperText={errors.totalWeight?.message}
+                />
+              </Stack>
+              <Divider />
+              <TextArea
+                {...register("comments", { maxLength: { value: 50, message: "Comments cannot exceed 50 characters" } })}
+                placeholder="Comments"
+                type="text"
+                error={!!errors.comments}
+                helperText={errors.comments?.message}
+              />
+              <Stack direction="row" spacing={2} justifyContent="flex-end">
+                <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
+                  Save
+                </Button>
+                <Button variant="contained" color="primary" fullWidth type="submit">
+                  Submit
+                </Button>
+              </Stack>
+            </Stack>
+          </form>
+        )}
+
+        <CustomConfirmation />
+      </CustomFormsLayout>
     </>
   );
 }
