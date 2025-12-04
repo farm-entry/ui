@@ -126,18 +126,10 @@ export default function MovePage() {
                     handleChange={(v) => setJob(v, "fromJob")}
                     watch={watch}
                     fieldName={"fromJob"}
+                    labelFormatter={formatLabel}
                     labelKey={"description"}
                     valueKey={"number"}
                     valueList={postingGroups}
-                    options={postingGroups.map(
-                      (job) =>
-                        ({
-                          label: formatLabel(job),
-                          value: job.number,
-                          deads: job.deadQuantity,
-                          inventory: job.inventory,
-                        }) as TypeAheadOption
-                    )}
                     placeholder="From"
                   />
                   {errors.fromJob && <FormHelperText error>{errors.fromJob.message}</FormHelperText>}
@@ -149,18 +141,10 @@ export default function MovePage() {
                     handleChange={(v) => setJob(v, "toJob")}
                     watch={watch}
                     fieldName={"toJob"}
+                    labelFormatter={formatLabel}
                     labelKey={"description"}
                     valueKey={"number"}
                     valueList={postingGroups}
-                    options={postingGroups.map(
-                      (job) =>
-                        ({
-                          label: formatLabel(job),
-                          value: job.number,
-                          deads: job.deadQuantity,
-                          inventory: job.inventory,
-                        }) as TypeAheadOption
-                    )}
                     placeholder="To"
                   />
                   {errors.toJob && <FormHelperText error>{errors.toJob.message}</FormHelperText>}
@@ -195,10 +179,6 @@ export default function MovePage() {
                     labelKey={"Description"}
                     valueKey={"Code"}
                     valueList={eventTypes}
-                    options={eventTypes.map((event) => ({
-                      label: event.Description,
-                      value: event.Code,
-                    }))}
                     placeholder="Event Name"
                   />
                   {errors.event && <FormHelperText error>{errors.event.message}</FormHelperText>}

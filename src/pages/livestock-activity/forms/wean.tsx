@@ -122,9 +122,9 @@ export default function WeanPage() {
                   fieldName={"group"}
                   labelKey={"description"}
                   valueKey={"number"}
+                  labelFormatter={formatLabel}
                   valueList={postingGroups}
                   loading={postingGroupsLoading}
-                  options={postingGroups.map((job) => ({ label: formatLabel(job), value: job.number }) as TypeAheadOption)}
                   placeholder="Group"
                 />
                 {errors.group && <FormHelperText error>{errors.group.message}</FormHelperText>}
@@ -165,13 +165,6 @@ export default function WeanPage() {
                         }
                       : null
                   }
-                  options={healthStatuses.map(
-                    (status) =>
-                      ({
-                        label: status.description,
-                        value: status.code,
-                      }) as TypeAheadOption
-                  )}
                   placeholder={(postingGroupDetails && postingGroupDetails.healthStatus?.Description) || healthStatuses.length ? "Health Status" : "Select a valid group"}
                 />
                 {errors.healthStatus && <FormHelperText error>{errors.healthStatus.message}</FormHelperText>}
@@ -189,10 +182,6 @@ export default function WeanPage() {
                   valueKey={"Code"}
                   valueList={eventTypes}
                   loading={livestockActivityLoading}
-                  options={eventTypes.map((event) => ({
-                    label: event.Description,
-                    value: event.Code,
-                  }))}
                   placeholder="Event Name"
                 />
                 {errors.event && <FormHelperText error>{errors.event.message}</FormHelperText>}

@@ -15,16 +15,17 @@ export interface TypeAheadProps<T = any> extends Omit<AutocompleteProps<TypeAhea
   placeholder?: string;
   watch: UseFormWatch<any>;
   fieldName: any;
-  options: T extends { [key: string]: any } ? T[] : any[];
+  options?: T extends { [key: string]: any } ? T[] : any[];
   valueList: T extends { [key: string]: any } ? T[] : any[];
   labelKey: keyof T;
   valueKey: keyof T;
   defaultValue?: TypeAheadOption | null;
+  labelFormatter?: (item: T) => string;
 }
 
 export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props, ref) => {
   // const { label, defaultValue, onChange, helperText, placeholder, freeSolo = false } = props;
-  const { watch, fieldName, valueList, options, labelKey, valueKey, defaultValue, handleChange, placeholder, ...other } = props;
+  const { watch, fieldName, valueList, options, labelKey, valueKey, defaultValue, handleChange, placeholder, labelFormatter, ...other } = props;
 
   const customChange = (_: any, newValue: TypeAheadOption | string | null) => {
     if (typeof newValue === "string") {
@@ -46,7 +47,10 @@ export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props
         ref={ref}
         value={useValue}
         onChange={customChange}
-        options={options}
+        options={valueList.map((event) => ({
+          label: labelFormatter ? labelFormatter(event) : String(event[labelKey]),
+          value: event[valueKey],
+        }))}
         renderInput={(params) => <TextField placeholder={placeholder} {...params} variant="outlined" label={props.label} />}
       />
     </FormControl>
