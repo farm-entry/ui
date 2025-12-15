@@ -1,7 +1,7 @@
 import {
   EventType,
-  FormData,
-  HealthStatus
+  HealthStatus,
+  FormData as LivestockFormData
 } from "../store/types/livestockActivity";
 import { HandleError } from "./handleError";
 import { delay } from "./localConfig";
@@ -61,13 +61,18 @@ const mockHealthStatuses: HealthStatus[] = [
 ];
 
 class LivestockActivityApi {
-  async postLivestockEvent(data: FormData): Promise<void> {
+  async postLivestockEvent(data: LivestockFormData): Promise<void> {
+    console.log({ data });
+    console.log({ data: JSON.stringify(data) });
     const response = await fetch(
       `/api/livestock`,
       {
         method: "POST",
         credentials: "include",
-        body: JSON.stringify(data)
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       }
     );
 

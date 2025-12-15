@@ -9,6 +9,7 @@ import LoadingSpinner from "../../../components/framework/LoadingSpinner";
 import { DatePicker, TextArea, TextField, TypeAhead } from "../../../components/inputs";
 import DenseTable from "../../../components/table/DenseTable";
 import CustomFormsLayout from "../../../layouts/forms";
+import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { PostingGroup } from "../../../services/postingGroupsApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
@@ -16,6 +17,7 @@ import { FormData, useLivestockActivityStore } from "../../../store/livestockAct
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { WEAN_STORAGE_KEY } from "./constants-livestock.json";
+import { useNavigate } from "react-router";
 
 interface WeanFormData extends FormData {
   group: string | number | null;
@@ -47,6 +49,7 @@ const columns = [
 ];
 
 export default function WeanPage() {
+  const navigate = useNavigate();
   const { isLoading: postingGroupsLoading, getPostingGroups, getPostingGroupDetails, postingGroups, postingGroupDetails } = usePostingGroupsStore();
   const { getEventTypes, eventTypes, healthStatuses, getHealthStatuses, isLoading: livestockActivityLoading } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
@@ -88,9 +91,31 @@ export default function WeanPage() {
       });
   }, [watch("group")]);
 
-  const onSubmit = (data: WeanFormData) => {
-    console.log("Form submitted:", data);
+  const onSubmit = async (data: WeanFormData) => {
     console.log("All required fields validated successfully!");
+    setInitLoading(true);
+    const state = {
+      formData: data,
+      section: "livestock-activity",
+    };
+    livestockActivityApi
+      .postLivestockEvent(data)
+      .then(() => {
+        console.log("Form submitted:", data);
+        navigate("/post-success", { state });
+      })
+      .catch((e: any) => {
+        console.error("Unable to post form.");
+        const error = {
+          code: e.code || data.form + "_SUBMISSION_ERROR",
+          message: e.message || "Unable to submit form. Please try again.",
+          details: e.details || JSON.stringify(e, null, 2),
+        };
+        navigate("/post-error", { state: { ...state, error } });
+      })
+      .finally(() => {
+        setInitLoading(false);
+      });
   };
 
   const onSave = () => {

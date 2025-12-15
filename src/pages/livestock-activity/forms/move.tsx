@@ -16,6 +16,8 @@ import { FormData, useLivestockActivityStore } from "../../../store/livestockAct
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { MOVE_STORAGE_KEY } from "./constants-livestock.json";
+import { livestockActivityApi } from "../../../services/livestockActivityApi";
+import { useNavigate } from "react-router";
 
 interface MoveFormData extends FormData {
   fromJob: string | number | null;
@@ -47,6 +49,7 @@ const columns = [
 ];
 
 export default function MovePage() {
+  const navigate = useNavigate();
   const { getPostingGroups, postingGroups } = usePostingGroupsStore();
   const { getEventTypes, eventTypes } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
@@ -85,9 +88,28 @@ export default function MovePage() {
     });
   }, []);
 
-  const onSubmit = (data: MoveFormData) => {
-    console.log("Form submitted:", data);
+  const onSubmit = async (data: MoveFormData) => {
     console.log("All required fields validated successfully!");
+    setInitLoading(true);
+    const state = { formData: data, section: "livestock-activity" };
+    livestockActivityApi
+      .postLivestockEvent(data)
+      .then(() => {
+        console.log("Form submitted:", data);
+        navigate("/post-success", { state });
+      })
+      .catch((e: any) => {
+        console.error("Unable to post form.");
+        const error = {
+          code: e.code || data.form + "_SUBMISSION_ERROR",
+          message: e.message || "Unable to submit form. Please try again.",
+          details: e.details || JSON.stringify(e, null, 2),
+        };
+        navigate("/post-error", { state: { ...state, error } });
+      })
+      .finally(() => {
+        setInitLoading(false);
+      });
   };
 
   const onSave = () => {
