@@ -74,7 +74,10 @@ export default function WeanPage() {
   useEffect(() => {
     setInitLoading(true);
     const promises = [];
-    if (!(eventTypes.length > 0 && eventTypes[0].Journal_Template_Name === "WEAN")) promises.push(getEventTypes("WEAN"));
+    if (
+      !(eventTypes.length > 0 && eventTypes[0].Journal_Template_Name === "WEAN")
+    )
+      promises.push(getEventTypes("WEAN"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
     if (!(healthStatuses.length > 0)) promises.push(getHealthStatuses());
 
@@ -124,10 +127,15 @@ export default function WeanPage() {
   };
 
   const handleReset = () => {
-    showConfirmation("Are you sure?", "This will reset all form fields to their default values.", () => reset(defaultValues));
+    showConfirmation(
+      "Are you sure?",
+      "This will reset all form fields to their default values.",
+      () => reset(defaultValues)
+    );
   };
 
-  const formatLabel = (group: PostingGroup) => `${group.number} ${group.description}`;
+  const formatLabel = (group: PostingGroup) =>
+    `${group.number} ${group.description}`;
 
   return (
     <>
