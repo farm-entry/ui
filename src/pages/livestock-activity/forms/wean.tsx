@@ -24,9 +24,9 @@ interface WeanFormData extends FormData {
   healthStatus: string | number | null;
   event: string | number | null;
   postingDate: string | null;
-  quantity: number | "";
-  smallLivestockQuantity: number | "";
-  totalWeight: number | "";
+  quantity: number | null;
+  smallLivestockQuantity: number | null;
+  totalWeight: number | null;
   comments: string;
 }
 
@@ -36,9 +36,9 @@ const defaultValues: WeanFormData = {
   healthStatus: null,
   event: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
-  quantity: "",
-  smallLivestockQuantity: "",
-  totalWeight: "",
+  quantity: null,
+  smallLivestockQuantity: null,
+  totalWeight: null,
   comments: "",
 };
 

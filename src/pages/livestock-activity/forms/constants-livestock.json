@@ -1,4 +1,8 @@
 {
   "WEAN_STORAGE_KEY": "livestock-wean-form",
-  "MOVE_STORAGE_KEY": "livestock-move-form"
+  "MOVE_STORAGE_KEY": "livestock-move-form",
+  "PURCHASE_STORAGE_KEY": "livestock-purchase-form",
+  "MORTALITY_STORAGE_KEY": "livestock-mortality-form",
+  "GRADEOFF_STORAGE_KEY": "livestock-gradeoff-form",
+  "QTYADJ_STORAGE_KEY": "livestock-qtyadj-form"
 }

@@ -17,7 +17,11 @@ export default function App() {
   const navigation = useDynamicNavigation(LEFTNAV_NAVIGATION);
 
   return (
-    <ReactRouterAppProvider navigation={navigation} branding={BRANDING} theme={customTheme}>
+    <ReactRouterAppProvider
+      navigation={navigation}
+      branding={BRANDING}
+      theme={customTheme}
+    >
       <AuthProvider>
         <Outlet />
       </AuthProvider>

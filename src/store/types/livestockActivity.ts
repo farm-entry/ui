@@ -9,7 +9,8 @@ export type ActivityType =
   | "GRADEOFF"
   | "QTYADJ"
   | "PURCHASE"
-  | "SHIPMENT";
+  | "SHIPMENT"
+  | "INVENTORY";
 
 export interface Job {
   number: string;
