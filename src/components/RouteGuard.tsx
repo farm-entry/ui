@@ -2,7 +2,6 @@ import { Box, CircularProgress } from "@mui/material";
 import { Navigate } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 import { useUserStore } from "../store/userStore";
-
 interface RouteGuardProps {
   children: React.ReactNode;
   requiredRoute?: string;
@@ -10,7 +9,12 @@ interface RouteGuardProps {
 
 export const RouteGuard: React.FC<RouteGuardProps> = ({ children, requiredRoute }) => {
   const { isAuthenticated } = useAuth();
-  const { menuOptions } = useUserStore();
+  const { menuOptions } = useUserStore();  
+
+  // Skip auth check if env var is set
+  if (process.env.FRONTLINE_SKIP_AUTH === "true") {
+    return <>{children}</>;
+  }
 
   // Still checking authentication status
   if (isAuthenticated === null) {
