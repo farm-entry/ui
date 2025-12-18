@@ -1,5 +1,5 @@
 import { Grade } from "@mui/icons-material";
-import { Button, Divider, FormHelperText, Stack, Typography } from "@mui/material";
+import { Button, Divider, FormHelperText, ListSubheader, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import CustomConfirmation from "../../../components/framework/CustomConfirmation";
@@ -16,12 +16,13 @@ import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../..
 import { GRADEOFF_STORAGE_KEY } from "./constants-livestock.json";
 import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { useNavigate } from "react-router";
+import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
 
 interface GradeOffFormData extends FormData {
   job: string | number | null;
   event: string | number | null;
   postingDate: string;
-  quantity: number | null;
+  quantities: LivestockQuantity[];
   livestockWeight: number | null;
   comments: string;
 }
@@ -31,9 +32,9 @@ const defaultValues: GradeOffFormData = {
   job: null,
   event: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
-  quantity: null,
+  quantities: [],
   livestockWeight: null,
-  comments: "",
+  comments: ""
 };
 
 export default function GradeOffPage() {
@@ -43,6 +44,7 @@ export default function GradeOffPage() {
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const { saveForm } = useFormStorageStore();
   const [initLoading, setInitLoading] = useState(true);
+  const [eventReasons, setEventReasons] = useState<Reason[]>([]);
 
   const {
     register,
@@ -51,11 +53,16 @@ export default function GradeOffPage() {
     watch,
     setValue,
     getValues,
-    formState: { errors },
+    formState: { errors }
   } = useForm<GradeOffFormData>({
     defaultValues: defaultValues,
-    mode: "onSubmit",
+    mode: "onSubmit"
   });
+
+  useEffect(() => {
+    setEventReasons(eventTypes.find((et) => et.Code === watch("event"))?.Reasons || []);
+    setValue("quantities", []);
+  }, [watch("event")]);
 
   useEffect(() => {
     setInitLoading(true);
@@ -84,7 +91,7 @@ export default function GradeOffPage() {
         const error = {
           code: e.code || data.form + "_SUBMISSION_ERROR",
           message: e.message || "Unable to submit form. Please try again.",
-          details: e.details || JSON.stringify(e, null, 2),
+          details: e.details || JSON.stringify(e, null, 2)
         };
         navigate("/post-error", { state: { ...state, error } });
       })
@@ -99,8 +106,10 @@ export default function GradeOffPage() {
   };
 
   const handleReset = () => {
-    showConfirmation("Are you sure?", "This will reset all form fields to their default values.", () =>
-      reset(defaultValues)
+    showConfirmation(
+      "Are you sure?",
+      "This will reset all form fields to their default values.",
+      () => reset(defaultValues)
     );
   };
 
@@ -109,9 +118,16 @@ export default function GradeOffPage() {
       {initLoading && <LoadingSpinner />}
       {!initLoading && (
         <>
-          <CustomNotice<GradeOffFormData> formType={GRADEOFF_STORAGE_KEY} onLoad={(data) => reset(data)} />
+          <CustomNotice<GradeOffFormData>
+            formType={GRADEOFF_STORAGE_KEY}
+            onLoad={(data) => reset(data)}
+          />
           <CustomFormsLayout>
-            <CustomHeader icon={Grade} title="Grade Off" button={{ label: "reset", onClick: handleReset }} />
+            <CustomHeader
+              icon={Grade}
+              title="Grade Off"
+              button={{ label: "reset", onClick: handleReset }}
+            />
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={2}>
@@ -148,7 +164,7 @@ export default function GradeOffPage() {
                 <Stack>
                   <DatePicker
                     {...register("postingDate", {
-                      required: "Activity Date is required",
+                      required: "Activity Date is required"
                     })}
                     value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
                     onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
@@ -157,41 +173,36 @@ export default function GradeOffPage() {
                     helperText={errors.postingDate?.message}
                   />
                 </Stack>
-                <Divider />
-
                 {watch("event") && (
                   <>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                      Available Grade-Off Reasons
-                    </Typography>
-                    <Stack spacing={1}>
-                      {eventTypes
-                        .find((et) => et.Code === watch("event"))
-                        ?.Reasons?.map((reason) => (
-                          <Typography key={reason.Code} variant="body2">
-                            <strong>{reason.Code}:</strong> {reason.Description}
-                          </Typography>
-                        ))}
+                    <Stack spacing={2}>
+                      {eventReasons.map((reason, index) => {
+                        return (
+                          <TextField
+                            {...register(`quantities.${index}.quantity`, {
+                              valueAsNumber: true
+                            })}
+                            label={reason?.Description}
+                            placeholder="Quantity"
+                            type="number"
+                          />
+                        );
+                      })}
                     </Stack>
+                    <Divider />
+
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <Typography variant="subtitle2" sx={{ fontWeight: 300 }}>
+                        Total Quantity
+                      </Typography>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                        {watch("quantities")?.reduce((sum, q) => sum + (q?.quantity || 0), 0) ?? 0}
+                      </Typography>
+                    </Stack>
+
                     <Divider />
                   </>
                 )}
-
-                <Stack>
-                  <TextField
-                    placeholder="Total Quantity"
-                    type="number"
-                    {...register("quantity", {
-                      required: "Total quantity is required",
-                      min: {
-                        value: 1,
-                        message: "Quantity must be greater than 0",
-                      },
-                    })}
-                    error={!!errors.quantity}
-                    helperText={errors.quantity?.message}
-                  />
-                </Stack>
 
                 <Stack>
                   <TextField
@@ -199,8 +210,8 @@ export default function GradeOffPage() {
                       required: "Average weight per head is required",
                       min: {
                         value: 1,
-                        message: "Weight must be greater than 0",
-                      },
+                        message: "Weight must be greater than 0"
+                      }
                     })}
                     placeholder="Ave Weight / Head"
                     type="number"
@@ -213,8 +224,8 @@ export default function GradeOffPage() {
                   {...register("comments", {
                     maxLength: {
                       value: 50,
-                      message: "Comments cannot exceed 50 characters",
-                    },
+                      message: "Comments cannot exceed 50 characters"
+                    }
                   })}
                   placeholder="Comments"
                   type="text"

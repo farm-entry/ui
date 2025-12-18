@@ -1,3 +1,7 @@
+export interface LivestockQuantity {
+  code: string;
+  quantity: number | null;
+}
 export interface FormData {
   form: ActivityType;
 }

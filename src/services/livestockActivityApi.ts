@@ -5,60 +5,7 @@ import {
 } from "../store/types/livestockActivity";
 import { HandleError } from "./handleError";
 import { delay } from "./localConfig";
-
-
-const mockHealthStatuses: HealthStatus[] = [
-  {
-    "code": "GOOD",
-    "description": "Solid overall health",
-    "color": null,
-  },
-  {
-    "code": "GUT",
-    "description": "Gut, scours, prolapse",
-    "color": null,
-  },
-  {
-    "code": "LAME",
-    "description": "Structure, lameness",
-    "color": null,
-  },
-  {
-    "code": "MEDS",
-    "description": "Heavy use of antibiotics",
-    "color": null,
-  },
-  {
-    "code": "PERF",
-    "description": "Picture perfect health",
-    "color": null,
-  },
-  {
-    "code": "PFIN",
-    "description": "PRRS @ finisher",
-    "color": null,
-  },
-  {
-    "code": "PNUR",
-    "description": "PRRS @ nursery",
-    "color": null,
-  },
-  {
-    "code": "PSOW",
-    "description": "PRRS @ wean",
-    "color": null,
-  },
-  {
-    "code": "RESP",
-    "description": "Excessive coughing, respiratory",
-    "color": null,
-  },
-  {
-    "code": "VICE",
-    "description": "Tail, ear, and fighting",
-    "color": null,
-  }
-];
+import { mockHealthStatuses } from "./mock_data";
 
 class LivestockActivityApi {
   async postLivestockEvent(data: LivestockFormData): Promise<void> {
@@ -67,12 +14,12 @@ class LivestockActivityApi {
     const response = await fetch(
       `/api/livestock`,
       {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
       }
     );
 
@@ -128,7 +75,6 @@ class LivestockActivityApi {
     await delay(200);
     return mockHealthStatuses;
   }
-
 }
 
 export const livestockActivityApi = new LivestockActivityApi();
