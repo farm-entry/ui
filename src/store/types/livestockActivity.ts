@@ -1,5 +1,5 @@
 export interface FormData {
-  form: ActivityType
+  form: ActivityType;
 }
 
 export type ActivityType =
@@ -25,10 +25,15 @@ export interface Job {
   startQuantity?: number;
 }
 
+export interface Reason {
+  Code: string;
+  Description: string;
+}
 export interface EventType {
   Journal_Template_Name: ActivityType;
   Code: string;
   Description: string;
+  Reasons?: Reason[];
 }
 
 export interface HealthStatus {

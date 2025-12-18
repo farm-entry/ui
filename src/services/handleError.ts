@@ -7,6 +7,9 @@ export interface ApiError {
 
 // Function to redirect to login page
 const redirectToLogin = () => {
+    if(process.env.FRONTLINE_SKIP_AUTH === 'true') {
+        return;
+    }
     // Store the current URL for redirect after login
     const currentUrl = window.location.pathname + window.location.search;
     sessionStorage.setItem('redirectAfterLogin', currentUrl);

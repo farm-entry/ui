@@ -149,7 +149,7 @@ export default function WeanPage() {
               <Stack>
                 <TypeAhead
                   {...register("group", { required: "Group is required" })}
-                  handleChange={(v) => v && v.value && setValue("group", String(v.value))}
+                  handleChange={(v) => setValue("group", v?.value ? String(v.value) : null)}
                   watch={watch}
                   fieldName={"group"}
                   labelKey={"description"}
@@ -182,7 +182,7 @@ export default function WeanPage() {
                   {...register("healthStatus", {
                     required: "Health Status is required",
                   })}
-                  handleChange={(v) => v && v.value && setValue("healthStatus", String(v.value))}
+                  handleChange={(v) => setValue("healthStatus", v?.value ? String(v.value) : null)}
                   loading={postingGroupsLoading}
                   watch={watch}
                   valueList={healthStatuses}
@@ -207,7 +207,7 @@ export default function WeanPage() {
               <Stack>
                 <TypeAhead
                   {...register("event", { required: "Event is required" })}
-                  handleChange={(v) => v && v.value && setValue("event", v.value)}
+                  handleChange={(v) => setValue("event", v?.value ?? null)}
                   watch={watch}
                   fieldName={"event"}
                   labelKey={"Description"}

@@ -122,8 +122,16 @@ export default function MovePage() {
   };
 
   const setJob = (value: any, label: "fromJob" | "toJob") => {
-    const job = postingGroups.find((pg) => pg.number === value?.value);
-    if (job && value && value.value) {
+    if (!value || !value.value) {
+      // Clear the field
+      setValue(label, null);
+      setDeads({ ...deads, [label]: undefined } as any);
+      setInventory({ ...inventory, [label]: undefined } as any);
+      return;
+    }
+
+    const job = postingGroups.find((pg) => pg.number === value.value);
+    if (job) {
       setValue(label, value.value);
       setDeads({ ...deads, [label]: job.deadQuantity } as any);
       setInventory({ ...inventory, [label]: job.inventory } as any);
@@ -196,7 +204,7 @@ export default function MovePage() {
                 <Stack>
                   <TypeAhead
                     {...register("event", { required: "Event is required" })}
-                    handleChange={(v) => v && v.value && setValue("event", v.value)}
+                    handleChange={(v) => setValue("event", v?.value ?? null)}
                     watch={watch}
                     fieldName={"event"}
                     labelKey={"Description"}

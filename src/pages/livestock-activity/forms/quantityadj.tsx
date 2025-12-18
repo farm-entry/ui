@@ -117,7 +117,7 @@ export default function QuantityAdjustmentPage() {
                 <Stack>
                   <TypeAhead
                     {...register("job", { required: "Job is required" })}
-                    handleChange={(v) => v && v.value && setValue("job", v.value)}
+                    handleChange={(v) => setValue("job", v?.value ?? null)}
                     watch={watch}
                     fieldName={"job"}
                     labelKey={"description"}
@@ -133,7 +133,7 @@ export default function QuantityAdjustmentPage() {
                 <Stack>
                   <TypeAhead
                     {...register("event", { required: "Event is required" })}
-                    handleChange={(v) => v && v.value && setValue("event", v.value)}
+                    handleChange={(v) => setValue("event", v?.value ?? null)}
                     watch={watch}
                     fieldName={"event"}
                     labelKey={"Description"}
