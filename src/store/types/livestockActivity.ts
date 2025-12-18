@@ -30,14 +30,14 @@ export interface Job {
 }
 
 export interface Reason {
-  Code: string;
-  Description: string;
+  code: string;
+  description: string;
 }
 export interface EventType {
-  Journal_Template_Name: ActivityType;
-  Code: string;
-  Description: string;
-  Reasons?: Reason[];
+  journal_template_name?: ActivityType;
+  code: string;
+  description: string;
+  reasons?: Reason[];
 }
 
 export interface HealthStatus {

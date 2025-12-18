@@ -136,11 +136,7 @@ Zustand stores manage:
 - Form storage and restoration
 - Global UI state (confirmations, notifications)
 
-## Development Guidelines
+## Development Notes
 
-- Forms use `number | null` for numeric fields (never `number | ""`)
-- All livestock forms follow the same template structure
-- TypeAhead clear functionality uses `v?.value ?? null` pattern
-- Form data is validated against GraphQL schema types
 - Use `formatDateToYYYYMMDDNoTimestamp` and `parseYYYYMMDDToLocalDate` for consistent date handling
 

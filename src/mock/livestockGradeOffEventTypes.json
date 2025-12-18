@@ -1,0 +1,92 @@
+[
+  {
+    "code": "FE-MKTPIG",
+    "description": "Grade-off Feeder Pigs at Move",
+    "reasons": [
+      {
+        "code": "GR-ADJUST",
+        "description": "Inventory Count Adjustment"
+      },
+      {
+        "code": "GR-BRUPT",
+        "description": "Belly Rupture"
+      },
+      {
+        "code": "GR-DOA",
+        "description": "Dead On Arrival"
+      },
+      {
+        "code": "GR-LAME",
+        "description": "Lame / Swollen Joints"
+      },
+      {
+        "code": "GR-PALE",
+        "description": "Pale / Anemic"
+      },
+      {
+        "code": "GR-RESP",
+        "description": "Strep / Respiratory"
+      },
+      {
+        "code": "GR-SCOURS",
+        "description": "Scours"
+      },
+      {
+        "code": "GR-SMALL",
+        "description": "Smalls"
+      },
+      {
+        "code": "GR-SRUPT",
+        "description": "Scrotum Rupture"
+      },
+      {
+        "code": "GR-UNTHRIF",
+        "description": "Unthrifty"
+      }
+    ],
+    "journal_template_name": "GRADEOFF"
+  },
+  {
+    "code": "FE-WEANNUR",
+    "description": "Wean Pig (non-inventory) Grade-offs",
+    "journal_template_name": "GRADEOFF",
+    "reasons": [
+      {
+        "code": "GR-BRUPT",
+        "description": "Belly Rupture"
+      },
+      {
+        "code": "GR-DOA",
+        "description": "Dead On Arrival"
+      },
+      {
+        "code": "GR-LAME",
+        "description": "Lame / Swollen Joints"
+      },
+      {
+        "code": "GR-PALE",
+        "description": "Pale / Anemic"
+      },
+      {
+        "code": "GR-RESP",
+        "description": "Strep / Respiratory"
+      },
+      {
+        "code": "GR-SCOURS",
+        "description": "Scours"
+      },
+      {
+        "code": "GR-SMALL",
+        "description": "Smalls"
+      },
+      {
+        "code": "GR-SRUPT",
+        "description": "Scrotum Rupture"
+      },
+      {
+        "code": "GR-UNTHRIF",
+        "description": "Unthrifty"
+      }
+    ]
+  }
+]

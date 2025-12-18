@@ -75,7 +75,7 @@ export default function WeanPage() {
     setInitLoading(true);
     const promises = [];
     if (
-      !(eventTypes.length > 0 && eventTypes[0].Journal_Template_Name === "WEAN")
+      !(eventTypes.length > 0 && eventTypes[0].journal_template_name === "WEAN")
     )
       promises.push(getEventTypes("WEAN"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());

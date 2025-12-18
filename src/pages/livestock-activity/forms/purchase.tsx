@@ -62,7 +62,7 @@ export default function PurchasePage() {
   useEffect(() => {
     setInitLoading(true);
     const promises = [];
-    if (!(eventTypes.length > 0 && eventTypes[0].Journal_Template_Name == "PURCHASE")) promises.push(getEventTypes("PURCHASE"));
+    if (!(eventTypes.length > 0 && eventTypes[0].journal_template_name == "PURCHASE")) promises.push(getEventTypes("PURCHASE"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
 
     Promise.all(promises).then(() => {

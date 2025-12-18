@@ -80,7 +80,7 @@ export default function MovePage() {
   useEffect(() => {
     setInitLoading(true);
     const promises = [];
-    if (!(eventTypes.length > 0 && eventTypes[0].Journal_Template_Name == "MOVE")) promises.push(getEventTypes("MOVE"));
+    if (!(eventTypes.length > 0 && eventTypes[0].journal_template_name == "MOVE")) promises.push(getEventTypes("MOVE"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
 
     Promise.all(promises).then(() => {
