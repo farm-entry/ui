@@ -27,6 +27,9 @@ export default function QRScanner() {
       { returnDetailedScanResult: true }
     );
     qrScannerRef.current = qrScanner;
+
+    handleStart();
+
     return () => {
       qrScanner.destroy();
       qrScannerRef.current = null;
@@ -40,7 +43,8 @@ export default function QRScanner() {
     try {
       await qrScannerRef.current?.start();
     } catch (err: any) {
-      setError(err?.message || "Could not start scanner");
+      const error = typeof err === "string" ? err : err?.message || "Could not start scanner";
+      setError(error);
       setScanning(false);
     }
   };
@@ -76,7 +80,7 @@ export default function QRScanner() {
           )}
           {error && (
             <Typography color="error" variant="body2">
-              {error}
+              Error: {error}
             </Typography>
           )}
         </Stack>

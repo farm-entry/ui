@@ -13,59 +13,54 @@ const LEFTNAV_NAVIGATION: Navigation = [
   {
     title: "Home",
     icon: <Home />,
-    segment: "",
+    segment: ""
   },
   {
     title: "Livestock Activity",
     icon: <AgricultureIcon color="primary" sx={{ fontSize: 21 }} />,
-    segment: "livestock-activity",
+    segment: "livestock-activity"
     // description: "Track and manage livestock activities.",
   },
   {
     title: "Scorecards",
     icon: <AssessmentIcon color="primary" sx={{ fontSize: 21 }} />,
-    segment: "scorecards",
+    segment: "scorecards"
     // description: "View and manage scorecards.",
   },
   {
     title: "Fuel",
     icon: <LocalGasStationIcon color="primary" sx={{ fontSize: 21 }} />,
-    segment: "fuel",
+    segment: "fuel"
     // description: "Monitor fuel usage and logs.",
   },
   {
     title: "Maintenance",
     icon: <BuildIcon color="primary" sx={{ fontSize: 21 }} />,
-    segment: "maintenance",
+    segment: "maintenance"
     // description: "Schedule and review maintenance tasks.",
   },
   {
     title: "Inventory Consumption",
     icon: <InventoryIcon color="primary" sx={{ fontSize: 21 }} />,
-    segment: "inventory-consumption",
+    segment: "inventory-consumption"
     // description: "Track inventory consumption and usage.",
   },
   {
     title: "Job Header Updates",
     icon: <UpdateIcon color="primary" sx={{ fontSize: 21 }} />,
-    segment: "job-header-updates",
+    segment: "job-header-updates"
     // description: "Update job headers and details.",
   },
-  {
-    segment: "forminputs",
-    title: "Form Inputs",
-    icon: <ClipboardIcon />,
-  },
-  {
-    segment: "employees",
-    title: "Employees",
-    icon: <PersonIcon />,
-  },
+  // {
+  //   segment: "forminputs",
+  //   title: "Form Inputs",
+  //   icon: <ClipboardIcon />
+  // },
   {
     segment: "qrcode",
     title: "QR Scanner",
-    icon: <QrCode />,
-  },
+    icon: <QrCode />
+  }
 ];
 
 export default LEFTNAV_NAVIGATION;
