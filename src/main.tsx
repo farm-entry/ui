@@ -19,6 +19,8 @@ import QuantityAdjustmentPage from "./pages/livestock-activity/forms/quantityadj
 import WeanPage from "./pages/livestock-activity/forms/wean";
 import LivestockActivityLayout from "./pages/livestock-activity/layout";
 import MaintenancePage from "./pages/maintenance";
+import PostErrorPage from "./pages/post-error";
+import PostSuccessPage from "./pages/post-success";
 import QRScanner from "./pages/qrscanner";
 import ScorecardsPage from "./pages/scorecards";
 import SignIn from "./pages/signin";
@@ -128,6 +130,14 @@ const router = createBrowserRouter([
           {
             path: "qrcode",
             Component: QRScanner,
+          },
+          {
+            path: "post-success",
+            Component: PostSuccessPage,
+          },
+          {
+            path: "post-error",
+            Component: PostErrorPage,
           },
         ],
       },

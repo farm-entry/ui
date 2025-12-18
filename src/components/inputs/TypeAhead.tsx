@@ -1,45 +1,77 @@
-import { Autocomplete, FormControl, FormHelperText, TextField } from "@mui/material";
+import { Autocomplete, AutocompleteProps, FormControl, TextField } from "@mui/material";
 import * as React from "react";
+import { useMemo } from "react";
+import { UseFormWatch } from "react-hook-form";
 
 export interface TypeAheadOption {
   label: string;
   value: string | number;
+  disabled?: boolean;
 }
 
-export interface TypeAheadProps {
-  label: string;
-  options: TypeAheadOption[];
-  // value: TypeAheadOption | null;
-  onChange: (value: TypeAheadOption | null) => void;
-  helperText?: string;
+export interface TypeAheadProps<T = any> extends Omit<AutocompleteProps<TypeAheadOption, false, false, false>, "onChange" | "renderInput" | "options"> {
+  label?: string;
+  handleChange: (value: TypeAheadOption | null) => void;
   placeholder?: string;
-  freeSolo?: boolean /* Allow custom text input */;
+  watch: UseFormWatch<any>;
+  fieldName: any;
+  options?: T extends { [key: string]: any } ? T[] : any[];
+  valueList: T extends { [key: string]: any } ? T[] : any[];
+  labelKey: keyof T;
+  valueKey: keyof T;
+  defaultValue?: TypeAheadOption | null;
+  labelFormatter?: (item: T) => string;
 }
+
+// Memoize the selected group value
+const useTypeAheadValue = (props: TypeAheadProps): TypeAheadOption | null => {
+  const { watch, fieldName, valueList, labelKey, valueKey, defaultValue, labelFormatter } = props;
+  return useMemo(() => {
+    const fieldValue = watch(fieldName);
+
+    if (!fieldValue) {
+      return defaultValue || null;
+    }
+
+    const option = valueList.find((item) => item[valueKey] === fieldValue);
+    return option
+      ? ({
+          label: labelFormatter ? labelFormatter(option) : String(option[labelKey]),
+          value: option[valueKey],
+        } as TypeAheadOption)
+      : null;
+  }, [watch(fieldName), valueList, defaultValue]);
+};
 
 export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props, ref) => {
-  const { label, options, onChange, helperText, placeholder, freeSolo = false } = props;
+  const { watch, fieldName, valueList, options, labelKey, valueKey, defaultValue, handleChange, placeholder, labelFormatter, ...other } = props;
 
-  const handleChange = (_: any, newValue: string | TypeAheadOption | null) => {
+  const customChange = (_: any, newValue: TypeAheadOption | string | null) => {
     if (typeof newValue === "string") {
       // Handle free solo text input
-      onChange({ label: newValue, value: newValue });
+      console.log("Free solo input:", newValue);
+      handleChange({ label: newValue, value: newValue });
     } else {
       // Handle option selection
-      onChange(newValue);
+      handleChange(newValue);
     }
   };
+
+  const useValue = useTypeAheadValue(props);
 
   return (
     <FormControl fullWidth>
       <Autocomplete
-        {...props}
+        {...other}
         ref={ref}
-        options={options}
-        onChange={handleChange}
-        freeSolo={freeSolo}
-        renderInput={(params) => <TextField {...params} label={label} placeholder={placeholder} variant="outlined" />}
+        value={useValue}
+        onChange={customChange}
+        options={valueList.map((event) => ({
+          label: labelFormatter ? labelFormatter(event) : String(event[labelKey]),
+          value: event[valueKey],
+        }))}
+        renderInput={(params) => <TextField placeholder={placeholder} {...params} variant="outlined" label={props.label} />}
       />
-      {helperText && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
   );
 });

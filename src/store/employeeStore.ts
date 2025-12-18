@@ -1,4 +1,5 @@
 import { create, StateCreator } from 'zustand';
+import { devtools } from 'zustand/middleware';
 import { Employee } from '../data/employees';
 
 interface EmployeeState {
@@ -36,8 +37,9 @@ const INITIAL_EMPLOYEES: Employee[] = [
 
 type EmployeeStore = StateCreator<EmployeeState>;
 
-export const useEmployeeStore = create<EmployeeState>(
-  ((set: (fn: (state: EmployeeState) => EmployeeState) => void, get: () => EmployeeState) => ({
+export const useEmployeeStore = create<EmployeeState>()(
+  devtools(
+    ((set: (fn: (state: EmployeeState) => EmployeeState) => void, get: () => EmployeeState) => ({
     employees: INITIAL_EMPLOYEES,
     
     setEmployees: (employees: Employee[]) => 
@@ -64,5 +66,7 @@ export const useEmployeeStore = create<EmployeeState>(
       const state = get();
       return state.employees.reduce((max: number, employee: Employee) => Math.max(max, employee.id), 0) + 1;
     },
-  })) as EmployeeStore
+  })) as EmployeeStore,
+    { name: "EmployeeStore" }
+  )
 );

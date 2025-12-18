@@ -1,16 +1,9 @@
 import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import type { ConfirmationState } from "./types/confirmation";
 
-interface ConfirmationState {
-  open: boolean;
-  title: string;
-  message: string;
-  onConfirm: (() => void) | null;
-  showConfirmation: (title: string, message: string, onConfirm: () => void) => void;
-  handleConfirm: () => void;
-  handleCancel: () => void;
-}
-
-export const useConfirmationStore = create<ConfirmationState>((set, get) => ({
+export const useConfirmationStore = create<ConfirmationState>()(
+  devtools((set, get) => ({
   open: false,
   title: "",
   message: "",
@@ -31,4 +24,5 @@ export const useConfirmationStore = create<ConfirmationState>((set, get) => ({
   handleCancel: () => {
     set({ open: false, title: "", message: "", onConfirm: null });
   },
-}));
+}), { name: "ConfirmationStore" })
+);

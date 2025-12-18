@@ -25,7 +25,15 @@ export default function SignIn() {
         domain: "moglerfarms",
         menuOptions: [],
       });
-      navigate("/");
+      
+      // Check for stored redirect URL and navigate there, or default to home
+      const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+      if (redirectUrl) {
+        sessionStorage.removeItem('redirectAfterLogin'); // Clean up
+        navigate(redirectUrl);
+      } else {
+        navigate("/");
+      }
       return { type: "CredentialsSignin" as const };
     } catch (error) {
       return {
@@ -38,8 +46,8 @@ export default function SignIn() {
   return (
     <SignInPage
       slots={{
-        emailField: (props: any) => <TextField label="Username" {...register("username")} />,
-        passwordField: (props: any) => <TextField label="Password" type="password" {...register("password")} />,
+        emailField: (props: any) => <TextField label="Username" placeholder="Enter username" {...register("username")} />,
+        passwordField: (props: any) => <TextField label="Password" placeholder="Enter password" type="password" {...register("password")} />,
         submitButton: (props: any) => (
           <Button type="submit" variant="contained" fullWidth {...props} sx={{ mt: 2 }}>
             Sign In

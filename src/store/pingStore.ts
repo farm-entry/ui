@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 
 interface PingDataState {
   ping: string;
@@ -10,7 +11,8 @@ interface PingDataState {
   fetchPing: () => Promise<void>;
 }
 
-export const usePingStore = create<PingDataState>((set, get) => ({
+export const usePingStore = create<PingDataState>()(
+  devtools((set, get) => ({
   ping: "", // Initial state
   isLoading: false,
   error: null,
@@ -49,7 +51,8 @@ export const usePingStore = create<PingDataState>((set, get) => ({
         ...state, 
         error: error instanceof Error ? error.message : 'An error occurred',
         isLoading: false 
-      }));
+      });
     }
   }
-}));
+}), { name: "PingStore" })
+);

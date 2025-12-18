@@ -1,18 +1,273 @@
-import * as React from "react";
-import { Typography, Box } from "@mui/material";
-import { ReportProblem } from "@mui/icons-material";
+import { Dangerous } from "@mui/icons-material";
+import { Button, Divider, FormHelperText, Stack, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
+import CustomConfirmation from "../../../components/framework/CustomConfirmation";
+import CustomHeader from "../../../components/framework/CustomHeader";
+import CustomNotice from "../../../components/framework/CustomNotice";
+import LoadingSpinner from "../../../components/framework/LoadingSpinner";
+import { DatePicker, EventNumberInput, TextArea, TypeAhead } from "../../../components/inputs";
 import CustomFormsLayout from "../../../layouts/forms";
+import { livestockActivityApi } from "../../../services/livestockActivityApi";
+import { useConfirmationStore } from "../../../store/confirmationStore";
+import { useFormStorageStore } from "../../../store/formStorageStore";
+import { FormData, useLivestockActivityStore } from "../../../store/livestockActivityStore";
+import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import type { EventType } from "../../../store/types/livestockActivity";
+import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
+import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
+import { MORTALITY_STORAGE_KEY } from "./constants-livestock.json";
+
+interface MortalityFormData extends FormData {
+  job: string | number | null;
+  healthStatus: string | number | null;
+  postingDate: string;
+  quantities: LivestockQuantity[];
+  comments: string;
+}
+
+const defaultValues: MortalityFormData = {
+  form: "MORTALITY",
+  job: null,
+  healthStatus: null,
+  postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
+  quantities: [],
+  comments: ""
+};
 
 export default function MortalityPage() {
+  const navigate = useNavigate();
+  const {
+    getPostingGroups,
+    postingGroups,
+    getPostingGroupDetails,
+    postingGroupDetails,
+    isLoading: postingGroupsLoading
+  } = usePostingGroupsStore();
+  const {
+    getEventTypes,
+    eventTypes,
+    healthStatuses,
+    getHealthStatuses,
+    isLoading: livestockActivityLoading
+  } = useLivestockActivityStore();
+  const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
+  const { saveForm } = useFormStorageStore();
+  const [initLoading, setInitLoading] = useState(true);
+  const [eventReasons, setEventReasons] = useState<Reason[]>([]);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    getValues,
+    formState: { errors }
+  } = useForm<MortalityFormData>({
+    defaultValues: defaultValues,
+    mode: "onSubmit"
+  });
+
+  useEffect(() => {
+    const job = watch("job");
+    job && getPostingGroupDetails(job);
+  }, [watch("job")]);
+
+  useEffect(() => {
+    setInitLoading(true);
+    const promises = [];
+    if (!(eventTypes.length > 0 && eventTypes[0].journal_template_name == "MORTALITY"))
+      promises.push(getEventTypes("MORTALITY").then((x) => setEventReasons(filterEventReasons(x))));
+    else {
+      setEventReasons(filterEventReasons(eventTypes));
+    }
+    if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
+    if (!(healthStatuses.length > 0)) promises.push(getHealthStatuses());
+
+    Promise.all(promises).then(() => {
+      setInitLoading(false);
+    });
+  }, []);
+
+  const filterEventReasons = (ev: EventType[] = []) =>
+    ev?.find((et) => et.code === "MORTALITY")?.reasons || [];
+
+  const onSubmit = async (data: MortalityFormData) => {
+    console.log("All required fields validated successfully!");
+    setInitLoading(true);
+    const state = { formData: data, section: "livestock-activity" };
+    livestockActivityApi
+      .postLivestockEvent(data)
+      .then(() => { navigate("/post-success", { state }) })
+      .catch((e: any) => {
+        console.error("Unable to post form.");
+        const error = {
+          code: e.code || data.form + "_SUBMISSION_ERROR",
+          message: e.message || "Unable to submit form. Please try again.",
+          details: e.details || JSON.stringify(e, null, 2)
+        };
+        navigate("/post-error", { state: { ...state, error } });
+      })
+      .finally(() => {
+        setInitLoading(false);
+      });
+  };
+
+  const onSave = () => {
+    const formData = getValues();
+    saveForm(MORTALITY_STORAGE_KEY, formData, 48);
+  };
+
+  const handleReset = () => {
+    showConfirmation(
+      "Are you sure?",
+      "This will reset all form fields to their default values.",
+      () => reset(defaultValues)
+    );
+  };
+
   return (
-    <CustomFormsLayout>
-      <ReportProblem sx={{ fontSize: 64, mb: 2 }} color="primary" />
-      <Typography variant="h4" gutterBottom>
-        Mortality
-      </Typography>
-      <Typography variant="body1">
-        Record livestock mortality and health issues.
-      </Typography>
-    </CustomFormsLayout>
+    <>
+      {initLoading && <LoadingSpinner />}
+      {!initLoading && (
+        <>
+          <CustomNotice<MortalityFormData>
+            formType={MORTALITY_STORAGE_KEY}
+            onLoad={(data) => reset(data)}
+          />
+          <CustomFormsLayout>
+            <CustomHeader
+              icon={Dangerous}
+              title="Mortality"
+              button={{ label: "reset", onClick: handleReset }}
+            />
+
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <Stack spacing={2}>
+                <Stack>
+                  <TypeAhead
+                    {...register("job", { required: "Job is required" })}
+                    handleChange={(v) => setValue("job", v?.value ?? null)}
+                    watch={watch}
+                    fieldName={"job"}
+                    labelKey={"description"}
+                    valueKey={"number"}
+                    valueList={postingGroups}
+                    loading={postingGroupsLoading}
+                    placeholder="Job"
+                  />
+                  {errors.job && <FormHelperText error>{errors.job.message}</FormHelperText>}
+                </Stack>
+
+                <Stack>
+                  <TypeAhead
+                    {...register("healthStatus", {
+                      required: "Health Status is required"
+                    })}
+                    handleChange={(v) =>
+                      setValue("healthStatus", v?.value ? String(v.value) : null)
+                    }
+                    loading={postingGroupsLoading}
+                    watch={watch}
+                    valueList={healthStatuses}
+                    fieldName={"healthStatus"}
+                    labelKey={"description"}
+                    valueKey={"code"}
+                    defaultValue={
+                      postingGroupDetails?.healthStatus?.Code
+                        ? {
+                            label: postingGroupDetails.healthStatus.Description,
+                            value: postingGroupDetails.healthStatus.Code
+                          }
+                        : null
+                    }
+                    placeholder={
+                      (postingGroupDetails && postingGroupDetails.healthStatus?.Description) ||
+                      healthStatuses.length
+                        ? "Health Status"
+                        : "Select a valid job"
+                    }
+                  />
+                  {errors.healthStatus && (
+                    <FormHelperText error>{errors.healthStatus.message}</FormHelperText>
+                  )}
+                </Stack>
+
+                <Divider />
+                <Typography>Event Details</Typography>
+                <Stack>
+                  <DatePicker
+                    {...register("postingDate", {
+                      required: "Activity Date is required"
+                    })}
+                    value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
+                    onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
+                    label="Activity Date"
+                    error={!!errors.postingDate}
+                    helperText={errors.postingDate?.message}
+                  />
+                </Stack>
+
+                <Stack spacing={2}>
+                  {eventReasons.map((reason, index) => (
+                    <EventNumberInput
+                      key={reason.code}
+                      codeRegistration={{
+                        ...register(`quantities.${index}.code`),
+                        value: reason.code
+                      }}
+                      quantityRegistration={register(`quantities.${index}.quantity`, {
+                        valueAsNumber: true
+                      })}
+                      value={watch("quantities")?.[index]?.quantity || ""}
+                      label={reason?.description}
+                      placeholder="Quantity"
+                      type="number"
+                    />
+                  ))}
+                </Stack>
+                <Divider />
+
+                <Stack direction="row" spacing={2} alignItems="center">
+                  <Typography variant="subtitle2" sx={{ fontWeight: 300 }}>
+                    Total Quantity
+                  </Typography>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                    {watch("quantities")?.reduce((sum, q) => sum + (q?.quantity || 0), 0) ?? 0}
+                  </Typography>
+                </Stack>
+
+                <Divider />
+
+                <TextArea
+                  {...register("comments", {
+                    maxLength: {
+                      value: 50,
+                      message: "Comments cannot exceed 50 characters"
+                    }
+                  })}
+                  placeholder="Comments"
+                  type="text"
+                  error={!!errors.comments}
+                  helperText={errors.comments?.message}
+                />
+                <Stack direction="row" spacing={2} justifyContent="flex-end">
+                  <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
+                    Save
+                  </Button>
+                  <Button variant="contained" color="primary" fullWidth type="submit">
+                    Submit
+                  </Button>
+                </Stack>
+              </Stack>
+            </form>
+
+            <CustomConfirmation />
+          </CustomFormsLayout>
+        </>
+      )}
+    </>
   );
 }
