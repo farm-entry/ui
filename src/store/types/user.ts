@@ -14,3 +14,10 @@ export interface UserType {
   domain: DomainType;
   menuOptions: MenuOption[];
 }
+
+export interface UserAbbreviatedType {
+  User_Security_ID: string;
+  User_Name: string;
+  License_Type: string;
+  Full_Name: string;
+}
