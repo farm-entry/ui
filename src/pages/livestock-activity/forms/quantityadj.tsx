@@ -62,7 +62,7 @@ export default function QuantityAdjustmentPage() {
   useEffect(() => {
     setInitLoading(true);
     const promises = [];
-    if (!(eventTypes.length > 0 && eventTypes[0].Journal_Template_Name == "QTYADJ")) promises.push(getEventTypes("QTYADJ"));
+    if (!(eventTypes.length > 0 && eventTypes[0].journal_template_name == "QTYADJ")) promises.push(getEventTypes("QTYADJ"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
 
     Promise.all(promises).then(() => {

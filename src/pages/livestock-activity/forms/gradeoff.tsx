@@ -6,7 +6,13 @@ import CustomConfirmation from "../../../components/framework/CustomConfirmation
 import CustomHeader from "../../../components/framework/CustomHeader";
 import CustomNotice from "../../../components/framework/CustomNotice";
 import LoadingSpinner from "../../../components/framework/LoadingSpinner";
-import { DatePicker, TextArea, TextField, TypeAhead } from "../../../components/inputs";
+import {
+  DatePicker,
+  EventNumberInput,
+  TextArea,
+  TextField,
+  TypeAhead
+} from "../../../components/inputs";
 import CustomFormsLayout from "../../../layouts/forms";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
@@ -20,6 +26,7 @@ import { LivestockQuantity, Reason } from "../../../store/types/livestockActivit
 
 interface GradeOffFormData extends FormData {
   job: string | number | null;
+  healthStatus: string | number | null;
   event: string | number | null;
   postingDate: string;
   quantities: LivestockQuantity[];
@@ -30,6 +37,7 @@ interface GradeOffFormData extends FormData {
 const defaultValues: GradeOffFormData = {
   form: "GRADEOFF",
   job: null,
+  healthStatus: null,
   event: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
   quantities: [],
@@ -39,8 +47,20 @@ const defaultValues: GradeOffFormData = {
 
 export default function GradeOffPage() {
   const navigate = useNavigate();
-  const { getPostingGroups, postingGroups } = usePostingGroupsStore();
-  const { getEventTypes, eventTypes } = useLivestockActivityStore();
+  const {
+    getPostingGroups,
+    postingGroups,
+    getPostingGroupDetails,
+    postingGroupDetails,
+    isLoading: postingGroupsLoading
+  } = usePostingGroupsStore();
+  const {
+    getEventTypes,
+    eventTypes,
+    healthStatuses,
+    getHealthStatuses,
+    isLoading: livestockActivityLoading
+  } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const { saveForm } = useFormStorageStore();
   const [initLoading, setInitLoading] = useState(true);
@@ -60,18 +80,24 @@ export default function GradeOffPage() {
   });
 
   useEffect(() => {
-    setEventReasons(eventTypes.find((et) => et.Code === watch("event"))?.Reasons || []);
+    setEventReasons(eventTypes.find((et) => et.code === watch("event"))?.reasons || []);
     setValue("quantities", []);
   }, [watch("event")]);
 
   useEffect(() => {
+    const job = watch("job");
+    job && getPostingGroupDetails(job);
+  }, [watch("job")]);
+
+  useEffect(() => {
     setInitLoading(true);
     const promises = [];
-    if (!(eventTypes.length > 0 && eventTypes[0].Journal_Template_Name == "GRADEOFF"))
+    if (!(eventTypes.length > 0 && eventTypes[0].journal_template_name == "GRADEOFF"))
       promises.push(getEventTypes("GRADEOFF"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
+    if (!(healthStatuses.length > 0)) promises.push(getHealthStatuses());
 
-    Promise.all(promises).then(() => {
+    Promise.all(promises).finally(() => {
       setInitLoading(false);
     });
   }, []);
@@ -140,9 +166,44 @@ export default function GradeOffPage() {
                     labelKey={"description"}
                     valueKey={"number"}
                     valueList={postingGroups}
+                    loading={postingGroupsLoading}
                     placeholder="Job"
                   />
                   {errors.job && <FormHelperText error>{errors.job.message}</FormHelperText>}
+                </Stack>
+
+                <Stack>
+                  <TypeAhead
+                    {...register("healthStatus", {
+                      required: "Health Status is required"
+                    })}
+                    handleChange={(v) =>
+                      setValue("healthStatus", v?.value ? String(v.value) : null)
+                    }
+                    loading={postingGroupsLoading}
+                    watch={watch}
+                    valueList={healthStatuses}
+                    fieldName={"healthStatus"}
+                    labelKey={"description"}
+                    valueKey={"code"}
+                    defaultValue={
+                      postingGroupDetails?.healthStatus?.Code
+                        ? {
+                            label: postingGroupDetails.healthStatus.Description,
+                            value: postingGroupDetails.healthStatus.Code
+                          }
+                        : null
+                    }
+                    placeholder={
+                      (postingGroupDetails && postingGroupDetails.healthStatus?.Description) ||
+                      healthStatuses.length
+                        ? "Health Status"
+                        : "Select a valid job"
+                    }
+                  />
+                  {errors.healthStatus && (
+                    <FormHelperText error>{errors.healthStatus.message}</FormHelperText>
+                  )}
                 </Stack>
 
                 <Divider />
@@ -153,8 +214,8 @@ export default function GradeOffPage() {
                     handleChange={(v) => setValue("event", v?.value ?? null)}
                     watch={watch}
                     fieldName={"event"}
-                    labelKey={"Description"}
-                    valueKey={"Code"}
+                    labelKey={"description"}
+                    valueKey={"code"}
                     valueList={eventTypes}
                     placeholder="Event Name"
                   />
@@ -176,18 +237,22 @@ export default function GradeOffPage() {
                 {watch("event") && (
                   <>
                     <Stack spacing={2}>
-                      {eventReasons.map((reason, index) => {
-                        return (
-                          <TextField
-                            {...register(`quantities.${index}.quantity`, {
-                              valueAsNumber: true
-                            })}
-                            label={reason?.Description}
-                            placeholder="Quantity"
-                            type="number"
-                          />
-                        );
-                      })}
+                      {eventReasons.map((reason, index) => (
+                        <EventNumberInput
+                          key={reason.code}
+                          codeRegistration={{
+                            ...register(`quantities.${index}.code`),
+                            value: reason.code
+                          }}
+                          quantityRegistration={register(`quantities.${index}.quantity`, {
+                            valueAsNumber: true
+                          })}
+                          value={watch("quantities")?.[index]?.quantity || ""}
+                          label={reason?.description}
+                          placeholder="Quantity"
+                          type="number"
+                        />
+                      ))}
                     </Stack>
                     <Divider />
 

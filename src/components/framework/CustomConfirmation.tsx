@@ -5,13 +5,17 @@ export default function CustomConfirmation() {
   const { open, title, message, handleConfirm, handleCancel } = useConfirmationStore();
 
   return (
-    <Dialog open={open} onClose={handleCancel}>
+    <Dialog 
+      open={open} 
+      onClose={handleCancel}
+      disableRestoreFocus
+    >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <DialogContentText>{message}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCancel}>Cancel</Button>
+        <Button onClick={handleCancel} autoFocus>Cancel</Button>
         <Button onClick={handleConfirm} color="error" variant="contained">
           Confirm
         </Button>

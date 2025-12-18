@@ -5,49 +5,40 @@ import {
 } from "../store/types/livestockActivity";
 import { HandleError } from "./handleError";
 import { delay } from "./localConfig";
-import { mockHealthStatuses } from "./mock_data";
+import { mockHealthStatuses, mockLivestockGradeOffEventTypes, mockLivestockMortalityEventTypes } from "../mock";
 
 class LivestockActivityApi {
   async postLivestockEvent(data: LivestockFormData): Promise<void> {
     console.log({ data });
     console.log({ data: JSON.stringify(data) });
-    const response = await fetch(
-      `/api/livestock`,
-      {
+    const response = await fetch(`/api/livestock`, {
       method: "POST",
       credentials: "include",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify(data),
-      }
-    );
+      body: JSON.stringify(data)
+    });
 
     if (!response.ok) {
-      await new HandleError().handleApiError(
-        response,
-        "LivestockActivityApi.postLivestockEvent"
-      );
+      await new HandleError().handleApiError(response, "LivestockActivityApi.postLivestockEvent");
     }
   }
 
   async fetchEventTypes(template: string): Promise<EventType[]> {
+    if (template === "MORTALITY") return mockLivestockMortalityEventTypes;
+    if (template === "GRADEOFF") return mockLivestockGradeOffEventTypes as EventType[];
+
     try {
       console.log("Fetching event types from API...");
 
-      const response = await fetch(
-        `/api/livestock/events?template=${template}`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`/api/livestock/events?template=${template}`, {
+        method: "GET",
+        credentials: "include"
+      });
 
       if (!response.ok) {
-        await new HandleError().handleApiError(
-          response,
-          "LivestockActivityApi.fetchEventTypes"
-        );
+        await new HandleError().handleApiError(response, "LivestockActivityApi.fetchEventTypes");
       }
 
       const data: any[] = await response.json();

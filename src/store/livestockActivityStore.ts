@@ -3,10 +3,10 @@ import { devtools } from "zustand/middleware";
 import { livestockActivityApi as api } from "../services/livestockActivityApi";
 import type {
   ActivityType,
-  Job,
   EventType,
-  HealthStatus,
   FormData,
+  HealthStatus,
+  Job
 } from "./types/livestockActivity";
 
 // Re-export FormData for components
@@ -45,11 +45,12 @@ export const useLivestockActivityStore = create<LivestockActivityStore>()(
       healthStatuses: [],
 
       //get data
-      getEventTypes: async (template: ActivityType) => {
+      getEventTypes: async (template: ActivityType): Promise<EventType[] | undefined> => {
+        console.log(`Fetching event types for template: ${template}`);
         try {
           if (
             get().eventTypes.length === 0 ||
-            get().eventTypes[0].Journal_Template_Name !== template
+            get().eventTypes[0].journal_template_name !== template
           ) {
             // Set loading state
             set({ isLoading: true, error: null });
@@ -61,7 +62,7 @@ export const useLivestockActivityStore = create<LivestockActivityStore>()(
             set((state) => ({
               ...state,
               eventTypes,
-              isLoading: false,
+              isLoading: false
             }));
           }
           return get().eventTypes;
@@ -70,7 +71,7 @@ export const useLivestockActivityStore = create<LivestockActivityStore>()(
           set((state) => ({
             ...state,
             error: error instanceof Error ? error.message : "An error occurred",
-            isLoading: false,
+            isLoading: false
           }));
         }
       },
@@ -87,7 +88,7 @@ export const useLivestockActivityStore = create<LivestockActivityStore>()(
             set((state) => ({
               ...state,
               healthStatuses,
-              isLoading: false,
+              isLoading: false
             }));
           }
           return get().healthStatuses;
@@ -96,7 +97,7 @@ export const useLivestockActivityStore = create<LivestockActivityStore>()(
           set((state) => ({
             ...state,
             error: error instanceof Error ? error.message : "An error occurred",
-            isLoading: false,
+            isLoading: false
           }));
         }
       },
@@ -110,7 +111,7 @@ export const useLivestockActivityStore = create<LivestockActivityStore>()(
 
       // Error handling
       error: null,
-      setError: (error) => set({ error }),
+      setError: (error) => set({ error })
     }),
     { name: "LivestockActivityStore" }
   )

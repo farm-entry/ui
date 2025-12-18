@@ -1,0 +1,16 @@
+[
+  {
+    "code": "MORTALITY",
+    "description": "Livestock Mortality",
+    "reasons": [
+      {
+        "code": "DEAD-EUTH",
+        "description": "Dead Euthanized"
+      },
+      {
+        "code": "DEAD-NAT",
+        "description": "Dead Natural Causes"
+      }
+    ]
+  }
+]
