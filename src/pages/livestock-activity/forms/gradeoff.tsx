@@ -16,13 +16,14 @@ import {
 import CustomFormsLayout from "../../../layouts/forms";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
-import { FormData, useLivestockActivityStore } from "../../../store/livestockActivityStore";
+import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { GRADEOFF_STORAGE_KEY } from "./constants-livestock.json";
 import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { useNavigate } from "react-router";
 import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
+import { FormData } from "../../../store/types/livestockActivity";
 
 interface GradeOffFormData extends FormData {
   job: string | number | null;
@@ -55,11 +56,11 @@ export default function GradeOffPage() {
     isLoading: postingGroupsLoading
   } = usePostingGroupsStore();
   const {
-    getEventTypes,
+    getEvents,
     eventTypes,
     healthStatuses,
-    getHealthStatuses,
-    isLoading: livestockActivityLoading
+    isLoading: livestockActivityLoading,
+    currentTemplate
   } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const { saveForm } = useFormStorageStore();
@@ -92,10 +93,9 @@ export default function GradeOffPage() {
   useEffect(() => {
     setInitLoading(true);
     const promises = [];
-    if (!(eventTypes.length > 0 && eventTypes[0].journal_template_name == "GRADEOFF"))
-      promises.push(getEventTypes("GRADEOFF"));
+    if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "GRADEOFF"))
+      promises.push(getEvents("GRADEOFF"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
-    if (!(healthStatuses.length > 0)) promises.push(getHealthStatuses());
 
     Promise.all(promises).finally(() => {
       setInitLoading(false);

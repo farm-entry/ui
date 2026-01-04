@@ -25,9 +25,9 @@ class LivestockActivityApi {
     }
   }
 
-  async fetchEventTypes(template: string): Promise<EventType[]> {
-    if (template === "MORTALITY") return mockLivestockMortalityEventTypes;
-    if (template === "GRADEOFF") return mockLivestockGradeOffEventTypes as EventType[];
+  async fetchEventTypes(template: string): Promise<{ journals: EventType[], healthStatuses: HealthStatus[] }> {
+    if (template === "MORTALITY") return { journals: mockLivestockMortalityEventTypes, healthStatuses: mockHealthStatuses };
+    if (template === "GRADEOFF") return { journals: mockLivestockGradeOffEventTypes as EventType[], healthStatuses: mockHealthStatuses };
 
     try {
       console.log("Fetching event types from API...");
@@ -41,7 +41,7 @@ class LivestockActivityApi {
         await new HandleError().handleApiError(response, "LivestockActivityApi.fetchEventTypes");
       }
 
-      const data: any[] = await response.json();
+      const data: { journals: EventType[], healthStatuses: HealthStatus[] } = await response.json();
 
       return data;
     } catch (error) {
@@ -62,10 +62,6 @@ class LivestockActivityApi {
     }
   }
 
-  async fetchHealthStatuses(): Promise<HealthStatus[]> {
-    await delay(200);
-    return mockHealthStatuses;
-  }
 }
 
 export const livestockActivityApi = new LivestockActivityApi();

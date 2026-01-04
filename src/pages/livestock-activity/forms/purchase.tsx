@@ -13,11 +13,12 @@ import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { PostingGroup } from "../../../services/postingGroupsApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
-import { FormData, useLivestockActivityStore } from "../../../store/livestockActivityStore";
+import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { PURCHASE_STORAGE_KEY } from "./constants-livestock.json";
 import { useNavigate } from "react-router";
+import { FormData } from "../../../store/types/livestockActivity";
 
 interface PurchaseFormData extends FormData {
   group: string | number | null;
@@ -39,19 +40,31 @@ const defaultValues: PurchaseFormData = {
   quantity: null,
   smallLivestockQuantity: null,
   totalWeight: null,
-  comments: "",
+  comments: ""
 };
 
 const columns = [
   { field: "postingGroup", headerName: "Posting Group", flex: 2 },
   { field: "inventory", headerName: "Inventory", flex: 1 },
-  { field: "deads", headerName: "Deads", flex: 1 },
+  { field: "deads", headerName: "Deads", flex: 1 }
 ];
 
 export default function PurchasePage() {
   const navigate = useNavigate();
-  const { isLoading: postingGroupsLoading, getPostingGroups, getPostingGroupDetails, postingGroups, postingGroupDetails } = usePostingGroupsStore();
-  const { getEventTypes, eventTypes, healthStatuses, getHealthStatuses, isLoading: livestockActivityLoading } = useLivestockActivityStore();
+  const {
+    isLoading: postingGroupsLoading,
+    getPostingGroups,
+    getPostingGroupDetails,
+    postingGroups,
+    postingGroupDetails
+  } = usePostingGroupsStore();
+  const {
+    getEvents,
+    eventTypes,
+    healthStatuses,
+    isLoading: livestockActivityLoading,
+    currentTemplate
+  } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const [deads, setDeads] = useState<{ group: number }>({ group: 0 });
   const [inventory, setInventory] = useState<{ group: number }>({ group: 0 });
@@ -65,21 +78,18 @@ export default function PurchasePage() {
     watch,
     setValue,
     getValues,
-    formState: { errors },
+    formState: { errors }
   } = useForm<PurchaseFormData>({
     defaultValues: defaultValues,
-    mode: "onSubmit",
+    mode: "onSubmit"
   });
 
   useEffect(() => {
     setInitLoading(true);
     const promises = [];
-    if (
-      !(eventTypes.length > 0 && eventTypes[0].journal_template_name === "PURCHASE")
-    )
-      promises.push(getEventTypes("PURCHASE"));
+    if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "PURCHASE"))
+      promises.push(getEvents("PURCHASE"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
-    if (!(healthStatuses.length > 0)) promises.push(getHealthStatuses());
 
     Promise.all(promises).then(() => setInitLoading(false));
   }, []);
@@ -99,7 +109,7 @@ export default function PurchasePage() {
     setInitLoading(true);
     const state = {
       formData: data,
-      section: "livestock-activity",
+      section: "livestock-activity"
     };
     livestockActivityApi
       .postLivestockEvent(data)
@@ -112,7 +122,7 @@ export default function PurchasePage() {
         const error = {
           code: e.code || data.form + "_SUBMISSION_ERROR",
           message: e.message || "Unable to submit form. Please try again.",
-          details: e.details || JSON.stringify(e, null, 2),
+          details: e.details || JSON.stringify(e, null, 2)
         };
         navigate("/post-error", { state: { ...state, error } });
       })
@@ -134,14 +144,20 @@ export default function PurchasePage() {
     );
   };
 
-  const formatLabel = (group: PostingGroup) =>
-    `${group.number} ${group.description}`;
+  const formatLabel = (group: PostingGroup) => `${group.number} ${group.description}`;
 
   return (
     <>
-      <CustomNotice<PurchaseFormData> formType={PURCHASE_STORAGE_KEY} onLoad={(data) => reset({ ...getValues(), ...data })} />
+      <CustomNotice<PurchaseFormData>
+        formType={PURCHASE_STORAGE_KEY}
+        onLoad={(data) => reset({ ...getValues(), ...data })}
+      />
       <CustomFormsLayout>
-        <CustomHeader icon={Celebration} title="Purchase" button={{ label: "reset", onClick: handleReset }} />
+        <CustomHeader
+          icon={Celebration}
+          title="Purchase"
+          button={{ label: "reset", onClick: handleReset }}
+        />
         {initLoading && <LoadingSpinner />}
         {!initLoading && (
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -170,8 +186,8 @@ export default function PurchasePage() {
                       name: "group",
                       postingGroup: watch("group"),
                       inventory: inventory.group,
-                      deads: deads.group,
-                    },
+                      deads: deads.group
+                    }
                   ]}
                   columns={columns}
                 />
@@ -180,7 +196,7 @@ export default function PurchasePage() {
               <Stack>
                 <TypeAhead
                   {...register("healthStatus", {
-                    required: "Health Status is required",
+                    required: "Health Status is required"
                   })}
                   handleChange={(v) => setValue("healthStatus", v?.value ? String(v.value) : null)}
                   loading={postingGroupsLoading}
@@ -193,13 +209,20 @@ export default function PurchasePage() {
                     postingGroupDetails?.healthStatus?.Code
                       ? {
                           label: postingGroupDetails.healthStatus.Description,
-                          value: postingGroupDetails.healthStatus.Code,
+                          value: postingGroupDetails.healthStatus.Code
                         }
                       : null
                   }
-                  placeholder={(postingGroupDetails && postingGroupDetails.healthStatus?.Description) || healthStatuses.length ? "Health Status" : "Select a valid group"}
+                  placeholder={
+                    (postingGroupDetails && postingGroupDetails.healthStatus?.Description) ||
+                    healthStatuses.length
+                      ? "Health Status"
+                      : "Select a valid group"
+                  }
                 />
-                {errors.healthStatus && <FormHelperText error>{errors.healthStatus.message}</FormHelperText>}
+                {errors.healthStatus && (
+                  <FormHelperText error>{errors.healthStatus.message}</FormHelperText>
+                )}
               </Stack>
 
               <Divider />
@@ -222,7 +245,7 @@ export default function PurchasePage() {
               <Stack>
                 <DatePicker
                   {...register("postingDate", {
-                    required: "Posting Date is required",
+                    required: "Posting Date is required"
                   })}
                   value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
                   onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
@@ -242,8 +265,8 @@ export default function PurchasePage() {
                       required: "Total quantity is required",
                       min: {
                         value: 1,
-                        message: "Quantity must be greater than 0",
-                      },
+                        message: "Quantity must be greater than 0"
+                      }
                     })}
                     error={!!errors.quantity}
                     helperText={errors.quantity?.message}
@@ -255,7 +278,7 @@ export default function PurchasePage() {
                     type="number"
                     {...register("smallLivestockQuantity", {
                       required: "Small livestock quantity is required",
-                      min: { value: 0, message: "Quantity cannot be negative" },
+                      min: { value: 0, message: "Quantity cannot be negative" }
                     })}
                     error={!!errors.smallLivestockQuantity}
                     helperText={errors.smallLivestockQuantity?.message}
@@ -267,7 +290,7 @@ export default function PurchasePage() {
                 <TextField
                   {...register("totalWeight", {
                     required: "Total weight is required",
-                    min: { value: 1, message: "Weight must be greater than 0" },
+                    min: { value: 1, message: "Weight must be greater than 0" }
                   })}
                   placeholder="Total Weight"
                   type="number"
@@ -277,7 +300,9 @@ export default function PurchasePage() {
               </Stack>
               <Divider />
               <TextArea
-                {...register("comments", { maxLength: { value: 50, message: "Comments cannot exceed 50 characters" } })}
+                {...register("comments", {
+                  maxLength: { value: 50, message: "Comments cannot exceed 50 characters" }
+                })}
                 placeholder="Comments"
                 type="text"
                 error={!!errors.comments}
