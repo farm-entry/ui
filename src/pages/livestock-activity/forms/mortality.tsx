@@ -12,12 +12,13 @@ import CustomFormsLayout from "../../../layouts/forms";
 import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
-import { FormData, useLivestockActivityStore } from "../../../store/livestockActivityStore";
+import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import type { EventType } from "../../../store/types/livestockActivity";
 import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { MORTALITY_STORAGE_KEY } from "./constants-livestock.json";
+import { FormData } from "../../../store/types/livestockActivity";
 
 interface MortalityFormData extends FormData {
   job: string | number | null;
@@ -46,11 +47,11 @@ export default function MortalityPage() {
     isLoading: postingGroupsLoading
   } = usePostingGroupsStore();
   const {
-    getEventTypes,
+    getEvents,
     eventTypes,
     healthStatuses,
-    getHealthStatuses,
-    isLoading: livestockActivityLoading
+    isLoading: livestockActivityLoading,
+    currentTemplate
   } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const { saveForm } = useFormStorageStore();
@@ -78,13 +79,12 @@ export default function MortalityPage() {
   useEffect(() => {
     setInitLoading(true);
     const promises = [];
-    if (!(eventTypes.length > 0 && eventTypes[0].journal_template_name == "MORTALITY"))
-      promises.push(getEventTypes("MORTALITY").then((x) => setEventReasons(filterEventReasons(x))));
+    if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "MORTALITY"))
+      promises.push(getEvents("MORTALITY").then((x) => setEventReasons(filterEventReasons(x?.journals))));
     else {
       setEventReasons(filterEventReasons(eventTypes));
     }
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
-    if (!(healthStatuses.length > 0)) promises.push(getHealthStatuses());
 
     Promise.all(promises).then(() => {
       setInitLoading(false);
@@ -100,7 +100,9 @@ export default function MortalityPage() {
     const state = { formData: data, section: "livestock-activity" };
     livestockActivityApi
       .postLivestockEvent(data)
-      .then(() => { navigate("/post-success", { state }) })
+      .then(() => {
+        navigate("/post-success", { state });
+      })
       .catch((e: any) => {
         console.error("Unable to post form.");
         const error = {

@@ -12,12 +12,13 @@ import CustomFormsLayout from "../../../layouts/forms";
 import { PostingGroup } from "../../../services/postingGroupsApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
-import { FormData, useLivestockActivityStore } from "../../../store/livestockActivityStore";
+import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { MOVE_STORAGE_KEY } from "./constants-livestock.json";
 import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { useNavigate } from "react-router";
+import { FormData } from "../../../store/types/livestockActivity";
 
 interface MoveFormData extends FormData {
   fromJob: string | number | null;
@@ -51,7 +52,7 @@ const columns = [
 export default function MovePage() {
   const navigate = useNavigate();
   const { getPostingGroups, postingGroups } = usePostingGroupsStore();
-  const { getEventTypes, eventTypes } = useLivestockActivityStore();
+  const { getEvents, eventTypes, currentTemplate } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const { saveForm } = useFormStorageStore();
   const [deads, setDeads] = useState<{ toJob: number; fromJob: number }>({
@@ -80,7 +81,7 @@ export default function MovePage() {
   useEffect(() => {
     setInitLoading(true);
     const promises = [];
-    if (!(eventTypes.length > 0 && eventTypes[0].journal_template_name == "MOVE")) promises.push(getEventTypes("MOVE"));
+    if (!(eventTypes.length > 0 && currentTemplate === "MOVE")) promises.push(getEvents("MOVE"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
 
     Promise.all(promises).then(() => {

@@ -21,11 +21,12 @@ import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { PostingGroup } from "../../../services/postingGroupsApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
-import { FormData, useLivestockActivityStore } from "../../../store/livestockActivityStore";
+import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { QTYADJ_STORAGE_KEY } from "./constants-livestock.json";
 import { useNavigate } from "react-router";
+import { FormData } from "../../../store/types/livestockActivity";
 
 interface QuantityAdjFormData extends FormData {
   group: string | number | null;
@@ -64,11 +65,11 @@ export default function QuantityAdjPage() {
     postingGroupDetails
   } = usePostingGroupsStore();
   const {
-    getEventTypes,
+    getEvents,
     eventTypes,
     healthStatuses,
-    getHealthStatuses,
-    isLoading: livestockActivityLoading
+    isLoading: livestockActivityLoading,
+    currentTemplate
   } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const [deads, setDeads] = useState<{ group: number }>({ group: 0 });
@@ -93,10 +94,9 @@ export default function QuantityAdjPage() {
   useEffect(() => {
     setInitLoading(true);
     const promises = [];
-    if (!(eventTypes.length > 0 && eventTypes[0].journal_template_name === "QTYADJ"))
-      promises.push(getEventTypes("QTYADJ"));
+    if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "QTYADJ"))
+      promises.push(getEvents("QTYADJ"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
-    if (!(healthStatuses.length > 0)) promises.push(getHealthStatuses());
 
     Promise.all(promises).then(() => setInitLoading(false));
   }, []);

@@ -1,26 +1,24 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { livestockActivityApi as api } from "../services/livestockActivityApi";
-import type {
-  ActivityType,
-  EventType,
-  FormData,
-  HealthStatus,
-  Job
-} from "./types/livestockActivity";
+import type { ActivityType, EventType, HealthStatus, Job } from "./types/livestockActivity";
 
-// Re-export FormData for components
-export type { FormData };
+type EventsType = {
+  template: ActivityType;
+  journals: EventType[];
+  healthStatuses: HealthStatus[];
+};
 
 interface LivestockActivityStore {
   // Reference data
+  currentTemplate: ActivityType | null;
   jobs: Job[];
   eventTypes: EventType[];
   healthStatuses: HealthStatus[];
 
   // Set reference data
   setJobs: (jobs: Job[]) => void;
-  setEventTypes: (eventTypes: EventType[]) => void;
+  setEvents: (eventTypes: EventType[]) => void;
   setHealthStatuses: (healthStatuses: HealthStatus[]) => void;
 
   // Loading states
@@ -32,8 +30,7 @@ interface LivestockActivityStore {
   setError: (error: string | null) => void;
 
   //get data
-  getEventTypes: (template: ActivityType) => Promise<EventType[] | undefined>;
-  getHealthStatuses: () => Promise<HealthStatus[] | undefined>;
+  getEvents: (template: ActivityType) => Promise<EventsType | undefined>;
 }
 
 export const useLivestockActivityStore = create<LivestockActivityStore>()(
@@ -41,14 +38,16 @@ export const useLivestockActivityStore = create<LivestockActivityStore>()(
     (set, get) => ({
       // Reference data
       jobs: [],
+      currentTemplate: null,
       eventTypes: [],
       healthStatuses: [],
 
       //get data
-      getEventTypes: async (template: ActivityType): Promise<EventType[] | undefined> => {
-        console.log(`Fetching event types for template: ${template}`);
+      getEvents: async (template: ActivityType): Promise<EventsType | undefined> => {
+        console.log(`Fetching events for template: ${template}`);
         try {
           if (
+            get().healthStatuses.length === 0 ||
             get().eventTypes.length === 0 ||
             get().eventTypes[0].journal_template_name !== template
           ) {
@@ -56,42 +55,17 @@ export const useLivestockActivityStore = create<LivestockActivityStore>()(
             set({ isLoading: true, error: null });
 
             // Make API call
-            const eventTypes = await api.fetchEventTypes(template);
+            const { journals, healthStatuses } = await api.fetchEventTypes(template);
 
             // Update state with fetched data
             set((state) => ({
               ...state,
-              eventTypes,
-              isLoading: false
-            }));
-          }
-          return get().eventTypes;
-        } catch (error) {
-          // Handle error
-          set((state) => ({
-            ...state,
-            error: error instanceof Error ? error.message : "An error occurred",
-            isLoading: false
-          }));
-        }
-      },
-      getHealthStatuses: async () => {
-        try {
-          if (get().healthStatuses.length === 0) {
-            // Set loading state
-            set({ isLoading: true, error: null });
-
-            // Make API call
-            const healthStatuses = await api.fetchHealthStatuses();
-
-            // Update state with fetched data
-            set((state) => ({
-              ...state,
+              eventTypes: journals,
               healthStatuses,
               isLoading: false
             }));
           }
-          return get().healthStatuses;
+          return { template, journals: get().eventTypes, healthStatuses: get().healthStatuses };
         } catch (error) {
           // Handle error
           set((state) => ({
@@ -102,7 +76,7 @@ export const useLivestockActivityStore = create<LivestockActivityStore>()(
         }
       },
       setJobs: (jobs) => set({ jobs }),
-      setEventTypes: (eventTypes) => set({ eventTypes }),
+      setEvents: (eventTypes) => set({ eventTypes }),
       setHealthStatuses: (healthStatuses) => set({ healthStatuses }),
 
       // Loading states
