@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import DEFAULT_USER from "../mock/userOptions.json";
 import type { DomainType, MenuOption, UserType, UserAbbreviatedType } from "./types/user";
-import { userApi } from "../services/userApi";
+import { authApi } from "../services/userApi";
 
 interface UserState extends UserType {
   users: UserAbbreviatedType[];
@@ -51,7 +51,7 @@ export const useUserStore = create<UserState>()(
   fetchAllUsers: async () => {
     try {
       set((state) => ({ ...state, isLoading: true, error: null }));
-      const users = await userApi.fetchAllUsers();
+      const users = await authApi.fetchAllUsers();
       set((state) => ({ ...state, users, isLoading: false }));
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -67,7 +67,7 @@ export const useUserStore = create<UserState>()(
     try {
       if (get().users.length === 0) {
         set((state) => ({ ...state, isLoading: true, error: null }));
-        const users = await userApi.fetchAllUsers();
+        const users = await authApi.fetchAllUsers();
         set((state) => ({ ...state, users, isLoading: false }));
       }
       return get().users;
