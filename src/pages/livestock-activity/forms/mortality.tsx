@@ -82,7 +82,9 @@ export default function MortalityPage() {
     setInitLoading(true);
     const promises = [];
     if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "MORTALITY"))
-      promises.push(getEvents("MORTALITY").then((x) => setEventReasons(filterEventReasons(x?.journals))));
+      promises.push(
+        getEvents("MORTALITY").then((x) => setEventReasons(filterEventReasons(x?.events)))
+      );
     else {
       setEventReasons(filterEventReasons(eventTypes));
     }
@@ -102,7 +104,9 @@ export default function MortalityPage() {
     const state = { formData: data, section: "livestock-activity" };
     livestockActivityApi
       .postLivestockEvent(data)
-      .then(() => { navigate("/post-success", { state }) })
+      .then(() => {
+        navigate("/post-success", { state });
+      })
       .catch((e: any) => {
         console.error("Unable to post form.");
         const errorMessage = e.message || "Unable to submit form. Please try again.";
