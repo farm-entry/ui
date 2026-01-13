@@ -1,3 +1,6 @@
+import { UserAbbreviatedType } from "../store/types/user";
+import { HandleError } from "./handleError";
+
 // Types for authentication
 export interface LoginCredentials {
   username: string;
@@ -41,17 +44,15 @@ class AuthApi {
       const response = await fetch(`/api/auth/login`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         credentials: "include", // This ensures cookies are sent and received
-        body: JSON.stringify(credentials),
+        body: JSON.stringify(credentials)
       });
 
       if (!response.ok) {
         const errorData: ApiErrorResponse = await response.json();
-        throw new Error(
-          errorData.message || `Login failed: ${response.status}`
-        );
+        throw new Error(errorData.message || `Login failed: ${response.status}`);
       }
 
       const data: LoginResponse = await response.json();
@@ -71,7 +72,7 @@ class AuthApi {
     try {
       const response = await fetch(`/api/auth/logout`, {
         method: "POST",
-        credentials: "include",
+        credentials: "include"
       });
 
       if (!response.ok) {
@@ -97,7 +98,7 @@ class AuthApi {
     try {
       const response = await fetch(`/api/auth/session`, {
         method: "GET",
-        credentials: "include",
+        credentials: "include"
       });
 
       if (!response.ok) {
@@ -138,7 +139,7 @@ class AuthApi {
         id: "dev-user",
         username: "developer",
         name: "Dev User",
-        loginTime: new Date().toISOString(),
+        loginTime: new Date().toISOString()
       };
     }
     try {
@@ -149,15 +150,40 @@ class AuthApi {
       return null;
     }
   }
+
+  async fetchAllUsers(): Promise<UserAbbreviatedType[]> {
+    try {
+      console.log("Fetching all users from API...");
+
+      const response = await fetch(`/api/user`, {
+        method: "GET",
+        credentials: "include"
+      });
+
+      if (!response.ok) {
+        await new HandleError().handleApiError(response, "UserApi.fetchAllUsers");
+      }
+
+      const data: UserAbbreviatedType[] = await response.json();
+
+      return data;
+    } catch (error) {
+      if (error && typeof error === "object" && "code" in error) {
+        // Re-throw API errors as-is
+        throw error;
+      }
+
+      // Handle unexpected errors
+      const apiError = new HandleError().createError(
+        "FETCH_ERROR",
+        "Failed to fetch users",
+        error instanceof Error ? error.message : "Unknown error occurred"
+      );
+
+      console.error("Unexpected error fetching users:", error);
+      throw apiError;
+    }
+  }
 }
 
-// class UserInfoApi {
-//     async fetchUserInfo(): Promise<UserInfo> {
-//         await delay(200); // Simulate API delay
-//         return DEFAULT_USER as UserInfo;
-//     }
-// }
-
-// Export instances
 export const authApi = new AuthApi();
-// export const userOptionsApi = new UserInfoApi();

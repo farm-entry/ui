@@ -1,10 +1,10 @@
 import { Error, Home, ArrowBack, Save, ExpandMore } from "@mui/icons-material";
-import { 
-  Button, 
-  Divider, 
-  Stack, 
-  Typography, 
-  Box, 
+import {
+  Button,
+  Divider,
+  Stack,
+  Typography,
+  Box,
   Accordion,
   AccordionSummary,
   AccordionDetails,
@@ -30,16 +30,16 @@ interface PostErrorState {
 // Convert field names to readable format
 const formatFieldName = (fieldName: string): string => {
   return fieldName
-    .replace(/([A-Z])/g, ' $1') // Add space before capital letters
-    .replace(/^./, str => str.toUpperCase()) // Capitalize first letter
-    .replace(/\b\w/g, str => str.toUpperCase()); // Capitalize each word
+    .replace(/([A-Z])/g, " $1") // Add space before capital letters
+    .replace(/^./, (str) => str.toUpperCase()) // Capitalize first letter
+    .replace(/\b\w/g, (str) => str.toUpperCase()); // Capitalize each word
 };
 
 // Get section routes from LeftNavConfig
 const getSectionRoutes = () => {
   const routes: Record<string, string> = {};
-  LEFTNAV_NAVIGATION.forEach(nav => {
-    if ('segment' in nav && nav.segment) {
+  LEFTNAV_NAVIGATION.forEach((nav) => {
+    if ("segment" in nav && nav.segment) {
       routes[nav.segment] = `/${nav.segment}`;
     }
   });
@@ -53,12 +53,12 @@ export default function PostErrorPage() {
   const sectionRoutes = getSectionRoutes();
   const { saveForm } = useFormStorageStore();
 
+  const { formData, formType, section, error } = state;
+
   if (!state?.formData || !state?.formType || !state?.error) {
     navigate("/");
     return null;
   }
-
-  const { formData, formType, section, error } = state;
 
   const handleBackToSection = () => {
     const sectionRoute = sectionRoutes[section] || "/";
@@ -80,9 +80,10 @@ export default function PostErrorPage() {
       .filter(([key, value]) => value !== null && value !== "" && key !== "form")
       .map(([key, value]) => {
         const description = formatFieldName(key);
-        const displayValue = typeof value === "string" || typeof value === "number" 
-          ? value.toString() 
-          : JSON.stringify(value);
+        const displayValue =
+          typeof value === "string" || typeof value === "number"
+            ? value.toString()
+            : JSON.stringify(value);
 
         return (
           <Box key={key} sx={{ display: "flex", justifyContent: "space-between", py: 1 }}>
@@ -123,12 +124,12 @@ export default function PostErrorPage() {
             <Typography variant="body1" sx={{ fontWeight: "medium", mb: 1 }}>
               Details:
             </Typography>
-            <Typography 
-              variant="body2" 
-              color="text.secondary" 
-              sx={{ 
-                bgcolor: "grey.100", 
-                p: 1, 
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                bgcolor: "grey.100",
+                p: 1,
                 borderRadius: 1,
                 fontFamily: "monospace",
                 whiteSpace: "pre-wrap"
@@ -145,12 +146,12 @@ export default function PostErrorPage() {
   return (
     <h1>HELLO ERROR</h1>
     // <CustomFormsLayout>
-    //   <CustomHeader 
-    //     icon={Error} 
-    //     title="Form Submission Failed" 
+    //   <CustomHeader
+    //     icon={Error}
+    //     title="Form Submission Failed"
     //     iconSx={{ color: "error.main" }}
     //   />
-      
+
     //   <Stack spacing={3}>
     //     <Alert severity="error" sx={{ textAlign: "center" }}>
     //       <Typography variant="h6">
@@ -160,7 +161,7 @@ export default function PostErrorPage() {
     //         You can save your form data to try again later, or go back to make changes.
     //       </Typography>
     //     </Alert>
-        
+
     //     <Accordion>
     //       <AccordionSummary
     //         expandIcon={<ExpandMore />}
@@ -196,9 +197,9 @@ export default function PostErrorPage() {
     //         </Box>
     //       </AccordionDetails>
     //     </Accordion>
-        
+
     //     <Divider />
-        
+
     //     <Stack spacing={2}>
     //       <Button
     //         variant="contained"
@@ -210,7 +211,7 @@ export default function PostErrorPage() {
     //       >
     //         Save Form to Try Again Later
     //       </Button>
-          
+
     //       <Stack direction="row" spacing={2} justifyContent="center">
     //         <Button
     //           variant="outlined"

@@ -1,20 +1,9 @@
+import { ActivityType } from "./forms";
+
 export interface LivestockQuantity {
   code: string;
   quantity: number | null;
 }
-export interface FormData {
-  form: ActivityType;
-}
-
-export type ActivityType =
-  | "WEAN"
-  | "MORTALITY"
-  | "MOVE"
-  | "GRADEOFF"
-  | "QTYADJ"
-  | "PURCHASE"
-  | "SHIPMENT"
-  | "INVENTORY";
 
 export interface Job {
   number: string;

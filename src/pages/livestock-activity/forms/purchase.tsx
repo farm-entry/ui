@@ -13,12 +13,13 @@ import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { PostingGroup } from "../../../services/postingGroupsApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
+import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { FormData } from "../../../store/types/forms";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { PURCHASE_STORAGE_KEY } from "./constants-livestock.json";
 import { useNavigate } from "react-router";
-import { FormData } from "../../../store/types/livestockActivity";
 
 interface PurchaseFormData extends FormData {
   group: string | number | null;
@@ -51,21 +52,10 @@ const columns = [
 
 export default function PurchasePage() {
   const navigate = useNavigate();
-  const {
-    isLoading: postingGroupsLoading,
-    getPostingGroups,
-    getPostingGroupDetails,
-    postingGroups,
-    postingGroupDetails
-  } = usePostingGroupsStore();
-  const {
-    getEvents,
-    eventTypes,
-    healthStatuses,
-    isLoading: livestockActivityLoading,
-    currentTemplate
-  } = useLivestockActivityStore();
+  const { isLoading: postingGroupsLoading, getPostingGroups, getPostingGroupDetails, postingGroups, postingGroupDetails } = usePostingGroupsStore();
+  const { getEvents, eventTypes, healthStatuses, isLoading: livestockActivityLoading, currentTemplate } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
+  const { setAlert } = useGlobalAlertStore();
   const [deads, setDeads] = useState<{ group: number }>({ group: 0 });
   const [inventory, setInventory] = useState<{ group: number }>({ group: 0 });
   const [initLoading, setInitLoading] = useState(false);
@@ -119,12 +109,9 @@ export default function PurchasePage() {
       })
       .catch((e: any) => {
         console.error("Unable to post form.");
-        const error = {
-          code: e.code || data.form + "_SUBMISSION_ERROR",
-          message: e.message || "Unable to submit form. Please try again.",
-          details: e.details || JSON.stringify(e, null, 2)
-        };
-        navigate("/post-error", { state: { ...state, error } });
+        const errorMessage = e.message || "Unable to submit form. Please try again.";
+        const errorTitle = e.code || data.form + "_SUBMISSION_ERROR";
+        setAlert("error", errorMessage, errorTitle);
       })
       .finally(() => {
         setInitLoading(false);
@@ -233,8 +220,8 @@ export default function PurchasePage() {
                   handleChange={(v) => setValue("event", v?.value ?? null)}
                   watch={watch}
                   fieldName={"event"}
-                  labelKey={"Description"}
-                  valueKey={"Code"}
+                  labelKey={"description"}
+                  valueKey={"code"}
                   valueList={eventTypes}
                   loading={livestockActivityLoading}
                   placeholder="Event Name"

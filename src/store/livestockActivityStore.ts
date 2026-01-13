@@ -1,11 +1,12 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { livestockActivityApi as api } from "../services/livestockActivityApi";
-import type { ActivityType, EventType, HealthStatus, Job } from "./types/livestockActivity";
+import type { EventType, HealthStatus, Job } from "./types/livestockActivity";
+import type { ActivityType } from "./types/forms";
 
 type EventsType = {
   template: ActivityType;
-  journals: EventType[];
+  events: EventType[];
   healthStatuses: HealthStatus[];
 };
 
@@ -55,17 +56,17 @@ export const useLivestockActivityStore = create<LivestockActivityStore>()(
             set({ isLoading: true, error: null });
 
             // Make API call
-            const { journals, healthStatuses } = await api.fetchEventTypes(template);
+            const { events, healthStatuses } = await api.fetchEventTypes(template);
 
             // Update state with fetched data
             set((state) => ({
               ...state,
-              eventTypes: journals,
+              eventTypes: events,
               healthStatuses,
               isLoading: false
             }));
           }
-          return { template, journals: get().eventTypes, healthStatuses: get().healthStatuses };
+          return { template, events: get().eventTypes, healthStatuses: get().healthStatuses };
         } catch (error) {
           // Handle error
           set((state) => ({

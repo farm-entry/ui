@@ -1,11 +1,6 @@
-import {
-  EventType,
-  HealthStatus,
-  FormData as LivestockFormData
-} from "../store/types/livestockActivity";
+import type { ActivityType, FormData as LivestockFormData } from "../store/types/forms";
+import { EventType, HealthStatus } from "../store/types/livestockActivity";
 import { HandleError } from "./handleError";
-import { delay } from "./localConfig";
-import { mockHealthStatuses, mockLivestockGradeOffEventTypes, mockLivestockMortalityEventTypes } from "../mock";
 
 class LivestockActivityApi {
   async postLivestockEvent(data: LivestockFormData): Promise<void> {
@@ -25,10 +20,9 @@ class LivestockActivityApi {
     }
   }
 
-  async fetchEventTypes(template: string): Promise<{ journals: EventType[], healthStatuses: HealthStatus[] }> {
-    if (template === "MORTALITY") return { journals: mockLivestockMortalityEventTypes, healthStatuses: mockHealthStatuses };
-    if (template === "GRADEOFF") return { journals: mockLivestockGradeOffEventTypes as EventType[], healthStatuses: mockHealthStatuses };
-
+  async fetchEventTypes(
+    template: string
+  ): Promise<{ events: EventType[]; healthStatuses: HealthStatus[]; template: ActivityType }> {
     try {
       console.log("Fetching event types from API...");
 
@@ -41,8 +35,8 @@ class LivestockActivityApi {
         await new HandleError().handleApiError(response, "LivestockActivityApi.fetchEventTypes");
       }
 
-      const data: { journals: EventType[], healthStatuses: HealthStatus[] } = await response.json();
-
+      const data: { events: EventType[]; healthStatuses: HealthStatus[]; template: ActivityType } =
+        await response.json();
       return data;
     } catch (error) {
       if (error && typeof error === "object" && "code" in error) {
@@ -53,15 +47,14 @@ class LivestockActivityApi {
       // Handle unexpected errors
       const apiError = new HandleError().createError(
         "FETCH_ERROR",
-        "Failed to fetch posting groups",
+        "Failed to fetch event types",
         error instanceof Error ? error.message : "Unknown error occurred"
       );
 
-      console.error("Unexpected error fetching posting groups:", error);
+      console.error("Unexpected error fetching event types:", error);
       throw apiError;
     }
   }
-
 }
 
 export const livestockActivityApi = new LivestockActivityApi();

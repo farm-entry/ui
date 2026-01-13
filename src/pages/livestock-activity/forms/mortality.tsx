@@ -12,13 +12,14 @@ import CustomFormsLayout from "../../../layouts/forms";
 import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
+import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import type { EventType } from "../../../store/types/livestockActivity";
 import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
+import { FormData } from "../../../store/types/forms";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { MORTALITY_STORAGE_KEY } from "./constants-livestock.json";
-import { FormData } from "../../../store/types/livestockActivity";
 
 interface MortalityFormData extends FormData {
   job: string | number | null;
@@ -54,6 +55,7 @@ export default function MortalityPage() {
     currentTemplate
   } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
+  const { setAlert } = useGlobalAlertStore();
   const { saveForm } = useFormStorageStore();
   const [initLoading, setInitLoading] = useState(true);
   const [eventReasons, setEventReasons] = useState<Reason[]>([]);
@@ -80,7 +82,9 @@ export default function MortalityPage() {
     setInitLoading(true);
     const promises = [];
     if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "MORTALITY"))
-      promises.push(getEvents("MORTALITY").then((x) => setEventReasons(filterEventReasons(x?.journals))));
+      promises.push(
+        getEvents("MORTALITY").then((x) => setEventReasons(filterEventReasons(x?.events)))
+      );
     else {
       setEventReasons(filterEventReasons(eventTypes));
     }
@@ -105,12 +109,9 @@ export default function MortalityPage() {
       })
       .catch((e: any) => {
         console.error("Unable to post form.");
-        const error = {
-          code: e.code || data.form + "_SUBMISSION_ERROR",
-          message: e.message || "Unable to submit form. Please try again.",
-          details: e.details || JSON.stringify(e, null, 2)
-        };
-        navigate("/post-error", { state: { ...state, error } });
+        const errorMessage = e.message || "Unable to submit form. Please try again.";
+        const errorTitle = e.code || data.form + "_SUBMISSION_ERROR";
+        setAlert("error", errorMessage, errorTitle);
       })
       .finally(() => {
         setInitLoading(false);

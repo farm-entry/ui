@@ -7,8 +7,6 @@ import { AuthProvider } from "./layouts/authContext";
 import CustomDashboardLayout from "./layouts/dashboard";
 import LEFTNAV_NAVIGATION from "./LeftNavConfig";
 import DashboardPage from "./pages";
-import EmployeesCrudPage from "./pages/employees";
-import FormsInput from "./pages/formsinput";
 import FuelPage from "./pages/fuel";
 import InventoryConsumptionPage from "./pages/inventory-consumption";
 import JobHeaderUpdatesPage from "./pages/job-header-updates";

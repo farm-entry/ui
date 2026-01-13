@@ -18,7 +18,7 @@ import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../..
 import { MOVE_STORAGE_KEY } from "./constants-livestock.json";
 import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { useNavigate } from "react-router";
-import { FormData } from "../../../store/types/livestockActivity";
+import { FormData } from "../../../store/types/forms";
 
 interface MoveFormData extends FormData {
   fromJob: string | number | null;
@@ -40,13 +40,13 @@ const defaultValues: MoveFormData = {
   quantity: null,
   smallLivestockQuantity: null,
   totalWeight: null,
-  comments: "",
+  comments: ""
 };
 
 const columns = [
   { field: "postingGroup", headerName: "Posting Group", flex: 2 },
   { field: "inventory", headerName: "Inventory", flex: 1 },
-  { field: "deads", headerName: "Deads", flex: 1 },
+  { field: "deads", headerName: "Deads", flex: 1 }
 ];
 
 export default function MovePage() {
@@ -57,7 +57,7 @@ export default function MovePage() {
   const { saveForm } = useFormStorageStore();
   const [deads, setDeads] = useState<{ toJob: number; fromJob: number }>({
     toJob: 0,
-    fromJob: 0,
+    fromJob: 0
   });
   const [inventory, setInventory] = useState<{
     toJob: number;
@@ -72,10 +72,10 @@ export default function MovePage() {
     watch,
     setValue,
     getValues,
-    formState: { errors },
+    formState: { errors }
   } = useForm<MoveFormData>({
     defaultValues: defaultValues,
-    mode: "onSubmit",
+    mode: "onSubmit"
   });
 
   useEffect(() => {
@@ -104,7 +104,7 @@ export default function MovePage() {
         const error = {
           code: e.code || data.form + "_SUBMISSION_ERROR",
           message: e.message || "Unable to submit form. Please try again.",
-          details: e.details || JSON.stringify(e, null, 2),
+          details: e.details || JSON.stringify(e, null, 2)
         };
         navigate("/post-error", { state: { ...state, error } });
       })
@@ -119,7 +119,11 @@ export default function MovePage() {
   };
 
   const handleReset = () => {
-    showConfirmation("Are you sure?", "This will reset all form fields to their default values.", () => reset(defaultValues));
+    showConfirmation(
+      "Are you sure?",
+      "This will reset all form fields to their default values.",
+      () => reset(defaultValues)
+    );
   };
 
   const setJob = (value: any, label: "fromJob" | "toJob") => {
@@ -148,7 +152,11 @@ export default function MovePage() {
         <>
           <CustomNotice<MoveFormData> formType={MOVE_STORAGE_KEY} onLoad={(data) => reset(data)} />
           <CustomFormsLayout>
-            <CustomHeader icon={SwapVert} title="Move" button={{ label: "reset", onClick: handleReset }} />
+            <CustomHeader
+              icon={SwapVert}
+              title="Move"
+              button={{ label: "reset", onClick: handleReset }}
+            />
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={2}>
@@ -164,7 +172,9 @@ export default function MovePage() {
                     valueList={postingGroups}
                     placeholder="From"
                   />
-                  {errors.fromJob && <FormHelperText error>{errors.fromJob.message}</FormHelperText>}
+                  {errors.fromJob && (
+                    <FormHelperText error>{errors.fromJob.message}</FormHelperText>
+                  )}
                 </Stack>
 
                 <Stack>
@@ -188,14 +198,14 @@ export default function MovePage() {
                         name: "fromJob",
                         postingGroup: watch("fromJob"),
                         inventory: inventory.fromJob,
-                        deads: deads.fromJob,
+                        deads: deads.fromJob
                       },
                       {
                         name: "toJob",
                         postingGroup: watch("toJob"),
                         inventory: inventory.toJob,
-                        deads: deads.toJob,
-                      },
+                        deads: deads.toJob
+                      }
                     ]}
                     columns={columns}
                   />
@@ -208,8 +218,8 @@ export default function MovePage() {
                     handleChange={(v) => setValue("event", v?.value ?? null)}
                     watch={watch}
                     fieldName={"event"}
-                    labelKey={"Description"}
-                    valueKey={"Code"}
+                    labelKey={"description"}
+                    valueKey={"code"}
                     valueList={eventTypes}
                     placeholder="Event Name"
                   />
@@ -219,7 +229,7 @@ export default function MovePage() {
                 <Stack>
                   <DatePicker
                     {...register("postingDate", {
-                      required: "Posting Date is required",
+                      required: "Posting Date is required"
                     })}
                     value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
                     onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
@@ -239,8 +249,8 @@ export default function MovePage() {
                         required: "Total quantity is required",
                         min: {
                           value: 1,
-                          message: "Quantity must be greater than 0",
-                        },
+                          message: "Quantity must be greater than 0"
+                        }
                       })}
                       error={!!errors.quantity}
                       helperText={errors.quantity?.message}
@@ -252,7 +262,7 @@ export default function MovePage() {
                       type="number"
                       {...register("smallLivestockQuantity", {
                         required: "Small livestock quantity is required",
-                        min: { value: 0, message: "Quantity cannot be negative" },
+                        min: { value: 0, message: "Quantity cannot be negative" }
                       })}
                       error={!!errors.smallLivestockQuantity}
                       helperText={errors.smallLivestockQuantity?.message}
@@ -264,7 +274,7 @@ export default function MovePage() {
                   <TextField
                     {...register("totalWeight", {
                       required: "Total weight is required",
-                      min: { value: 1, message: "Weight must be greater than 0" },
+                      min: { value: 1, message: "Weight must be greater than 0" }
                     })}
                     placeholder="Total Weight"
                     type="number"
@@ -274,7 +284,9 @@ export default function MovePage() {
                 </Stack>
                 <Divider />
                 <TextArea
-                  {...register("comments", { maxLength: { value: 50, message: "Comments cannot exceed 50 characters" } })}
+                  {...register("comments", {
+                    maxLength: { value: 50, message: "Comments cannot exceed 50 characters" }
+                  })}
                   placeholder="Comments"
                   type="text"
                   error={!!errors.comments}

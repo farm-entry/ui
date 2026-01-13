@@ -1,0 +1,176 @@
+[
+  {
+    "title": "Herd Health (<2%, 2-5%, 5%+)",
+    "elements": [
+      {
+        "id": "NG00SUPERVISOR",
+        "label": "Person Completing Survey",
+        "code": "SUPERVISOR",
+        "order": 0,
+        "max": 0
+      },
+      {
+        "id": "NG01SLIDER-1-5-2",
+        "label": "Respitory",
+        "code": "SLIDER-1-5-2",
+        "order": 0,
+        "max": 5
+      },
+      {
+        "id": "NG02SLIDER-1-5-2",
+        "label": "Lameness",
+        "code": "SLIDER-1-5-2",
+        "order": 0,
+        "max": 5
+      },
+      {
+        "id": "NG03SLIDER-1-5-2",
+        "label": "Loose Stool",
+        "code": "SLIDER-1-5-2",
+        "order": 0,
+        "max": 5
+      },
+      {
+        "id": "NG04SLIDER-1-5-2",
+        "label": "Other",
+        "code": "SLIDER-1-5-2",
+        "order": 0,
+        "max": 5
+      }
+    ]
+  },
+  {
+    "title": "Caretaker Management Evaluation",
+    "elements": [
+      {
+        "id": "NG05SLIDER-1-10-1",
+        "label": "Feed adjustment & available",
+        "code": "SLIDER-1-10-1",
+        "order": 0,
+        "max": 10
+      },
+      {
+        "id": "NG06SLIDER-1-10-1",
+        "label": "Water flow rate & quality",
+        "code": "SLIDER-1-10-1",
+        "order": 0,
+        "max": 10
+      },
+      {
+        "id": "NG07SLIDER-1-10-1",
+        "label": "Environment-temp, RH, speed",
+        "code": "SLIDER-1-10-1",
+        "order": 0,
+        "max": 10
+      },
+      {
+        "id": "NG08SLIDER-1-10-1",
+        "label": "Individual pig care & treats",
+        "code": "SLIDER-1-10-1",
+        "order": 0,
+        "max": 10
+      },
+      {
+        "id": "NG09SLIDER-1-5",
+        "label": "Sorts & pull pen utilization",
+        "code": "SLIDER-1-5",
+        "order": 0,
+        "max": 5
+      },
+      {
+        "id": "NG10SLIDER-1-5",
+        "label": "Timely euthanasia & welfare",
+        "code": "SLIDER-1-5",
+        "order": 0,
+        "max": 5
+      },
+      {
+        "id": "NG11SLIDER-1-5",
+        "label": "Dead removal & disposal",
+        "code": "SLIDER-1-5",
+        "order": 0,
+        "max": 5
+      },
+      {
+        "id": "NG12SLIDER-1-5",
+        "label": "Entry cleanliness & organization",
+        "code": "SLIDER-1-5",
+        "order": 0,
+        "max": 5
+      },
+      {
+        "id": "NG13SLIDER-1-5",
+        "label": "Communication with supervisor",
+        "code": "SLIDER-1-5",
+        "order": 0,
+        "max": 5
+      },
+      {
+        "id": "NG14SLIDER-1-5",
+        "label": "Logging temp, mort, H2O, treats",
+        "code": "SLIDER-1-5",
+        "order": 0,
+        "max": 5
+      }
+    ]
+  },
+  {
+    "title": "Facility Management Evaluation",
+    "elements": [
+      {
+        "id": "NG16SLIDER-1-5",
+        "label": "Maintenance & repairs",
+        "code": "SLIDER-1-5",
+        "order": 0,
+        "max": 5
+      },
+      {
+        "id": "NG17SLIDER-1-5",
+        "label": "Handling equipment",
+        "code": "SLIDER-1-5",
+        "order": 0,
+        "max": 5
+      },
+      {
+        "id": "NG18SLIDER-1-5",
+        "label": "Appearance outside",
+        "code": "SLIDER-1-5",
+        "order": 0,
+        "max": 5
+      },
+      {
+        "id": "NG19SLIDER-1-5",
+        "label": "Rodent control",
+        "code": "SLIDER-1-5",
+        "order": 0,
+        "max": 5
+      },
+      {
+        "id": "NG20SLIDER-1-5",
+        "label": "Bio-security, bench, boots, clothing",
+        "code": "SLIDER-1-5",
+        "order": 0,
+        "max": 5
+      },
+      {
+        "id": "NG21SLIDER-1-5",
+        "label": "Monthly generator test and run",
+        "code": "SLIDER-1-5",
+        "order": 0,
+        "max": 5
+      }
+    ]
+  },
+  {
+    "title": "Summary Evaluation Commenthead",
+    "elements": [
+      {
+        "id": "NG23SLIDER-1-1",
+        "label": "Additional comments",
+        "code": "SLIDER-1-1",
+        "order": 0,
+        "max": 1
+      }
+    ]
+  }
+]
