@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { Box, FormControl, FormLabel, FormHelperText } from "@mui/material";
 import { Slider } from "../../../components/inputs";
 import { TextArea } from "../../../components/inputs";
-import { FormValue, useScorecard } from "../contexts/scorecard";
 import { useFormContext, Controller } from "react-hook-form";
 
 export interface ScorecardSliderProps {
@@ -20,21 +19,15 @@ const ScorecardSlider: React.FC<ScorecardSliderProps> = ({
   max,
   step
 }) => {
-  const { formState } = useScorecard();
-  const { setValue } = useFormContext();
+  // const { formState } = useScorecard();
+  const { setValue, control, formState: { errors } } = useFormContext();
   const scoreName = `${id}.numericValue`;
   const commentsName = `${id}.stringValue`;
-  const { stringValue, numericValue } = formState[id] || {};
+  // const { stringValue, numericValue } = formState[id] || {};
 
   useEffect(() => {
-    setValue(scoreName, numericValue ? numericValue : min);
-  }, [min, numericValue, scoreName, setValue]);
-
-  useEffect(() => {
-    setValue(commentsName, stringValue ? stringValue : undefined);
-  }, [commentsName, setValue, stringValue]);
-
-  const { control, formState: { errors } } = useFormContext();
+    setValue(scoreName, min);
+  }, [scoreName, setValue, min]);
 
   return (
     <Box sx={{ mb: 3 }}>
@@ -73,6 +66,11 @@ const ScorecardSlider: React.FC<ScorecardSliderProps> = ({
     </Box>
   );
 };
+
+export interface FormValue {
+  stringValue?: string;
+  numericValue?: number;
+}
 
 export const isComplete = ({ numericValue }: FormValue) =>
   typeof numericValue === "number";

@@ -1,0 +1,29 @@
+import { Alert, AlertTitle, IconButton, Collapse } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { useGlobalAlertStore } from "../../store/globalAlertStore";
+
+export default function GlobalAlert() {
+  const { open, severity, message, title, clearAlert } = useGlobalAlertStore();
+
+  return (
+    <Collapse in={open}>
+      <Alert
+        severity={severity}
+        action={
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            size="small"
+            onClick={clearAlert}
+          >
+            <CloseIcon fontSize="inherit" />
+          </IconButton>
+        }
+        sx={{ mb: 2 }}
+      >
+        {title && <AlertTitle>{title}</AlertTitle>}
+        {message}
+      </Alert>
+    </Collapse>
+  );
+}

@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { Box, FormControl, FormLabel, FormHelperText } from "@mui/material";
-import { useScorecardUsersQuery } from "../graphql/index";
 import { TypeAhead } from "../../../components/inputs";
-import { FormValue, useScorecard } from "../contexts/scorecard";
 import { useFormContext, Controller } from "react-hook-form";
 
 export interface ScorecardSupervisorProps {
@@ -14,25 +12,26 @@ const ScorecardSupervisor: React.FC<ScorecardSupervisorProps> = ({
   label,
   id
 }) => {
-  const { data } = useScorecardUsersQuery();
-  const { job, formState } = useScorecard();
+  // const { data } = useScorecardUsersQuery();
+  // const { job, formState } = useScorecard();
   const { control, watch, formState: { errors } } = useFormContext();
 
   const name = `${id}.stringValue`;
-  const { stringValue } = formState[id] || {};
+  // const { stringValue } = formState[id] || {};
 
-  useEffect(() => {
-    if (!stringValue && job?.projectManager) {
-      control._defaultValues[name] = job.projectManager;
-    }
-  }, [job, name, stringValue]);
+  // useEffect(() => {
+  //   if (!stringValue && job?.projectManager) {
+  //     control._defaultValues[name] = job.projectManager;
+  //   }
+  // }, [job, name, stringValue]);
 
-  const users = ((data && data.users) || [])
-    .filter(person => person.name.length > 0)
-    .map(user => ({
-      label: user.name || (user.username || "").split("/")[1] || user.username,
-      value: user.username
-    }));
+  // const users = ((data && data.users) || [])
+  //   .filter((person: any) => person.name.length > 0)
+  //   .map((user: any) => ({
+  //     label: user.name || (user.username || "").split("/")[1] || user.username,
+  //     value: user.username
+  //   }));
+  const users: any[] = [];
 
   return (
     <FormControl fullWidth sx={{ mb: 3 }}>
@@ -58,6 +57,11 @@ const ScorecardSupervisor: React.FC<ScorecardSupervisorProps> = ({
     </FormControl>
   );
 };
+
+export interface FormValue {
+  stringValue?: string;
+  numericValue?: number;
+}
 
 export const isComplete = ({ stringValue }: FormValue) => !!stringValue;
 

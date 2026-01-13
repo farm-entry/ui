@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { FormControl, FormLabel, Typography, Box } from "@mui/material";
-import { FormValue } from "../contexts/scorecard";
 import useLivestockJob from "./useLivestockJob";
 
 export interface ScorecardWeeksOnFeedProps {
@@ -21,7 +20,7 @@ const ScorecardWeeksOnFeed: React.FC<ScorecardWeeksOnFeedProps> = ({
   const weeksOnFeed = watch(name);
 
   useEffect(() => {
-    register({ name, type: "custom" });
+    register(name);
     return () => unregister(name);
   }, [register, name, unregister]);
 
@@ -55,6 +54,11 @@ const ScorecardWeeksOnFeed: React.FC<ScorecardWeeksOnFeedProps> = ({
     </FormControl>
   );
 };
+
+export interface FormValue {
+  stringValue?: string;
+  numericValue?: number;
+}
 
 export const isComplete = ({ numericValue }: FormValue) =>
   typeof numericValue === "number";

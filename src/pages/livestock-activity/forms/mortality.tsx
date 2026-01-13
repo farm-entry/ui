@@ -12,10 +12,12 @@ import CustomFormsLayout from "../../../layouts/forms";
 import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
-import { FormData, useLivestockActivityStore } from "../../../store/livestockActivityStore";
+import { useGlobalAlertStore } from "../../../store/globalAlertStore";
+import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import type { EventType } from "../../../store/types/livestockActivity";
 import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
+import { FormData } from "../../../store/types/forms";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { MORTALITY_STORAGE_KEY } from "./constants-livestock.json";
 
@@ -46,13 +48,14 @@ export default function MortalityPage() {
     isLoading: postingGroupsLoading
   } = usePostingGroupsStore();
   const {
-    getEventTypes,
+    getEvents,
     eventTypes,
     healthStatuses,
-    getHealthStatuses,
-    isLoading: livestockActivityLoading
+    isLoading: livestockActivityLoading,
+    currentTemplate
   } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
+  const { setAlert } = useGlobalAlertStore();
   const { saveForm } = useFormStorageStore();
   const [initLoading, setInitLoading] = useState(true);
   const [eventReasons, setEventReasons] = useState<Reason[]>([]);
@@ -78,13 +81,12 @@ export default function MortalityPage() {
   useEffect(() => {
     setInitLoading(true);
     const promises = [];
-    if (!(eventTypes.length > 0 && eventTypes[0].journal_template_name == "MORTALITY"))
-      promises.push(getEventTypes("MORTALITY").then((x) => setEventReasons(filterEventReasons(x))));
+    if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "MORTALITY"))
+      promises.push(getEvents("MORTALITY").then((x) => setEventReasons(filterEventReasons(x?.journals))));
     else {
       setEventReasons(filterEventReasons(eventTypes));
     }
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
-    if (!(healthStatuses.length > 0)) promises.push(getHealthStatuses());
 
     Promise.all(promises).then(() => {
       setInitLoading(false);
@@ -103,12 +105,9 @@ export default function MortalityPage() {
       .then(() => { navigate("/post-success", { state }) })
       .catch((e: any) => {
         console.error("Unable to post form.");
-        const error = {
-          code: e.code || data.form + "_SUBMISSION_ERROR",
-          message: e.message || "Unable to submit form. Please try again.",
-          details: e.details || JSON.stringify(e, null, 2)
-        };
-        navigate("/post-error", { state: { ...state, error } });
+        const errorMessage = e.message || "Unable to submit form. Please try again.";
+        const errorTitle = e.code || data.form + "_SUBMISSION_ERROR";
+        setAlert("error", errorMessage, errorTitle);
       })
       .finally(() => {
         setInitLoading(false);

@@ -1,10 +1,8 @@
-import isMatch from "date-fns/isMatch";
+import { isMatch } from "date-fns";
 import React, { useEffect } from "react";
 import { useFormContext, Controller } from "react-hook-form";
 import { FormControl, FormLabel, FormHelperText } from "@mui/material";
 import { DatePicker } from "../../../components/inputs";
-import { dateInputDate, formInputDate } from "../../common/utils";
-import { FormValue, useScorecard } from "../contexts/scorecard";
 
 export interface ScorecardPostingDateProps {
   label: string;
@@ -17,16 +15,16 @@ const ScorecardPostingDate: React.FC<ScorecardPostingDateProps> = ({
   label,
   id
 }) => {
-  const { formState } = useScorecard();
+  // const { formState } = useScorecard();
   const { control, formState: { errors } } = useFormContext();
   const name = `${id}.stringValue`;
-  const { stringValue } = formState[id] || {};
+  // const { stringValue } = formState[id] || {};
 
-  useEffect(() => {
-    if (!stringValue) {
-      control._defaultValues[name] = formInputDate(dateInputDate(new Date()));
-    }
-  }, [name, stringValue]);
+  // useEffect(() => {
+  //   if (!stringValue) {
+  //     control._defaultValues[name] = formInputDate(dateInputDate(new Date()));
+  //   }
+  // }, [name, stringValue]);
 
   return (
     <FormControl fullWidth sx={{ mb: 3 }}>
@@ -47,7 +45,7 @@ const ScorecardPostingDate: React.FC<ScorecardPostingDateProps> = ({
             {...field}
             label=""
             value={field.value ? new Date(field.value) : new Date()}
-            onChange={(date) => field.onChange(date ? formInputDate(dateInputDate(date)) : "")}
+            onChange={(date) => field.onChange(date ? date.toISOString() : "")}
           />
         )}
       />
@@ -55,6 +53,11 @@ const ScorecardPostingDate: React.FC<ScorecardPostingDateProps> = ({
     </FormControl>
   );
 };
+
+export interface FormValue {
+  stringValue?: string;
+  numericValue?: number;
+}
 
 export const isComplete = ({ stringValue }: FormValue) => !!stringValue;
 

@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Box, FormControl, FormLabel, FormHelperText } from "@mui/material";
 import { Slider, TextArea } from "../../../components/inputs";
-import { FormValue, useScorecard } from "../contexts/scorecard";
 import { useFormContext, Controller } from "react-hook-form";
 
 export interface ScorecardScoresProps {
@@ -20,6 +19,8 @@ const ScorecardScores: React.FC<ScorecardScoresProps> = ({
   step
 }) => {
   const { control, formState: { errors } } = useFormContext();
+  const scoreName = `${id}.numericValue`;
+  const commentsName = `${id}.stringValue`;
 
   return (
     <Box sx={{ mb: 3 }}>
@@ -58,6 +59,11 @@ const ScorecardScores: React.FC<ScorecardScoresProps> = ({
     </Box>
   );
 };
+
+export interface FormValue {
+  stringValue?: string;
+  numericValue?: number;
+}
 
 export const isComplete = ({ numericValue }: FormValue) =>
   typeof numericValue === "number";

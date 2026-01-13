@@ -17,7 +17,7 @@ const ScorecardMortality: React.FC<ScorecardMortalityProps> = ({
   const name = `${id}.numericValue`;
 
   useEffect(() => {
-    register({ name, type: "custom" });
+    register(name);
     return () => unregister(name);
   }, [register, name, unregister]);
 

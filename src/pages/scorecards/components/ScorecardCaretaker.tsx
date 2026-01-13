@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { FormControl, FormLabel, FormHelperText } from "@mui/material";
-import { useScorecardPeopleQuery } from "../graphql/index";
 import { TypeAhead } from "../../../components/inputs";
-import { useScorecard, FormValue } from "../contexts/scorecard";
 import { useFormContext, Controller } from "react-hook-form";
 import { UserAbbreviatedType } from "../../../store/types/user";
 
@@ -12,26 +10,27 @@ export interface ScorecardCaretakerProps {
 }
 
 const ScorecardCaretaker: React.FC<ScorecardCaretakerProps> = ({ label, id }) => {
-  const { job, formState } = useScorecard();
+  // const { job, formState } = useScorecard();
   const {
     control,
     watch,
     formState: { errors }
   } = useFormContext();
-  const { data } = useScorecardPeopleQuery();
+  // const { data } = useScorecardPeopleQuery();
   const name = `${id}.stringValue`;
-  const { stringValue } = formState[id] || {};
+  // const { stringValue } = formState[id] || {};
 
-  useEffect(() => {
-    if (!stringValue && job?.caretaker) {
-      control._defaultValues[name] = job.caretaker;
-    }
-  }, [job, name, stringValue]);
+  // useEffect(() => {
+  //   if (!stringValue && job?.caretaker) {
+  //     control._defaultValues[name] = job.caretaker;
+  //   }
+  // }, [job, name, stringValue]);
 
-  const people = ((data && data.people) || []).map((person: UserAbbreviatedType) => ({
-    label: person.User_Name,
-    value: person.User_Security_ID
-  }));
+  // const people = ((data && data.people) || []).map((person: UserAbbreviatedType) => ({
+  //   label: person.User_Name,
+  //   value: person.User_Security_ID
+  // }));
+  const people: any[] = [];
 
   return (
     <FormControl fullWidth sx={{ mb: 3 }}>
@@ -57,6 +56,11 @@ const ScorecardCaretaker: React.FC<ScorecardCaretakerProps> = ({ label, id }) =>
     </FormControl>
   );
 };
+
+export interface FormValue {
+  stringValue?: string;
+  numericValue?: number;
+}
 
 export const isComplete = ({ stringValue }: FormValue) => !!stringValue;
 

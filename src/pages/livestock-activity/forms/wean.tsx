@@ -13,8 +13,10 @@ import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { PostingGroup } from "../../../services/postingGroupsApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
-import { FormData, useLivestockActivityStore } from "../../../store/livestockActivityStore";
+import { useGlobalAlertStore } from "../../../store/globalAlertStore";
+import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { FormData } from "../../../store/types/forms";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { WEAN_STORAGE_KEY } from "./constants-livestock.json";
 import { useNavigate } from "react-router";
@@ -51,8 +53,9 @@ const columns = [
 export default function WeanPage() {
   const navigate = useNavigate();
   const { isLoading: postingGroupsLoading, getPostingGroups, getPostingGroupDetails, postingGroups, postingGroupDetails } = usePostingGroupsStore();
-  const { getEventTypes, eventTypes, healthStatuses, getHealthStatuses, isLoading: livestockActivityLoading } = useLivestockActivityStore();
+  const { getEvents, eventTypes, healthStatuses, isLoading: livestockActivityLoading, currentTemplate } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
+  const { setAlert } = useGlobalAlertStore();
   const [deads, setDeads] = useState<{ group: number }>({ group: 0 });
   const [inventory, setInventory] = useState<{ group: number }>({ group: 0 });
   const [initLoading, setInitLoading] = useState(false);
@@ -74,12 +77,9 @@ export default function WeanPage() {
   useEffect(() => {
     setInitLoading(true);
     const promises = [];
-    if (
-      !(eventTypes.length > 0 && eventTypes[0].journal_template_name === "WEAN")
-    )
-      promises.push(getEventTypes("WEAN"));
+    if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "WEAN"))
+      promises.push(getEvents("WEAN"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
-    if (!(healthStatuses.length > 0)) promises.push(getHealthStatuses());
 
     Promise.all(promises).then(() => setInitLoading(false));
   }, []);
@@ -109,12 +109,9 @@ export default function WeanPage() {
       })
       .catch((e: any) => {
         console.error("Unable to post form.");
-        const error = {
-          code: e.code || data.form + "_SUBMISSION_ERROR",
-          message: e.message || "Unable to submit form. Please try again.",
-          details: e.details || JSON.stringify(e, null, 2),
-        };
-        navigate("/post-error", { state: { ...state, error } });
+        const errorMessage = e.message || "Unable to submit form. Please try again.";
+        const errorTitle = e.code || data.form + "_SUBMISSION_ERROR";
+        setAlert("error", errorMessage, errorTitle);
       })
       .finally(() => {
         setInitLoading(false);
@@ -197,7 +194,12 @@ export default function WeanPage() {
                         }
                       : null
                   }
-                  placeholder={(postingGroupDetails && postingGroupDetails.healthStatus?.Description) || healthStatuses.length ? "Health Status" : "Select a valid group"}
+                  placeholder={
+                    (postingGroupDetails && postingGroupDetails.healthStatus?.Description) ||
+                    healthStatuses.length > 0
+                      ? "Health Status"
+                      : "Select a valid group"
+                  }
                 />
                 {errors.healthStatus && <FormHelperText error>{errors.healthStatus.message}</FormHelperText>}
               </Stack>
@@ -210,8 +212,8 @@ export default function WeanPage() {
                   handleChange={(v) => setValue("event", v?.value ?? null)}
                   watch={watch}
                   fieldName={"event"}
-                  labelKey={"Description"}
-                  valueKey={"Code"}
+                  labelKey={"description"}
+                  valueKey={"code"}
                   valueList={eventTypes}
                   loading={livestockActivityLoading}
                   placeholder="Event Name"

@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Box, FormControl, FormLabel, FormHelperText, Button, ButtonGroup } from "@mui/material";
 import { TextArea } from "../../../components/inputs";
-import { FormValue, useScorecard } from "../contexts/scorecard";
 import { useFormContext, Controller } from "react-hook-form";
 
 export interface ScorecardPassFailProps {
@@ -10,11 +9,11 @@ export interface ScorecardPassFailProps {
 }
 
 const ScorecardPassFail: React.FC<ScorecardPassFailProps> = ({ label, id }) => {
-  const { formState } = useScorecard();
+  // const { formState } = useScorecard();
   const { control, formState: { errors } } = useFormContext();
   const name = `${id}.numericValue`;
   const commentsName = `${id}.stringValue`;
-  const { stringValue, numericValue } = formState[id] || {};
+  // const { stringValue, numericValue } = formState[id] || {};
 
   return (
     <Box sx={{ mb: 3 }}>
@@ -59,6 +58,11 @@ const ScorecardPassFail: React.FC<ScorecardPassFailProps> = ({ label, id }) => {
     </Box>
   );
 };
+
+export interface FormValue {
+  stringValue?: string;
+  numericValue?: number;
+}
 
 export const isComplete = ({ numericValue }: FormValue) =>
   typeof numericValue === "number";

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { FormControl, FormLabel, FormHelperText } from "@mui/material";
 import { TextField } from "../../../components/inputs";
-import { FormValue, useScorecard } from "../contexts/scorecard";
+
 import { useFormContext, Controller } from "react-hook-form";
 
 export interface ScorecardTempProps {
@@ -10,10 +10,10 @@ export interface ScorecardTempProps {
 }
 
 const ScorecardTempInput: React.FC<ScorecardTempProps> = ({ label, id }) => {
-  const { formState } = useScorecard();
+  // const { formState } = useScorecard();
   const { control, formState: { errors } } = useFormContext();
   const name = `${id}.numericValue`;
-  const { numericValue } = formState[id] || {};
+  // const { numericValue } = formState[id] || {};
 
   return (
     <FormControl fullWidth sx={{ mb: 3 }}>
@@ -44,6 +44,11 @@ const ScorecardTempInput: React.FC<ScorecardTempProps> = ({ label, id }) => {
     </FormControl>
   );
 };
+
+export interface FormValue {
+  stringValue?: string;
+  numericValue?: number;
+}
 
 export const isComplete = ({ numericValue }: FormValue) =>
   typeof numericValue === "number";

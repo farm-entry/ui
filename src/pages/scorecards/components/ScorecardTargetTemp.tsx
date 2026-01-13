@@ -1,10 +1,8 @@
 import React, { useEffect } from "react";
-import formatDistanceToNowStrict from "date-fns/formatDistanceToNowStrict";
+import { formatDistanceToNowStrict } from "date-fns";
 import { FormControl, FormLabel, Typography, Box } from "@mui/material";
-import { useScorecardTargetTempLazyQuery } from "../graphql/index";
 import { useFormContext } from "react-hook-form";
 import useLivestockJob from "./useLivestockJob";
-import { FormValue } from "../contexts/scorecard";
 
 export interface ScorecardTargetTempProps {
   label: string;
@@ -17,30 +15,30 @@ const ScorecardTargetTemp: React.FC<ScorecardTargetTempProps> = ({
 }) => {
   const { job: livestockJob } = useLivestockJob();
   const { setValue, register, unregister, watch } = useFormContext();
-  const [loadResource, { data }] = useScorecardTargetTempLazyQuery();
+  // const [loadResource, { data }] = useScorecardTargetTempLazyQuery();
   const name = `${id}.numericValue`;
   const targetTemp = watch(name);
 
-  useEffect(() => {
-    if (livestockJob && livestockJob.groupStartDate) {
-      const groupStartDate = new Date(livestockJob.groupStartDate);
-      const diff = formatDistanceToNowStrict(groupStartDate, {
-        unit: "day"
-      }).split(" ")[0];
-      const tempWeeks = Math.min(16, Math.floor(Math.ceil(Number(diff)) / 7));
-      const resourceNo = `${tempWeeks}TARGETTEMP`;
-      loadResource({ variables: { code: resourceNo } });
-    }
-  }, [livestockJob, loadResource]);
+  // useEffect(() => {
+  //   if (livestockJob && livestockJob.groupStartDate) {
+  //     const groupStartDate = new Date(livestockJob.groupStartDate);
+  //     const diff = formatDistanceToNowStrict(groupStartDate, {
+  //       unit: "day"
+  //     }).split(" ")[0];
+  //     const tempWeeks = Math.min(16, Math.floor(Math.ceil(Number(diff)) / 7));
+  //     const resourceNo = `${tempWeeks}TARGETTEMP`;
+  //     loadResource({ variables: { code: resourceNo } });
+  //   }
+  // }, [livestockJob, loadResource]);
+
+  // useEffect(() => {
+  //   if (data && data.resource && data.resource.unitPrice) {
+  //     setValue(name, data.resource.unitPrice);
+  //   }
+  // }, [data, setValue, name]);
 
   useEffect(() => {
-    if (data && data.resource && data.resource.unitPrice) {
-      setValue(name, data.resource.unitPrice);
-    }
-  }, [data, setValue, name]);
-
-  useEffect(() => {
-    register({ name, type: "custom" });
+    register(name);
     return () => unregister(name);
   }, [register, name, unregister]);
 
@@ -55,6 +53,11 @@ const ScorecardTargetTemp: React.FC<ScorecardTargetTempProps> = ({
     </FormControl>
   );
 };
+
+export interface FormValue {
+  stringValue?: string;
+  numericValue?: number;
+}
 
 export const isComplete = ({ numericValue }: FormValue) =>
   typeof numericValue === "number";

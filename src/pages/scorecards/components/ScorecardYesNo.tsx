@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Box, FormControl, FormLabel, FormHelperText, Button, ButtonGroup } from "@mui/material";
-import { FormValue, useScorecard } from "../contexts/scorecard";
 import { useFormContext, Controller } from "react-hook-form";
 
 export interface ScorecardYesNoProps {
@@ -9,14 +8,14 @@ export interface ScorecardYesNoProps {
 }
 
 const ScorecardYesNo: React.FC<ScorecardYesNoProps> = ({ label, id }) => {
-  const { formState } = useScorecard();
+  // const { formState } = useScorecard();
   const { setValue } = useFormContext();
   const name = `${id}.numericValue`;
-  const { numericValue } = formState[id] || {};
+  // const { numericValue } = formState[id] || {};
 
   useEffect(() => {
-    setValue(name, numericValue ? numericValue : 0);
-  }, [numericValue, name, setValue]);
+    setValue(name, 0);
+  }, [name, setValue]);
 
   const { control, formState: { errors } } = useFormContext();
 
@@ -47,6 +46,11 @@ const ScorecardYesNo: React.FC<ScorecardYesNoProps> = ({ label, id }) => {
     </FormControl>
   );
 };
+
+export interface FormValue {
+  stringValue?: string;
+  numericValue?: number;
+}
 
 export const isComplete = ({ numericValue }: FormValue) =>
   typeof numericValue === "number";

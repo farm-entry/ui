@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Box, FormControl, FormLabel, FormHelperText } from "@mui/material";
 import { TextField, TextArea } from "../../../components/inputs";
-import { FormValue, useScorecard } from "../contexts/scorecard";
 import { useFormContext, Controller } from "react-hook-form";
 
 export interface ScorecardHealthInputProps {
@@ -17,11 +16,11 @@ const ScorecardHealthInput: React.FC<ScorecardHealthInputProps> = ({
   min,
   max
 }) => {
-  const { formState } = useScorecard();
+  // const { formState } = useScorecard();
   const { control, formState: { errors } } = useFormContext();
   const name = `${id}.numericValue`;
   const commentsName = `${id}.stringValue`;
-  const { stringValue, numericValue } = formState[id] || {};
+  // const { stringValue, numericValue } = formState[id] || {};
 
   return (
     <Box sx={{ mb: 3 }}>
@@ -68,6 +67,11 @@ const ScorecardHealthInput: React.FC<ScorecardHealthInputProps> = ({
     </Box>
   );
 };
+
+export interface FormValue {
+  stringValue?: string;
+  numericValue?: number;
+}
 
 export const isComplete = ({ numericValue }: FormValue) =>
   typeof numericValue === "number";
