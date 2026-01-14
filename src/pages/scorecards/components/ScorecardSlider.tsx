@@ -1,78 +1,54 @@
-import React, { useEffect } from "react";
-import { Box, FormControl, FormLabel, FormHelperText } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import { FieldValues, UseFormReturn } from "react-hook-form";
+import { ScorecardElement } from "../../../store/types/scorecards";
 import { Slider } from "../../../components/inputs";
-import { TextArea } from "../../../components/inputs";
-import { useFormContext, Controller } from "react-hook-form";
 
-export interface ScorecardSliderProps {
-  label: string;
-  id: string;
+export type CodeConfigType = {
+  type: string;
   min: number;
   max: number;
   step: number;
-}
+};
 
-const ScorecardSlider: React.FC<ScorecardSliderProps> = ({
-  label,
-  id,
-  min,
-  max,
-  step
+const ScoreCardSlider = ({
+  codeConfig,
+  element,
+  formContext
+}: {
+  codeConfig: CodeConfigType;
+  formContext: UseFormReturn<FieldValues, any, FieldValues>;
+  element: ScorecardElement;
 }) => {
-  // const { formState } = useScorecard();
-  const { setValue, control, formState: { errors } } = useFormContext();
-  const scoreName = `${id}.numericValue`;
-  const commentsName = `${id}.stringValue`;
-  // const { stringValue, numericValue } = formState[id] || {};
-
-  useEffect(() => {
-    setValue(scoreName, min);
-  }, [scoreName, setValue, min]);
-
+  const {
+    register,
+    watch,
+    formState: { errors }
+  } = formContext || {};
+  const watchValue = watch ? watch(element.id) : undefined;
   return (
-    <Box sx={{ mb: 3 }}>
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <FormLabel>{label}</FormLabel>
-        <Controller
-          name={scoreName}
-          control={control}
-          render={({ field }) => (
-            <Slider
-              value={field.value || min}
-              onChange={field.onChange}
-              min={min}
-              max={max}
-              step={step}
-              showMarks
-            />
-          )}
-        />
-        {errors[scoreName] && <FormHelperText error>{String(errors[scoreName]?.message)}</FormHelperText>}
-      </FormControl>
-      <FormControl fullWidth>
-        <FormLabel>Comments</FormLabel>
-        <Controller
-          name={commentsName}
-          control={control}
-          render={({ field }) => (
-            <TextArea
-              {...field}
-              rows={2}
-              placeholder="Enter comments"
-            />
-          )}
-        />
-      </FormControl>
+    <Box>
+      <Slider
+        {...register(element.id, {
+          required: "This field is required",
+          min: { value: codeConfig.min, message: `Minimum value is ${codeConfig.min}` },
+          max: { value: codeConfig.max, message: `Maximum value is ${codeConfig.max}` },
+          valueAsNumber: true
+        })}
+        value={watchValue || codeConfig.min}
+        min={codeConfig.min}
+        max={codeConfig.max}
+        step={codeConfig.step}
+        marks
+        valueChip
+        // valueLabelDisplay="on"
+      />
+      {errors[element.id] && (
+        <Typography variant="caption" color="error">
+          {String(errors[element.id]?.message) ?? "Invalid value"}
+        </Typography>
+      )}
     </Box>
   );
 };
 
-export interface FormValue {
-  stringValue?: string;
-  numericValue?: number;
-}
-
-export const isComplete = ({ numericValue }: FormValue) =>
-  typeof numericValue === "number";
-
-export default ScorecardSlider;
+export default ScoreCardSlider;

@@ -1,35 +1,69 @@
-import React from "react";
-import { Slider as MuiSlider, FormControl, FormHelperText, Typography } from "@mui/material";
+import {
+  Chip,
+  Slider as MUISlider,
+  SliderProps as MUISliderProps,
+  Stack,
+  TextField
+} from "@mui/material";
+import { forwardRef } from "react";
 
-export interface SliderProps {
-  label?: string;
-  value: number;
-  onChange: (value: number) => void;
-  min?: number;
-  max?: number;
-  step?: number;
-  helperText?: string;
-  showMarks?: boolean;
+interface SliderProps extends Omit<MUISliderProps, "value" | "onChange"> {
+  withInput?: boolean;
+  valueChip?: boolean;
+  value?: number;
+  onChange?: (event: Event, value: number | number[]) => void;
 }
 
-export function Slider({ label, onChange, min = 0, max = 100, value, step = 1, helperText, showMarks = false }: SliderProps) {
-  // Generate marks if showMarks is true
-  const marks = showMarks
-    ? Array.from({ length: Math.floor((max - min) / step) + 1 }, (_, i) => {
-        const value = min + i * step;
-        return { value, label: value.toString() };
-      })
-    : undefined;
+export const Slider = forwardRef<HTMLInputElement, SliderProps>(
+  (
+    {
+      withInput = false,
+      valueChip = false,
+      value = 0,
+      onChange,
+      min = 0,
+      max = 100,
+      ...sliderProps
+    },
+    ref
+  ) => {
+    const handleSliderChange = (event: Event, newValue: number | number[]) => {
+      onChange?.(event, newValue);
+    };
 
-  return (
-    <FormControl fullWidth>
-      {label && (
-        <Typography gutterBottom>
-          {label}: {value}
-        </Typography>
-      )}
-      <MuiSlider value={value} onChange={(_, newValue) => onChange(newValue as number)} valueLabelDisplay="auto" min={min} max={max} step={step} marks={marks} />
-      {helperText && <FormHelperText>{helperText}</FormHelperText>}
-    </FormControl>
-  );
-}
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      const newValue = event.target.value;
+      if (/^\d*$/.test(newValue)) {
+        const numValue = Math.min(Math.max(Number(newValue) || 0, min), max);
+        onChange?.(event as any, numValue);
+      }
+    };
+
+    return (
+      <Stack direction="row" spacing={2} alignItems="center">
+        {valueChip && <Chip label={value} />}
+        {withInput && (
+          <TextField
+            value={value}
+            onChange={handleInputChange}
+            size="small"
+            inputProps={{
+              maxLength: 3,
+              inputMode: "numeric",
+              style: { textAlign: "center" }
+            }}
+            sx={{ width: 60 }}
+          />
+        )}
+        <MUISlider
+          {...sliderProps}
+          value={value}
+          onChange={handleSliderChange}
+          min={min}
+          max={max}
+          sx={{ flexGrow: 1, ...sliderProps.sx }}
+        />
+      </Stack>
+    );
+  }
+);

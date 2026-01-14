@@ -36,7 +36,7 @@ const ScorecardScores: React.FC<ScorecardScoresProps> = ({
               min={min}
               max={max}
               step={step}
-              showMarks
+              marks
             />
           )}
         />
