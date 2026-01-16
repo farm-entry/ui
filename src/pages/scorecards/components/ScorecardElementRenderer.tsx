@@ -1,8 +1,14 @@
-import { Box, FormLabel, Stack, TextField, Typography } from "@mui/material";
-import { useFormContext } from "react-hook-form";
+import {
+  Button,
+  ButtonGroup,
+  FormHelperText,
+  FormLabel,
+  Stack,
+  TextField
+} from "@mui/material";
+import { Controller, useFormContext } from "react-hook-form";
+import { Slider, TextArea, TypeAhead } from "../../../components/inputs";
 import { ScorecardElement } from "../../../store/types/scorecards";
-import { Slider } from "../../../components/inputs";
-import ScoreCardSlider from "./ScorecardSlider";
 
 interface ScorecardElementRendererProps {
   element: ScorecardElement;
@@ -13,9 +19,10 @@ export default function ScorecardElementRenderer({ element }: ScorecardElementRe
   const {
     register,
     watch,
+    setValue,
+    control,
     formState: { errors }
   } = useFormContext();
-  const formContext = useFormContext();
 
   // Parse the code to determine component type and parameters
   const parseElementCode = (code: string) => {
@@ -35,104 +42,195 @@ export default function ScorecardElementRenderer({ element }: ScorecardElementRe
     switch (codeConfig.type) {
       case "SLIDER":
         return (
-          <ScoreCardSlider formContext={formContext} codeConfig={codeConfig} element={element} />
+          <Stack spacing={2}>
+            <Slider
+              {...register(`${element.id}.numericValue`, { required: "This field is required" })}
+              min={codeConfig.min}
+              max={codeConfig.max}
+              step={codeConfig.step}
+              valueChip
+              marks
+            />
+            <TextField
+              {...register(`${element.id}.stringValue`)}
+              placeholder="Comments..."
+              fullWidth
+            />
+          </Stack>
         );
 
       case "SUPERVISOR":
         return (
-          <Typography variant="body2" color="text.secondary">
-            Supervisor selection component is under development.
-          </Typography>
-          //   <Controller
-          //     name={element.id}
-          //     control={control}
-          //     defaultValue=""
-          //     rules={{ required: "Please select a supervisor" }}
-          //     render={({ field, fieldState }) => (
-          //       <FormControl fullWidth error={!!fieldState.error}>
-          //         <InputLabel>Select Supervisor</InputLabel>
-          //         <Select {...field} label="Select Supervisor">
-          //           <MenuItem value="supervisor1">John Smith</MenuItem>
-          //           <MenuItem value="supervisor2">Jane Doe</MenuItem>
-          //           <MenuItem value="supervisor3">Mike Johnson</MenuItem>
-          //           <MenuItem value="other">Other</MenuItem>
-          //         </Select>
-          //         {fieldState.error && (
-          //           <Typography variant="caption" color="error" sx={{ mt: 1 }}>
-          //             {fieldState.error.message}
-          //           </Typography>
-          //         )}
-          //       </FormControl>
-          //     )}
-          //   />
+          <Stack spacing={2}>
+            <TypeAhead
+              {...register(`${element.id}.stringValue`, { required: "Supervisor is required" })}
+              handleChange={(v) => setValue(`${element.id}.stringValue`, v?.value ?? null)}
+              watch={watch}
+              fieldName={`${element.id}.stringValue`}
+              valueList={[]}
+              labelKey="label"
+              valueKey="value"
+              placeholder="Select supervisor"
+            />
+            {errors[`${element.id}.stringValue`] && (
+              <FormHelperText error>
+                {String(errors[`${element.id}.stringValue`]?.message)}
+              </FormHelperText>
+            )}
+          </Stack>
         );
 
       case "YN":
         return (
-          <Typography variant="body2" color="text.secondary">
-            Yes/No selection component is under development.
-          </Typography>
+          <Stack spacing={2}>
+            <Controller
+              name={`${element.id}.numericValue`}
+              control={control}
+              defaultValue={0}
+              rules={{ required: "Please make a selection" }}
+              render={({ field }) => (
+                <ButtonGroup orientation="horizontal" fullWidth>
+                  <Button
+                    variant={field.value === 1 ? "contained" : "outlined"}
+                    onClick={() => field.onChange(1)}
+                  >
+                    Yes
+                  </Button>
+                  <Button
+                    variant={field.value === -1 ? "contained" : "outlined"}
+                    onClick={() => field.onChange(-1)}
+                  >
+                    No
+                  </Button>
+                </ButtonGroup>
+              )}
+            />
+            {errors[`${element.id}.numericValue`] && (
+              <FormHelperText error>
+                {String(errors[`${element.id}.numericValue`]?.message)}
+              </FormHelperText>
+            )}
+          </Stack>
         );
-      // return (
-      //   <Controller
-      //     name={element.id}
-      //     control={control}
-      //     defaultValue=""
-      //     rules={{ required: "Please make a selection" }}
-      //     render={({ field, fieldState }) => (
-      //       <FormControl component="fieldset" error={!!fieldState.error}>
-      //         <RadioGroup {...field} row>
-      //           <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-      //           <FormControlLabel value="no" control={<Radio />} label="No" />
-      //         </RadioGroup>
-      //         {fieldState.error && (
-      //           <Typography variant="caption" color="error" sx={{ mt: 1 }}>
-      //             {fieldState.error.message}
-      //           </Typography>
-      //         )}
-      //       </FormControl>
-      //     )}
-      //   />
-      // );
+
+      case "PASSFAIL":
+        return (
+          <Stack spacing={2}>
+            <Controller
+              name={`${element.id}.numericValue`}
+              control={control}
+              rules={{ required: "Please make a selection" }}
+              render={({ field }) => (
+                <ButtonGroup orientation="horizontal" fullWidth>
+                  <Button
+                    variant={field.value === 1 ? "contained" : "outlined"}
+                    onClick={() => field.onChange(1)}
+                  >
+                    Pass
+                  </Button>
+                  <Button
+                    variant={field.value === -1 ? "contained" : "outlined"}
+                    onClick={() => field.onChange(-1)}
+                  >
+                    Fail
+                  </Button>
+                </ButtonGroup>
+              )}
+            />
+            {errors[`${element.id}.numericValue`] && (
+              <FormHelperText error>
+                {String(errors[`${element.id}.numericValue`]?.message)}
+              </FormHelperText>
+            )}
+            <TextArea
+              {...register(`${element.id}.stringValue`)}
+              rows={2}
+              placeholder="Comments..."
+            />
+          </Stack>
+        );
+
+      case "SCORE5":
+      case "SCORE10":
+        const scoreMax = codeConfig.type === "SCORE5" ? 5 : 10;
+        return (
+          <Stack spacing={2}>
+            <Slider
+              {...register(`${element.id}.numericValue`, { required: "This field is required" })}
+              min={0}
+              max={scoreMax}
+              step={1}
+              marks
+            />
+            <TextArea
+              {...register(`${element.id}.stringValue`)}
+              rows={2}
+              placeholder="Comments..."
+            />
+          </Stack>
+        );
+
+      case "HEALTH":
+        return (
+          <Stack spacing={2}>
+            <TextField
+              {...register(`${element.id}.numericValue`, {
+                required: "This field is required",
+                min: { value: 0, message: "Must be at least 0." },
+                max: { value: 100, message: "Must be at most 100." },
+                valueAsNumber: true
+              })}
+              type="number"
+              placeholder="Enter percentage (0-100)"
+              error={!!errors[`${element.id}.numericValue`]}
+              helperText={
+                errors[`${element.id}.numericValue`]
+                  ? String(errors[`${element.id}.numericValue`]?.message)
+                  : ""
+              }
+              fullWidth
+            />
+            <TextArea
+              {...register(`${element.id}.stringValue`)}
+              rows={2}
+              placeholder="Comments..."
+            />
+          </Stack>
+        );
 
       case "RANGE":
         return (
-          <Typography variant="body2" color="text.secondary">
-            Range input component is under development.
-          </Typography>
+          <Stack spacing={2}>
+            <TextField
+              {...register(`${element.id}.numericValue`, {
+                required: "This field is required",
+                min: {
+                  value: codeConfig.min,
+                  message: `Must be at least ${codeConfig.min}.`
+                },
+                max: {
+                  value: codeConfig.max,
+                  message: `Must be at most ${codeConfig.max}.`
+                },
+                valueAsNumber: true
+              })}
+              type="number"
+              placeholder={`Enter value (${codeConfig.min}-${codeConfig.max})`}
+              error={!!errors[`${element.id}.numericValue`]}
+              helperText={
+                errors[`${element.id}.numericValue`]
+                  ? String(errors[`${element.id}.numericValue`]?.message)
+                  : ""
+              }
+              fullWidth
+            />
+            <TextArea
+              {...register(`${element.id}.stringValue`)}
+              rows={2}
+              placeholder="Comments..."
+            />
+          </Stack>
         );
-      // return (
-      //   <Controller
-      //     name={element.id}
-      //     control={control}
-      //     defaultValue=""
-      //     rules={{
-      //       required: "This field is required",
-      //       min: { value: codeConfig.min, message: `Minimum value is ${codeConfig.min}` },
-      //       max: { value: codeConfig.max, message: `Maximum value is ${codeConfig.max}` }
-      //     }}
-      //     render={({ field, fieldState }) => (
-      //       <TextField
-      //         {...field}
-      //         type="number"
-      //         fullWidth
-      //         variant="outlined"
-      //         error={!!fieldState.error}
-      //         helperText={
-      //           fieldState.error?.message ||
-      //           `Enter a value between ${codeConfig.min} and ${codeConfig.max}`
-      //         }
-      //         InputProps={{
-      //           inputProps: {
-      //             min: codeConfig.min,
-      //             max: codeConfig.max,
-      //             step: codeConfig.step
-      //           }
-      //         }}
-      //       />
-      //     )}
-      //   />
-      // );
 
       default:
         // For any unrecognized codes, render a text input
@@ -142,7 +240,6 @@ export default function ScorecardElementRenderer({ element }: ScorecardElementRe
             fullWidth
             variant="outlined"
             error={!!errors[element.id]}
-            // helperText={fieldError?.message}
             placeholder="Enter value..."
           />
         );
@@ -150,8 +247,8 @@ export default function ScorecardElementRenderer({ element }: ScorecardElementRe
   };
 
   return (
-    <Stack>
-      <FormLabel component="legend" sx={{ mb: 2, fontWeight: 600, color: "text.primary" }}>
+    <Stack spacing={2}>
+      <FormLabel component="legend" sx={{ fontWeight: 600, color: "text.primary" }}>
         {element.label}
       </FormLabel>
       {renderInputComponent()}

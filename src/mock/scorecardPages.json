@@ -36,6 +36,13 @@
         "code": "SLIDER-1-5-2",
         "order": 0,
         "max": 5
+      },
+      {
+        "id": "NG04AHEALTH",
+        "label": "Overall Health Status",
+        "code": "HEALTH",
+        "order": 0,
+        "max": 0
       }
     ]
   },
@@ -69,6 +76,20 @@
         "code": "SLIDER-1-10-1",
         "order": 0,
         "max": 10
+      },
+      {
+        "id": "NG08AYN",
+        "label": "Are pigs comfortable?",
+        "code": "YN",
+        "order": 0,
+        "max": 0
+      },
+      {
+        "id": "NG08BPASSFAIL",
+        "label": "Bio-security checklist complete?",
+        "code": "PASSFAIL",
+        "order": 0,
+        "max": 0
       },
       {
         "id": "NG09SLIDER-1-5",
@@ -132,6 +153,20 @@
         "max": 5
       },
       {
+        "id": "NG17ASCORE5",
+        "label": "Overall equipment condition (1-5)",
+        "code": "SCORE5",
+        "order": 0,
+        "max": 5
+      },
+      {
+        "id": "NG17BSCORE10",
+        "label": "Facility cleanliness (1-10)",
+        "code": "SCORE10",
+        "order": 0,
+        "max": 10
+      },
+      {
         "id": "NG18SLIDER-1-5",
         "label": "Appearance outside",
         "code": "SLIDER-1-5",
@@ -144,6 +179,13 @@
         "code": "SLIDER-1-5",
         "order": 0,
         "max": 5
+      },
+      {
+        "id": "NG19ARANGE-0-100",
+        "label": "Feed usage percentage",
+        "code": "RANGE-0-100",
+        "order": 0,
+        "max": 100
       },
       {
         "id": "NG20SLIDER-1-5",
