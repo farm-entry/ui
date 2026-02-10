@@ -33,7 +33,7 @@ const useTypeAheadValue = (props: TypeAheadProps): TypeAheadOption | null => {
       return defaultValue || null;
     }
 
-    const option = valueList.find((item) => item[valueKey] === fieldValue);
+    const option = valueList && valueList.find((item) => item[valueKey] === fieldValue);
     return option
       ? ({
           label: labelFormatter ? labelFormatter(option) : String(option[labelKey]),
@@ -66,11 +66,11 @@ export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props
         ref={ref}
         value={useValue}
         onChange={customChange}
-        options={valueList.map((event, index) => ({
+        options={(valueList || []).map((event, index) => ({
           label: labelFormatter ? labelFormatter(event) : String(event[labelKey]),
           value: event[valueKey],
         }))}
-        getOptionKey={(option) => `${option.value}-${valueList.findIndex((item) => item[valueKey] === option.value)}`}
+        getOptionKey={(option) => `${option.value}-${(valueList || []).findIndex((item) => item[valueKey] === option.value)}`}
         renderInput={(params) => <TextField placeholder={placeholder} {...params} variant="outlined" label={props.label} />}
       />
     </FormControl>

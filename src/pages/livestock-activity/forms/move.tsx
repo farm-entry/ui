@@ -12,6 +12,7 @@ import CustomFormsLayout from "../../../layouts/forms";
 import { PostingGroup } from "../../../services/postingGroupsApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
+import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
@@ -19,6 +20,7 @@ import { MOVE_STORAGE_KEY } from "./constants-livestock.json";
 import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { useNavigate } from "react-router";
 import { FormData } from "../../../store/types/forms";
+import GlobalAlert from "../../../components/framework/GlobalAlert";
 
 interface MoveFormData extends FormData {
   fromJob: string | number | null;
@@ -54,6 +56,7 @@ export default function MovePage() {
   const { getPostingGroups, postingGroups } = usePostingGroupsStore();
   const { getEvents, eventTypes, currentTemplate } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
+  const { setAlert } = useGlobalAlertStore();
   const { saveForm } = useFormStorageStore();
   const [deads, setDeads] = useState<{ toJob: number; fromJob: number }>({
     toJob: 0,
@@ -106,7 +109,9 @@ export default function MovePage() {
           message: e.message || "Unable to submit form. Please try again.",
           details: e.details || JSON.stringify(e, null, 2)
         };
-        navigate("/post-error", { state: { ...state, error } });
+        const errorMessage = error.message || "Unable to submit form. Please try again.";
+        const errorTitle = error.code + "Unable to submit your form." || data.form + "_SUBMISSION_ERROR";
+        setAlert("error", errorMessage, errorTitle);
       })
       .finally(() => {
         setInitLoading(false);

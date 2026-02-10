@@ -1,5 +1,6 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig, loadEnv } from "vite";
+import { qrcode } from 'vite-plugin-qrcode';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -8,7 +9,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "FRONTLINE_");
 
   return {
-    plugins: [react()],
+    plugins: [react(), qrcode()],
     server: {
       proxy: {
         "/api/nav": {

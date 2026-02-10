@@ -1,0 +1,765 @@
+[
+  {
+    "number": "FA0002",
+    "code": "FUEL",
+    "description": "2011 JD 244J loader",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0016",
+    "code": "FUEL",
+    "description": "2005 Chevy 1 Ton K3500-White",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0017",
+    "code": "FUEL",
+    "description": "2006 Chevy K2500-Gray (Lalo)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0022",
+    "code": "FUEL",
+    "description": "JD 4555 Tractor",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0034",
+    "code": "FUEL",
+    "description": "JD 7520 Tractor",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0046",
+    "code": "FUEL",
+    "description": "2000 Buick Lesabre",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0051",
+    "code": "FUEL",
+    "description": "2011 Chevy Tahoe LT (brown)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0052",
+    "code": "FUEL",
+    "description": "2012 Chevy Wht Silverado K2500 (Rodney Old)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0064",
+    "code": "FUEL",
+    "description": "1997 JD 8400T Tractor",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0100",
+    "code": "FUEL",
+    "description": "JD Z930M Mower",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0102",
+    "code": "FUEL",
+    "description": "Jumper Compactor",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0104",
+    "code": "FUEL",
+    "description": "Finisher-Perry East (1996)",
+    "fuelType": "Water",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0106",
+    "code": "FUEL",
+    "description": "Finisher-Perry's Tunnel Barn-West (2008)",
+    "fuelType": "Water",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0114",
+    "code": "FUEL",
+    "description": "2003 Chevy K1500-Red (Ross)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0115",
+    "code": "FUEL",
+    "description": "2006 Chevy Silverado K1500-White (Dwight)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0131",
+    "code": "FUEL",
+    "description": "2000 Kenworth/Sudenga Bulk Feed Truck",
+    "fuelType": "Diesel Fuel - Taxed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0190",
+    "code": "FUEL",
+    "description": "Forklift",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0201",
+    "code": "FUEL",
+    "description": "1995 Freightliner (Goldie)",
+    "fuelType": "Diesel Fuel - Taxed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0206",
+    "code": "FUEL",
+    "description": "2002 Chevy 2500 Silverado-Gray (50% w/Chet)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0215",
+    "code": "FUEL",
+    "description": "2016 black PJ Trailer mounted manure pump",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0216",
+    "code": "FUEL",
+    "description": "2006 Daewoo G25E-3 Forklift",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0222",
+    "code": "FUEL",
+    "description": "2005 Freightliner-white (pig truck)",
+    "fuelType": "Diesel Fuel - Taxed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0232",
+    "code": "FUEL",
+    "description": "2002 Chevy Tahoe K1500 (maroon)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0241",
+    "code": "FUEL",
+    "description": "2006 Chevy Trailblazer (white)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0247E",
+    "code": "FUEL",
+    "description": "JLG 135SP Lift (orange)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0248E",
+    "code": "FUEL",
+    "description": "JD 322 Skid Loader",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0249E",
+    "code": "FUEL",
+    "description": "JD 323E Skid Loader",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0250E",
+    "code": "FUEL",
+    "description": "JD 331G Skid Loader",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0254E",
+    "code": "FUEL",
+    "description": "Gator 6 wheeler",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0257E",
+    "code": "FUEL",
+    "description": "JD Z930M Mower",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0258E",
+    "code": "FUEL",
+    "description": "JD F687 Mower 60 in",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0259E",
+    "code": "FUEL",
+    "description": "JD F687 Mower 54 in",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0260E",
+    "code": "FUEL",
+    "description": "JD F687 Mower 54 in",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0261E",
+    "code": "FUEL",
+    "description": "JD Z960R Mower",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0262E",
+    "code": "FUEL",
+    "description": "Cat 304CR Mini Ex",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0263E",
+    "code": "FUEL",
+    "description": "825i JD Gator",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0265E",
+    "code": "FUEL",
+    "description": "Gator Deluxe",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0286",
+    "code": "FUEL",
+    "description": "2010 Red IH Truck w/Flatbed",
+    "fuelType": "Diesel Fuel - Taxed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0302",
+    "code": "FUEL",
+    "description": "2020 JD 8400R Tractor",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0303",
+    "code": "FUEL",
+    "description": "JD Combine S770",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0304",
+    "code": "FUEL",
+    "description": "2006 Chevy Uplander - Chet's",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0307",
+    "code": "FUEL",
+    "description": "2015 Chevy Captiva LS (Red)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0308",
+    "code": "FUEL",
+    "description": "2015 Freightliner bulk feed truck Walinga",
+    "fuelType": "Diesel Fuel - Taxed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0309E",
+    "code": "FUEL",
+    "description": "2004 Chevy 3/4 Ton Pickup (Aaron's)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0311",
+    "code": "FUEL",
+    "description": "2001 Dodge Dakota-Black",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0314",
+    "code": "FUEL",
+    "description": "2002 Chevy Silverado 2500HD-Red",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0316",
+    "code": "FUEL",
+    "description": "2013 GMC Terrain",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0317",
+    "code": "FUEL",
+    "description": "1996 Freightliner Feed Truck (Green)",
+    "fuelType": "Diesel Fuel - Taxed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0318E",
+    "code": "FUEL",
+    "description": "2001 Ford F150-Black",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0320",
+    "code": "FUEL",
+    "description": "2021 JCB 427 Agri Payloader",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0321E",
+    "code": "FUEL",
+    "description": "2017 Maroon Chevy (Rosalee)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0324",
+    "code": "FUEL",
+    "description": "1998 Chevy C1500-Maroon ",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0329E",
+    "code": "FUEL",
+    "description": "6140 JD Rodney",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0333",
+    "code": "FUEL",
+    "description": "2012 Freightliner Cascadia (Purple)",
+    "fuelType": "Diesel Fuel - Taxed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0334",
+    "code": "FUEL",
+    "description": "2010 Kenworth T800 (Red)",
+    "fuelType": "Diesel Fuel - Taxed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0338",
+    "code": "FUEL",
+    "description": "1998 Cadillac-Red",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0341",
+    "code": "FUEL",
+    "description": "2008 GMC Sierra K1500 (blue)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0342E",
+    "code": "FUEL",
+    "description": "2012 VW Passat",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0343",
+    "code": "FUEL",
+    "description": "2014 Dodge Caravan (blue or gray)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0344",
+    "code": "FUEL",
+    "description": "2008 Chevy Silverado K1500-Silver (Rier's old)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0345",
+    "code": "FUEL",
+    "description": "2023 White Kenworth-Cattle-Roto-Mix Feed Truck",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0350",
+    "code": "FUEL",
+    "description": "2024 JCB TM320",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0351",
+    "code": "FUEL",
+    "description": "2022 JCB 427 Wheel Loader",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0352",
+    "code": "FUEL",
+    "description": "2024 JCB Telehandler 560-80AG+",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0353",
+    "code": "FUEL",
+    "description": "2013 GMC Sierra K2500 Black",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0354",
+    "code": "FUEL",
+    "description": "2016 Mack Truck (Yellow)",
+    "fuelType": "Diesel Fuel - Taxed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0355",
+    "code": "FUEL",
+    "description": "2020 Chevy Express G2500",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0356",
+    "code": "FUEL",
+    "description": "2013 Chevy Equinox (Tan)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0359",
+    "code": "FUEL",
+    "description": "2018 Chevy Equinox Lt (Black)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0360",
+    "code": "FUEL",
+    "description": "2012 Chevy Traverse (Dwight)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0365",
+    "code": "FUEL",
+    "description": "Sullivan Air Compressor orange",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0366",
+    "code": "FUEL",
+    "description": "Zoske Manure Pump",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0369",
+    "code": "FUEL",
+    "description": "2023 Polaris Sportsman",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0370",
+    "code": "FUEL",
+    "description": "2001 Isuzu Reefer Truck",
+    "fuelType": "Diesel Fuel - Taxed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0371",
+    "code": "FUEL",
+    "description": "2013 Chevy Silverado 3500 - Jeff",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0372",
+    "code": "FUEL",
+    "description": "2017 Chevy Silverado K1500 - Liz",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0374",
+    "code": "FUEL",
+    "description": "2023 Chevy Silverado 1500 (Adam)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0375",
+    "code": "FUEL",
+    "description": "1986 Freightliner Vacuum Tank",
+    "fuelType": "Diesel Fuel - Taxed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0376",
+    "code": "FUEL",
+    "description": "2025 White Chevy 3/4 Ton",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0377",
+    "code": "FUEL",
+    "description": "2025 Silver Chevy 3/4 Ton (Rodney)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0378",
+    "code": "FUEL",
+    "description": "2024 JD S780 Combine",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0381",
+    "code": "FUEL",
+    "description": "2019 Black Mack",
+    "fuelType": "Diesel Fuel - Taxed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0382",
+    "code": "FUEL",
+    "description": "2022 White Mack",
+    "fuelType": "Diesel Fuel - Taxed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0500M",
+    "code": "FUEL",
+    "description": "4020 JD TRACTOR 1970",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0501M",
+    "code": "FUEL",
+    "description": "4020 JD TRACTOR 1968",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0502M",
+    "code": "FUEL",
+    "description": "4440 JD TRACTOR - Powershift",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0503M",
+    "code": "FUEL",
+    "description": "4440 JD TRACTOR - Quad",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0504M",
+    "code": "FUEL",
+    "description": "4450 JD TRACTOR",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0505M",
+    "code": "FUEL",
+    "description": "CHALLENGER 65C Tractor",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0506M",
+    "code": "FUEL",
+    "description": "7920 TRACTOR  ",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0507M",
+    "code": "FUEL",
+    "description": "2008 JD 8430T Tractor",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0508M",
+    "code": "FUEL",
+    "description": "6215 JD TRACTOR    ",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0526M",
+    "code": "FUEL",
+    "description": "CHOPPER",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0568",
+    "code": "FUEL",
+    "description": "2007 Chevy Silverado 1500-White (Vance)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0579",
+    "code": "FUEL",
+    "description": "2003 Freightliner FL112 white day cab",
+    "fuelType": "Diesel Fuel - Taxed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0581M",
+    "code": "FUEL",
+    "description": "KUBOTA TRACTOR",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0585M",
+    "code": "FUEL",
+    "description": "GATOR",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0587M",
+    "code": "FUEL",
+    "description": "504 TRACTOR",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0588M",
+    "code": "FUEL",
+    "description": "Welder & STANDBY GENERATOR  ",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0591M",
+    "code": "FUEL",
+    "description": "575 J.D. SKID LOADER",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0593M",
+    "code": "FUEL",
+    "description": "KOMATSU SKID LOADER",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0595M",
+    "code": "FUEL",
+    "description": "2014 Yamaha Grizzly (4-wheeler Red)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0598M",
+    "code": "FUEL",
+    "description": "Red 6' RIDING MOWER -Ferris",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0605",
+    "code": "FUEL",
+    "description": "2009 Buick Lucerne",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA0607",
+    "code": "FUEL",
+    "description": "2018 Chevy Silverado 1500 (Jason's)",
+    "fuelType": "Gasoline",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FA99999",
+    "code": "FUEL",
+    "description": "OPEN",
+    "fuelType": "Diesel - Non-Taxed Dyed",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FAB23N",
+    "code": "FUEL",
+    "description": "LVR East Nursery",
+    "fuelType": "Water",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FAB49",
+    "code": "FUEL",
+    "description": "LVR West Nursery",
+    "fuelType": "Water",
+    "__typename": "FuelAsset"
+  },
+  {
+    "number": "FAB62",
+    "code": "FUEL",
+    "description": "Moser Nursery",
+    "fuelType": "Water",
+    "__typename": "FuelAsset"
+  }
+]

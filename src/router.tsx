@@ -20,7 +20,6 @@ import WeanPage from "./pages/livestock-activity/forms/wean";
 import LivestockActivityLayout from "./pages/livestock-activity/layout";
 import MaintenancePage from "./pages/maintenance";
 import NotFoundPage from "./pages/not-found";
-import PostErrorPage from "./pages/post-error";
 import PostSuccessPage from "./pages/post-success";
 import QRScanner from "./pages/qrscanner";
 import ScorecardsPage from "./pages/scorecards";
@@ -140,14 +139,6 @@ export const router = createBrowserRouter([
             path: "job-header-updates",
             Component: JobHeaderUpdatesPage
           },
-          // {
-          //   path: "forminputs",
-          //   Component: FormsInput
-          // },
-          // {
-          //   path: "employees/:employeeId?/*",
-          //   Component: EmployeesCrudPage
-          // },
           {
             path: "qrcode",
             Component: QRScanner
@@ -155,10 +146,6 @@ export const router = createBrowserRouter([
           {
             path: "post-success",
             Component: PostSuccessPage
-          },
-          {
-            path: "post-error",
-            Component: PostErrorPage
           }
         ]
       },
