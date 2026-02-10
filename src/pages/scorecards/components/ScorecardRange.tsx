@@ -1,79 +1,50 @@
-import React, { useEffect } from "react";
-import { Box, FormControl, FormLabel, FormHelperText } from "@mui/material";
-import { TextField, TextArea } from "../../../components/inputs";
-import { useFormContext, Controller } from "react-hook-form";
+import { Stack, TextField } from "@mui/material";
+import { useFormContext } from "react-hook-form";
+import { TextArea } from "../../../components/inputs";
+import { ScorecardElement } from "../../../store/types/scorecards";
 
-export interface ScorecardRangeInputProps {
-  label: string;
-  id: string;
+interface ScorecardRangeProps {
+  element: ScorecardElement;
   min: number;
   max: number;
 }
 
-const ScorecardRangeInput: React.FC<ScorecardRangeInputProps> = ({
-  label,
-  id,
-  min,
-  max
-}) => {
-  // const { formState } = useScorecard();
-  const { control, formState: { errors } } = useFormContext();
-  const name = `${id}.numericValue`;
-  const commentsName = `${id}.stringValue`;
-  // const { stringValue, numericValue } = formState[id] || {};
+export default function ScorecardRange({ element, min, max }: ScorecardRangeProps) {
+  const {
+    register,
+    formState: { errors }
+  } = useFormContext();
 
   return (
-    <Box sx={{ mb: 3 }}>
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <FormLabel>{label}</FormLabel>
-        <Controller
-          name={name}
-          control={control}
-          rules={{
-            min: {
-              value: min,
-              message: `Must be at least ${min}.`
-            },
-            max: {
-              value: max,
-              message: `Must be at most ${max}.`
-            }
-          }}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              type="number"
-              placeholder={`Enter value (${min}-${max})`}
-              error={!!errors[name]}
-              helperText={errors[name] ? String(errors[name]?.message) : ""}
-            />
-          )}
-        />
-      </FormControl>
-      <FormControl fullWidth>
-        <FormLabel>Comments</FormLabel>
-        <Controller
-          name={commentsName}
-          control={control}
-          render={({ field }) => (
-            <TextArea
-              {...field}
-              rows={2}
-              placeholder="Enter comments"
-            />
-          )}
-        />
-      </FormControl>
-    </Box>
+    <Stack spacing={2}>
+      <TextField
+        {...register(`${element.id}.numericValue`, {
+          required: "This field is required",
+          min: {
+            value: min,
+            message: `Must be at least ${min}.`
+          },
+          max: {
+            value: max,
+            message: `Must be at most ${max}.`
+          },
+          valueAsNumber: true
+        })}
+        type="number"
+        placeholder={`Enter value (${min}-${max})`}
+        error={!!errors[`${element.id}.numericValue`]}
+        helperText={
+          errors[`${element.id}.numericValue`]
+            ? String(errors[`${element.id}.numericValue`]?.message)
+            : ""
+        }
+        fullWidth
+      />
+      <TextArea
+        {...register(`${element.id}.stringValue`)}
+        rows={2}
+        placeholder="Comments..."
+      />
+    </Stack>
   );
-};
-
-export interface FormValue {
-  stringValue?: string;
-  numericValue?: number;
 }
-
-export const isComplete = ({ numericValue }: FormValue) =>
-  typeof numericValue === "number";
-
-export default ScorecardRangeInput;

@@ -1,65 +1,46 @@
-import React, { useEffect } from "react";
-import { formatDistanceToNowStrict } from "date-fns";
-import { FormControl, FormLabel, Typography, Box } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
+import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
-import useLivestockJob from "./useLivestockJob";
+import { ScorecardElement } from "../../../store/types/scorecards";
 
-export interface ScorecardTargetTempProps {
-  label: string;
-  id: string;
+interface ScorecardTargetTempProps {
+  element: ScorecardElement;
 }
 
-const ScorecardTargetTemp: React.FC<ScorecardTargetTempProps> = ({
-  label,
-  id
-}) => {
-  const { job: livestockJob } = useLivestockJob();
-  const { setValue, register, unregister, watch } = useFormContext();
-  // const [loadResource, { data }] = useScorecardTargetTempLazyQuery();
-  const name = `${id}.numericValue`;
-  const targetTemp = watch(name);
+const MS_TO_DAYS_MULTIPLIER = 1000 * 60 * 60 * 24;
 
-  // useEffect(() => {
-  //   if (livestockJob && livestockJob.groupStartDate) {
-  //     const groupStartDate = new Date(livestockJob.groupStartDate);
-  //     const diff = formatDistanceToNowStrict(groupStartDate, {
-  //       unit: "day"
-  //     }).split(" ")[0];
-  //     const tempWeeks = Math.min(16, Math.floor(Math.ceil(Number(diff)) / 7));
-  //     const resourceNo = `${tempWeeks}TARGETTEMP`;
-  //     loadResource({ variables: { code: resourceNo } });
-  //   }
-  // }, [livestockJob, loadResource]);
-
-  // useEffect(() => {
-  //   if (data && data.resource && data.resource.unitPrice) {
-  //     setValue(name, data.resource.unitPrice);
-  //   }
-  // }, [data, setValue, name]);
+export default function ScorecardTargetTemp({ element }: ScorecardTargetTempProps) {
+  const { setValue, register, watch } = useFormContext();
+  const fieldName = `${element.id}.numericValue`;
+  const targetTemp = watch(fieldName);
 
   useEffect(() => {
-    register(name);
-    return () => unregister(name);
-  }, [register, name, unregister]);
+    // Calculate target temperature based on weeks on feed
+    // TODO: Replace this with actual livestock job data and GraphQL query when available
+
+    // Placeholder calculation - in production, this should:
+    // 1. Get groupStartDate from livestock job context
+    // 2. Calculate weeks on feed
+    // 3. Query for resource with code like "5TARGETTEMP" based on weeks
+    // 4. Get unitPrice from resource as the target temperature
+
+    const groupStartDate = new Date().getTime() - 45 * MS_TO_DAYS_MULTIPLIER; // Example: 45 days ago
+    const diff = (new Date().getTime() - groupStartDate) / MS_TO_DAYS_MULTIPLIER;
+    const tempWeeks = Math.min(16, Math.floor(Math.ceil(Number(diff)) / 7));
+
+    // Mock temperature lookup based on weeks (placeholder values)
+    // In production: loadResource({ variables: { code: `${tempWeeks}TARGETTEMP` } })
+    0;
+    // const temperature = mockTemperatures[tempWeeks] || 70;
+    // setValue(fieldName, temperature);
+  }, [setValue, fieldName]);
+
+  const displayValue = typeof targetTemp === "number" ? `${targetTemp} Degrees` : "Unknown";
 
   return (
-    <FormControl fullWidth sx={{ mb: 3 }}>
-      <FormLabel>{label}</FormLabel>
-      <Box sx={{ mt: 1, p: 2, backgroundColor: "grey.100", borderRadius: 1 }}>
-        <Typography variant="body1">
-          {typeof targetTemp === "number" ? `${targetTemp} Degrees` : "Unknown"}
-        </Typography>
-      </Box>
-    </FormControl>
+    <Stack direction="row" spacing={1}>
+      <Typography>{displayValue}</Typography>
+      <input type="hidden" {...register(fieldName, { valueAsNumber: true })} />
+    </Stack>
   );
-};
-
-export interface FormValue {
-  stringValue?: string;
-  numericValue?: number;
 }
-
-export const isComplete = ({ numericValue }: FormValue) =>
-  typeof numericValue === "number";
-
-export default ScorecardTargetTemp;

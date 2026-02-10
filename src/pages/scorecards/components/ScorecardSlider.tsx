@@ -1,54 +1,31 @@
-import { Box, Typography } from "@mui/material";
-import { FieldValues, UseFormReturn } from "react-hook-form";
-import { ScorecardElement } from "../../../store/types/scorecards";
+import { Stack, TextField } from "@mui/material";
+import { useFormContext } from "react-hook-form";
 import { Slider } from "../../../components/inputs";
+import { ScorecardElement } from "../../../store/types/scorecards";
 
-export type CodeConfigType = {
-  type: string;
+interface ScorecardSliderProps {
+  element: ScorecardElement;
   min: number;
   max: number;
   step: number;
-};
+  marks: Array<{ value: number; label: string }>;
+}
 
-const ScoreCardSlider = ({
-  codeConfig,
-  element,
-  formContext
-}: {
-  codeConfig: CodeConfigType;
-  formContext: UseFormReturn<FieldValues, any, FieldValues>;
-  element: ScorecardElement;
-}) => {
-  const {
-    register,
-    watch,
-    formState: { errors }
-  } = formContext || {};
-  const watchValue = watch ? watch(element.id) : undefined;
+export default function ScorecardSlider({ element, min, max, step, marks }: ScorecardSliderProps) {
+  const { register } = useFormContext();
+
   return (
-    <Box>
+    <Stack spacing={5}>
       <Slider
-        {...register(element.id, {
-          required: "This field is required",
-          min: { value: codeConfig.min, message: `Minimum value is ${codeConfig.min}` },
-          max: { value: codeConfig.max, message: `Maximum value is ${codeConfig.max}` },
-          valueAsNumber: true
-        })}
-        value={watchValue || codeConfig.min}
-        min={codeConfig.min}
-        max={codeConfig.max}
-        step={codeConfig.step}
-        marks
-        valueChip
-        // valueLabelDisplay="on"
+        {...register(`${element.id}.numericValue`, { required: "This field is required" })}
+        min={min}
+        max={max}
+        step={step}
+        valueLabelDisplay="auto"
+        marks={marks}
+        withInput
       />
-      {errors[element.id] && (
-        <Typography variant="caption" color="error">
-          {String(errors[element.id]?.message) ?? "Invalid value"}
-        </Typography>
-      )}
-    </Box>
+      <TextField {...register(`${element.id}.stringValue`)} placeholder="Comments..." fullWidth />
+    </Stack>
   );
-};
-
-export default ScoreCardSlider;
+}

@@ -1,52 +1,35 @@
-import React, { useEffect } from "react";
+import { Stack, Typography } from "@mui/material";
+import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
-import { FormControl, FormLabel, Typography, Box } from "@mui/material";
-import useLivestockJob from "./useLivestockJob";
+import { ScorecardElement } from "../../../store/types/scorecards";
 
-export interface ScorecardMortalityProps {
-  label: string;
-  id: string;
+interface ScorecardMortalityProps {
+  element: ScorecardElement;
 }
 
-const ScorecardMortality: React.FC<ScorecardMortalityProps> = ({
-  label,
-  id
-}) => {
-  const { job: livestockJob } = useLivestockJob();
-  const { setValue, register, unregister, watch } = useFormContext();
-  const name = `${id}.numericValue`;
+export default function ScorecardMortality({ element }: ScorecardMortalityProps) {
+  const { setValue, register, watch } = useFormContext();
+  const fieldName = `${element.id}.numericValue`;
+  const deadQuantity = watch(fieldName);
 
   useEffect(() => {
-    register(name);
-    return () => unregister(name);
-  }, [register, name, unregister]);
+    // TODO: Replace this with actual livestock job data when available
+    // For now, using a placeholder value
+    const mockDeadQuantity = 0; // Replace with: livestockJob?.deadQuantity
 
-  useEffect(() => {
-    if (
-      livestockJob &&
-      livestockJob.deadQuantity &&
-      livestockJob.deadQuantity > 0
-    ) {
-      setValue(name, livestockJob.deadQuantity);
+    if (mockDeadQuantity && mockDeadQuantity > 0) {
+      setValue(fieldName, mockDeadQuantity);
     } else {
-      setValue(name, null);
+      setValue(fieldName, null);
     }
-  }, [livestockJob, setValue, name]);
+  }, [setValue, fieldName]);
 
-  let deadQuantity = watch(name);
+  const displayValue = typeof deadQuantity === "number" ? `${deadQuantity} deads` : "None";
 
   return (
-    <FormControl fullWidth sx={{ mb: 3 }}>
-      <FormLabel>{label}</FormLabel>
-      <Box sx={{ mt: 1, p: 2, backgroundColor: "grey.100", borderRadius: 1 }}>
-        <Typography variant="body1">
-          {typeof deadQuantity === "number" ? `${deadQuantity} deads` : "None"}
-        </Typography>
-      </Box>
-    </FormControl>
+    <Stack direction="row" spacing={1} alignItems="end">
+      <Typography>{displayValue}</Typography>
+      <input type="hidden" {...register(fieldName, { valueAsNumber: true })} />
+    </Stack>
   );
-};
-
-export const isComplete = () => true;
-
-export default ScorecardMortality;
+}

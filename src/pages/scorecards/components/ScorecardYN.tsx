@@ -1,15 +1,13 @@
 import { Button, ButtonGroup, FormHelperText, Stack } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
-import { TextArea } from "../../../components/inputs";
 import { ScorecardElement } from "../../../store/types/scorecards";
 
-interface ScorecardPassFailProps {
+interface ScorecardYNProps {
   element: ScorecardElement;
 }
 
-export default function ScorecardPassFail({ element }: ScorecardPassFailProps) {
+export default function ScorecardYN({ element }: ScorecardYNProps) {
   const {
-    register,
     control,
     formState: { errors }
   } = useFormContext();
@@ -19,6 +17,7 @@ export default function ScorecardPassFail({ element }: ScorecardPassFailProps) {
       <Controller
         name={`${element.id}.numericValue`}
         control={control}
+        defaultValue={0}
         rules={{ required: "Please make a selection" }}
         render={({ field }) => (
           <ButtonGroup orientation="horizontal" fullWidth>
@@ -26,13 +25,13 @@ export default function ScorecardPassFail({ element }: ScorecardPassFailProps) {
               variant={field.value === 1 ? "contained" : "outlined"}
               onClick={() => field.onChange(1)}
             >
-              Pass
+              Yes
             </Button>
             <Button
               variant={field.value === -1 ? "contained" : "outlined"}
               onClick={() => field.onChange(-1)}
             >
-              Fail
+              No
             </Button>
           </ButtonGroup>
         )}
@@ -42,11 +41,6 @@ export default function ScorecardPassFail({ element }: ScorecardPassFailProps) {
           {String(errors[`${element.id}.numericValue`]?.message)}
         </FormHelperText>
       )}
-      <TextArea
-        {...register(`${element.id}.stringValue`)}
-        rows={2}
-        placeholder="Comments..."
-      />
     </Stack>
   );
 }
