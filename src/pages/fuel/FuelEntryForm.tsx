@@ -5,13 +5,8 @@ import LoadingSpinner from "../../components/framework/LoadingSpinner";
 import { DatePicker, TextArea, TextField } from "../../components/inputs";
 import { useFuelStore } from "../../store/fuelStore";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
-
-interface FuelFormData {
-  activityDate: string;
-  gallons: number;
-  currentMiles: number;
-  comments?: string;
-}
+import { FuelFormData } from "../../store/types/fuel";
+import { isEmpty } from "lodash";
 
 export default function FuelEntryForm() {
   const [initLoading, setInitLoading] = useState(true);
@@ -58,7 +53,11 @@ export default function FuelEntryForm() {
 
             <Divider />
 
-            {!selectedFuelAsset && <Typography>Select a fuel asset to enter details.</Typography>}
+            {!selectedFuelAsset && (
+              <Typography align="center" sx={{ pt: 2 }}>
+                Select a fuel asset to enter details.
+              </Typography>
+            )}
             {isFuelLoading && <LoadingSpinner />}
             {selectedFuelAsset && !isFuelLoading && (
               <>

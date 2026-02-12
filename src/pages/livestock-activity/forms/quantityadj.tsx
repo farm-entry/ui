@@ -29,6 +29,8 @@ import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../..
 import { QTYADJ_STORAGE_KEY } from "./constants-livestock.json";
 import { useNavigate } from "react-router";
 
+const FORM_STORAGE_HOURS = 48;
+
 interface QuantityAdjFormData extends FormData {
   group: string | number | null;
   healthStatus: string | number | null;
@@ -94,32 +96,47 @@ export default function QuantityAdjPage() {
   });
 
   useEffect(() => {
+    let isMounted = true;
     setInitLoading(true);
     const promises = [];
     if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "QTYADJ"))
       promises.push(getEvents("QTYADJ"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
 
-    Promise.all(promises).then(() => setInitLoading(false));
+    Promise.all(promises).then(() => {
+      if (isMounted) {
+        setInitLoading(false);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
+  const groupValue = watch("group");
   useEffect(() => {
-    const group = watch("group");
-    group &&
-      getPostingGroupDetails(group).then((details) => {
-        console.log({ details });
+    if (groupValue) {
+      getPostingGroupDetails(groupValue).then((details) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.log({ details });
+        }
         setInventory({ group: details?.inventory ?? 0 });
         setDeads({ group: details?.deadQuantity ?? 0 });
       });
-  }, [watch("group")]);
+    }
+  }, [groupValue, getPostingGroupDetails]);
 
+  const quantityValue = watch("quantity");
   useEffect(() => {
-    if ((watch("quantity") ?? 0) < 0) setMultiplier(-1); //defaults to positive, so only set negative
+    if ((quantityValue ?? 0) < 0) setMultiplier(-1); //defaults to positive, so only set negative
     setValue("quantity", Math.abs(getValues("quantity") ?? 0) || null);
-  }, [watch("quantity")]);
+  }, [quantityValue, setValue, getValues]);
 
   const onSubmit = async (data: QuantityAdjFormData) => {
-    console.log("All required fields validated successfully!");
+    if (process.env.NODE_ENV === 'development') {
+      console.log("All required fields validated successfully!");
+    }
     setInitLoading(true);
     const formData = { ...getValues(), quantity: multiplier * (getValues("quantity") ?? 0) };
     const state = {
@@ -129,13 +146,15 @@ export default function QuantityAdjPage() {
     livestockActivityApi
       .postLivestockEvent(data)
       .then(() => {
-        console.log("Form submitted:", data);
+        if (process.env.NODE_ENV === 'development') {
+          console.log("Form submitted:", data);
+        }
         navigate("/post-success", { state });
       })
-      .catch((e: any) => {
+      .catch((error: Error) => {
         console.error("Unable to post form.");
-        const errorMessage = e.message || "Unable to submit form. Please try again.";
-        const errorTitle = e.code || data.form + "_SUBMISSION_ERROR";
+        const errorMessage = error.message || "Unable to submit form. Please try again.";
+        const errorTitle = (error as any).code || data.form + "_SUBMISSION_ERROR";
         setAlert("error", errorMessage, errorTitle);
       })
       .finally(() => {
@@ -145,7 +164,7 @@ export default function QuantityAdjPage() {
 
   const onSave = () => {
     const formData = { ...getValues(), quantity: multiplier * (getValues("quantity") ?? 0) };
-    saveForm(QTYADJ_STORAGE_KEY, formData, 48);
+    saveForm(QTYADJ_STORAGE_KEY, formData, FORM_STORAGE_HOURS);
   };
 
   const handleReset = () => {
@@ -229,8 +248,7 @@ export default function QuantityAdjPage() {
                       : null
                   }
                   placeholder={
-                    (postingGroupDetails && postingGroupDetails.healthStatus?.Description) ||
-                    healthStatuses.length
+                    postingGroupDetails?.healthStatus?.Description || healthStatuses.length > 0
                       ? "Health Status"
                       : "Select a valid group"
                   }

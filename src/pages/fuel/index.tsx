@@ -19,11 +19,13 @@ interface TabPanelProps {
 
 const defaultValues: FuelFormData = {
   fuelAsset: "",
-  activityDate: new Date().toISOString().split("T")[0],
+  activityDate: new Date().toLocaleDateString("en-CA"),
   gallons: 0,
   currentMiles: 0,
   comments: ""
 };
+
+console.log("Default values:", defaultValues);
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
@@ -52,12 +54,13 @@ export default function FuelPage() {
     getFuelAssets
   } = useFuelStore();
 
-  const formContext = useForm<FuelFormData>();
+  const formContext = useForm<FuelFormData>({ defaultValues });
 
   const {
     register,
     watch,
     reset,
+    setValue,
     formState: { errors }
   } = formContext;
 
@@ -79,13 +82,17 @@ export default function FuelPage() {
   const setFuelAsset = (value: TypeAheadOption | null) => {
     console.log("Selected fuel asset changed:", value?.value, selectedFuelAsset?.number);
     if (value?.value && value?.value !== selectedFuelAsset?.number) {
-      getFuelAssetDetails(`${value.value}`).then((asset) => setSelectedFuelAsset(asset));
+      getFuelAssetDetails(`${value.value}`).then((asset) => {
+        setValue("fuelAsset", asset?.number || "");
+        setSelectedFuelAsset(asset);
+      });
     } else if (!value) {
       setSelectedFuelAsset(null);
     }
   };
 
   const handleReset = () => {
+    setSelectedFuelAsset(null);
     reset(defaultValues);
   };
 
@@ -97,7 +104,7 @@ export default function FuelPage() {
         button={{ label: "reset", onClick: handleReset }}
       />
       <FormProvider {...formContext}>
-        <Paper elevation={0} sx={{ p: 3, mb: 2 }}>
+        <Paper elevation={0} sx={{ p: 1 }}>
           <Stack>
             <TypeAhead
               {...register("fuelAsset", { required: "Fuel asset is required" })}

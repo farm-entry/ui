@@ -21,6 +21,8 @@ import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../..
 import { PURCHASE_STORAGE_KEY } from "./constants-livestock.json";
 import { useNavigate } from "react-router";
 
+const FORM_STORAGE_HOURS = 48;
+
 interface PurchaseFormData extends FormData {
   group: string | number | null;
   healthStatus: string | number | null;
@@ -75,27 +77,41 @@ export default function PurchasePage() {
   });
 
   useEffect(() => {
+    let isMounted = true;
     setInitLoading(true);
     const promises = [];
     if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "PURCHASE"))
       promises.push(getEvents("PURCHASE"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
 
-    Promise.all(promises).then(() => setInitLoading(false));
+    Promise.all(promises).then(() => {
+      if (isMounted) {
+        setInitLoading(false);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
+  const groupValue = watch("group");
   useEffect(() => {
-    const group = watch("group");
-    group &&
-      getPostingGroupDetails(group).then((details) => {
-        console.log({ details });
+    if (groupValue) {
+      getPostingGroupDetails(groupValue).then((details) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.log({ details });
+        }
         setInventory({ group: details?.inventory ?? 0 });
         setDeads({ group: details?.deadQuantity ?? 0 });
       });
-  }, [watch("group")]);
+    }
+  }, [groupValue, getPostingGroupDetails]);
 
   const onSubmit = async (data: PurchaseFormData) => {
-    console.log("All required fields validated successfully!");
+    if (process.env.NODE_ENV === 'development') {
+      console.log("All required fields validated successfully!");
+    }
     setInitLoading(true);
     const state = {
       formData: data,
@@ -104,13 +120,15 @@ export default function PurchasePage() {
     livestockActivityApi
       .postLivestockEvent(data)
       .then(() => {
-        console.log("Form submitted:", data);
+        if (process.env.NODE_ENV === 'development') {
+          console.log("Form submitted:", data);
+        }
         navigate("/post-success", { state });
       })
-      .catch((e: any) => {
+      .catch((error: Error) => {
         console.error("Unable to post form.");
-        const errorMessage = e.message || "Unable to submit form. Please try again.";
-        const errorTitle = e.code || data.form + "_SUBMISSION_ERROR";
+        const errorMessage = error.message || "Unable to submit form. Please try again.";
+        const errorTitle = (error as any).code || data.form + "_SUBMISSION_ERROR";
         setAlert("error", errorMessage, errorTitle);
       })
       .finally(() => {
@@ -120,7 +138,7 @@ export default function PurchasePage() {
 
   const onSave = () => {
     const formData = getValues();
-    saveForm(PURCHASE_STORAGE_KEY, formData, 48);
+    saveForm(PURCHASE_STORAGE_KEY, formData, FORM_STORAGE_HOURS);
   };
 
   const handleReset = () => {
@@ -201,8 +219,7 @@ export default function PurchasePage() {
                       : null
                   }
                   placeholder={
-                    (postingGroupDetails && postingGroupDetails.healthStatus?.Description) ||
-                    healthStatuses.length
+                    postingGroupDetails?.healthStatus?.Description || healthStatuses.length > 0
                       ? "Health Status"
                       : "Select a valid group"
                   }

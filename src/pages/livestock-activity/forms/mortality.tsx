@@ -21,6 +21,8 @@ import { FormData } from "../../../store/types/forms";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { MORTALITY_STORAGE_KEY } from "./constants-livestock.json";
 
+const FORM_STORAGE_HOURS = 48;
+
 interface MortalityFormData extends FormData {
   job: string | number | null;
   healthStatus: string | number | null;
@@ -73,17 +75,24 @@ export default function MortalityPage() {
     mode: "onSubmit"
   });
 
+  const jobValue = watch("job");
   useEffect(() => {
-    const job = watch("job");
-    job && getPostingGroupDetails(job);
-  }, [watch("job")]);
+    if (jobValue) {
+      getPostingGroupDetails(jobValue);
+    }
+  }, [jobValue, getPostingGroupDetails]);
 
   useEffect(() => {
+    let isMounted = true;
     setInitLoading(true);
     const promises = [];
     if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "MORTALITY"))
       promises.push(
-        getEvents("MORTALITY").then((x) => setEventReasons(filterEventReasons(x?.events)))
+        getEvents("MORTALITY").then((x) => {
+          if (isMounted) {
+            setEventReasons(filterEventReasons(x?.events));
+          }
+        })
       );
     else {
       setEventReasons(filterEventReasons(eventTypes));
@@ -91,15 +100,23 @@ export default function MortalityPage() {
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
 
     Promise.all(promises).then(() => {
-      setInitLoading(false);
+      if (isMounted) {
+        setInitLoading(false);
+      }
     });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const filterEventReasons = (ev: EventType[] = []) =>
     ev?.find((et) => et.code === "MORTALITY")?.reasons || [];
 
   const onSubmit = async (data: MortalityFormData) => {
-    console.log("All required fields validated successfully!");
+    if (process.env.NODE_ENV === 'development') {
+      console.log("All required fields validated successfully!");
+    }
     setInitLoading(true);
     const state = { formData: data, section: "livestock-activity" };
     livestockActivityApi
@@ -107,10 +124,10 @@ export default function MortalityPage() {
       .then(() => {
         navigate("/post-success", { state });
       })
-      .catch((e: any) => {
+      .catch((error: Error) => {
         console.error("Unable to post form.");
-        const errorMessage = e.message || "Unable to submit form. Please try again.";
-        const errorTitle = e.code || data.form + "_SUBMISSION_ERROR";
+        const errorMessage = error.message || "Unable to submit form. Please try again.";
+        const errorTitle = (error as any).code || data.form + "_SUBMISSION_ERROR";
         setAlert("error", errorMessage, errorTitle);
       })
       .finally(() => {
@@ -120,7 +137,7 @@ export default function MortalityPage() {
 
   const onSave = () => {
     const formData = getValues();
-    saveForm(MORTALITY_STORAGE_KEY, formData, 48);
+    saveForm(MORTALITY_STORAGE_KEY, formData, FORM_STORAGE_HOURS);
   };
 
   const handleReset = () => {
@@ -187,8 +204,7 @@ export default function MortalityPage() {
                         : null
                     }
                     placeholder={
-                      (postingGroupDetails && postingGroupDetails.healthStatus?.Description) ||
-                      healthStatuses.length
+                      postingGroupDetails?.healthStatus?.Description || healthStatuses.length > 0
                         ? "Health Status"
                         : "Select a valid job"
                     }
