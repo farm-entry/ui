@@ -1,8 +1,3 @@
-import {
-  mockHealthStatuses,
-  mockLivestockGradeOffEventTypes,
-  mockLivestockMortalityEventTypes
-} from "../mock";
 import type { ActivityType, FormData as LivestockFormData } from "../store/types/forms";
 import { EventType, HealthStatus } from "../store/types/livestockActivity";
 import { HandleError } from "./handleError";

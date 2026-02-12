@@ -9,7 +9,7 @@ import CustomFormsLayout from "../../layouts/forms";
 import { scorecardPages } from "../../mock";
 import { usePostingGroupsStore } from "../../store/postingGroupsStore";
 import { ScorecardPages } from "../../store/types/scorecards";
-import ScorecardElementRenderer from "./ScorecardElementRenderer";
+import ScorecardElementRenderer from "./components/ScorecardElementRenderer";
 import ScorecardSetup from "./components/ScorecardSetup";
 import { transformScorecardFormData } from "./helpers";
 
@@ -47,18 +47,18 @@ export default function ScorecardsPage() {
   } = methods;
 
   const handleNext = async () => {
-    let fieldsToValidate: string[];
-    if (activeStep === 0) {
-      fieldsToValidate = ["postingGroup", "scorecardType"];
-    } else {
-      const currentPageElements = pages[activeStep - 1]?.elements || [];
-      fieldsToValidate = currentPageElements.map((element) => element.id);
-      console.log("Fields to validate:", fieldsToValidate);
-    }
+    console.log({ formState: getValues() });
 
-    const isStepValid = await trigger(fieldsToValidate, { shouldFocus: true });
+    // let fieldsToValidate: string[];
+    // if (activeStep === 0) {
+    //   fieldsToValidate = ["postingGroup", "scorecardType"];
+    // } else {
+    //   const currentPageElements = pages[activeStep - 1]?.elements || [];
+    //   fieldsToValidate = currentPageElements.map((element) => element.id);
+    // }
 
-    console.log("Fields to validate:", isStepValid);
+    // const isStepValid = await trigger(fieldsToValidate);
+    const isStepValid = true;
 
     if (isStepValid && activeStep < pages.length) {
       setActiveStep((prevStep) => prevStep + 1);
@@ -118,7 +118,12 @@ export default function ScorecardsPage() {
       {initLoading && <LoadingSpinner />}
       {!initLoading && (
         <CustomFormsLayout>
-          <Stepper activeStep={activeStep} sx={{ mb: 2 }}>
+          <CustomHeader
+            icon={Assignment}
+            title={activeStep === 0 ? "Scorecard Setup" : pages[activeStep - 1].title}
+          />
+
+          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
             <Step>
               <StepLabel>Setup</StepLabel>
             </Step>
@@ -144,16 +149,7 @@ export default function ScorecardsPage() {
                 )}
 
                 {activeStep > 0 && pages[activeStep - 1] && (
-                  <PageContainer
-                    slots={{
-                      header: () => (
-                        <CustomHeader
-                          icon={Assignment}
-                          title={activeStep === 0 ? "Scorecard Setup" : pages[activeStep - 1].title}
-                        />
-                      )
-                    }}
-                  >
+                  <PageContainer>
                     {pages[activeStep - 1].elements.map((element, index) => (
                       <Stack key={element.id} spacing={2} mb={2}>
                         <ScorecardElementRenderer element={element} elementIndex={index} />

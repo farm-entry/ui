@@ -21,6 +21,8 @@ import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../..
 import { WEAN_STORAGE_KEY } from "./constants-livestock.json";
 import { useNavigate } from "react-router";
 
+const FORM_STORAGE_HOURS = 48;
+
 interface WeanFormData extends FormData {
   group: string | number | null;
   healthStatus: string | number | null;
@@ -41,13 +43,13 @@ const defaultValues: WeanFormData = {
   quantity: null,
   smallLivestockQuantity: null,
   totalWeight: null,
-  comments: "",
+  comments: ""
 };
 
 const columns = [
   { field: "postingGroup", headerName: "Posting Group", flex: 2 },
   { field: "inventory", headerName: "Inventory", flex: 1 },
-  { field: "deads", headerName: "Deads", flex: 1 },
+  { field: "deads", headerName: "Deads", flex: 1 }
 ];
 
 export default function WeanPage() {
@@ -68,49 +70,65 @@ export default function WeanPage() {
     watch,
     setValue,
     getValues,
-    formState: { errors },
+    formState: { errors }
   } = useForm<WeanFormData>({
     defaultValues: defaultValues,
-    mode: "onSubmit",
+    mode: "onSubmit"
   });
 
   useEffect(() => {
+    let isMounted = true;
     setInitLoading(true);
     const promises = [];
     if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "WEAN"))
       promises.push(getEvents("WEAN"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
 
-    Promise.all(promises).then(() => setInitLoading(false));
+    Promise.all(promises).then(() => {
+      if (isMounted) {
+        setInitLoading(false);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
+  const groupValue = watch("group");
   useEffect(() => {
-    const group = watch("group");
-    group &&
-      getPostingGroupDetails(group).then((details) => {
-        console.log({ details });
+    if (groupValue) {
+      getPostingGroupDetails(groupValue).then((details) => {
+        if (process.env.NODE_ENV === 'development') {
+          console.log({ details });
+        }
         setInventory({ group: details?.inventory ?? 0 });
         setDeads({ group: details?.deadQuantity ?? 0 });
       });
-  }, [watch("group")]);
+    }
+  }, [groupValue, getPostingGroupDetails]);
 
   const onSubmit = async (data: WeanFormData) => {
-    console.log("All required fields validated successfully!");
+    if (process.env.NODE_ENV === 'development') {
+      console.log("All required fields validated successfully!");
+    }
     setInitLoading(true);
     const state = {
       formData: data,
-      section: "livestock-activity",
+      section: "livestock-activity"
     };
     livestockActivityApi
       .postLivestockEvent(data)
       .then(() => {
-        console.log("Form submitted:", data);
+        if (process.env.NODE_ENV === 'development') {
+          console.log("Form submitted:", data);
+        }
         navigate("/post-success", { state });
       })
-      .catch((e: any) => {
+      .catch((error: Error) => {
         console.error("Unable to post form.");
-        const errorMessage = e.message || "Unable to submit form. Please try again.";
-        const errorTitle = e.code || data.form + "_SUBMISSION_ERROR";
+        const errorMessage = error.message || "Unable to submit form. Please try again.";
+        const errorTitle = (error as any).code || data.form + "_SUBMISSION_ERROR";
         setAlert("error", errorMessage, errorTitle);
       })
       .finally(() => {
@@ -120,7 +138,7 @@ export default function WeanPage() {
 
   const onSave = () => {
     const formData = getValues();
-    saveForm(WEAN_STORAGE_KEY, formData, 48);
+    saveForm(WEAN_STORAGE_KEY, formData, FORM_STORAGE_HOURS);
   };
 
   const handleReset = () => {
@@ -131,14 +149,20 @@ export default function WeanPage() {
     );
   };
 
-  const formatLabel = (group: PostingGroup) =>
-    `${group.number} ${group.description}`;
+  const formatLabel = (group: PostingGroup) => `${group.number} ${group.description}`;
 
   return (
     <>
-      <CustomNotice<WeanFormData> formType={WEAN_STORAGE_KEY} onLoad={(data) => reset({ ...getValues(), ...data })} />
+      <CustomNotice<WeanFormData>
+        formType={WEAN_STORAGE_KEY}
+        onLoad={(data) => reset({ ...getValues(), ...data })}
+      />
       <CustomFormsLayout>
-        <CustomHeader icon={Celebration} title="Wean" button={{ label: "reset", onClick: handleReset }} />
+        <CustomHeader
+          icon={Celebration}
+          title="Wean"
+          button={{ label: "reset", onClick: handleReset }}
+        />
         {initLoading && <LoadingSpinner />}
         {!initLoading && (
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -167,8 +191,8 @@ export default function WeanPage() {
                       name: "group",
                       postingGroup: watch("group"),
                       inventory: inventory.group,
-                      deads: deads.group,
-                    },
+                      deads: deads.group
+                    }
                   ]}
                   columns={columns}
                 />
@@ -177,7 +201,7 @@ export default function WeanPage() {
               <Stack>
                 <TypeAhead
                   {...register("healthStatus", {
-                    required: "Health Status is required",
+                    required: "Health Status is required"
                   })}
                   handleChange={(v) => setValue("healthStatus", v?.value ? String(v.value) : null)}
                   loading={postingGroupsLoading}
@@ -190,18 +214,19 @@ export default function WeanPage() {
                     postingGroupDetails?.healthStatus?.Code
                       ? {
                           label: postingGroupDetails.healthStatus.Description,
-                          value: postingGroupDetails.healthStatus.Code,
+                          value: postingGroupDetails.healthStatus.Code
                         }
                       : null
                   }
                   placeholder={
-                    (postingGroupDetails && postingGroupDetails.healthStatus?.Description) ||
-                    healthStatuses.length > 0
+                    postingGroupDetails?.healthStatus?.Description || healthStatuses.length > 0
                       ? "Health Status"
                       : "Select a valid group"
                   }
                 />
-                {errors.healthStatus && <FormHelperText error>{errors.healthStatus.message}</FormHelperText>}
+                {errors.healthStatus && (
+                  <FormHelperText error>{errors.healthStatus.message}</FormHelperText>
+                )}
               </Stack>
 
               <Divider />
@@ -224,7 +249,7 @@ export default function WeanPage() {
               <Stack>
                 <DatePicker
                   {...register("postingDate", {
-                    required: "Posting Date is required",
+                    required: "Posting Date is required"
                   })}
                   value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
                   onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
@@ -244,8 +269,8 @@ export default function WeanPage() {
                       required: "Total quantity is required",
                       min: {
                         value: 1,
-                        message: "Quantity must be greater than 0",
-                      },
+                        message: "Quantity must be greater than 0"
+                      }
                     })}
                     error={!!errors.quantity}
                     helperText={errors.quantity?.message}
@@ -257,7 +282,7 @@ export default function WeanPage() {
                     type="number"
                     {...register("smallLivestockQuantity", {
                       required: "Small livestock quantity is required",
-                      min: { value: 0, message: "Quantity cannot be negative" },
+                      min: { value: 0, message: "Quantity cannot be negative" }
                     })}
                     error={!!errors.smallLivestockQuantity}
                     helperText={errors.smallLivestockQuantity?.message}
@@ -269,7 +294,7 @@ export default function WeanPage() {
                 <TextField
                   {...register("totalWeight", {
                     required: "Total weight is required",
-                    min: { value: 1, message: "Weight must be greater than 0" },
+                    min: { value: 1, message: "Weight must be greater than 0" }
                   })}
                   placeholder="Total Weight"
                   type="number"
@@ -279,7 +304,9 @@ export default function WeanPage() {
               </Stack>
               <Divider />
               <TextArea
-                {...register("comments", { maxLength: { value: 50, message: "Comments cannot exceed 50 characters" } })}
+                {...register("comments", {
+                  maxLength: { value: 50, message: "Comments cannot exceed 50 characters" }
+                })}
                 placeholder="Comments"
                 type="text"
                 error={!!errors.comments}

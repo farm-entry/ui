@@ -1,0 +1,1347 @@
+[
+  {
+    "number": "FA0004",
+    "description": "30x300 Cattle Shed",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0005",
+    "description": "Feed Shed-Cattle",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0006",
+    "description": "Processing Shed-Perry's",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0007",
+    "description": "Quanset",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0009",
+    "description": "150x320 Concrete Feed Floor",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0010",
+    "description": "Bunk Driveway",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0011",
+    "description": "Machine Shed-Perry",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0012",
+    "description": "Updated Corral-Perry",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0013",
+    "description": "Perry Bunker",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0014",
+    "description": "Settling Basin - Perry",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0015",
+    "description": "Pen 5 - Perry",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0103",
+    "description": "West Finishers (4 barn site)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0104",
+    "description": "Finisher-Perry East (1996)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0106",
+    "description": "Finisher-Perry's Tunnel Barn-West (2008)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0152",
+    "description": "2026 Well Project",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0187",
+    "description": "PHC share of shop",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0203",
+    "description": "Supply Storage Shed for Hog Supplies",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0204",
+    "description": "Well shed at Jess's",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0220",
+    "description": "2018 West loadout - sow farm",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0229",
+    "description": "Shed (Jess's shed/garage)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0236",
+    "description": "Finishing Barn - Ross",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0546M",
+    "description": "West / Middle Lots",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0553M",
+    "description": "East Lot, including Fenceline and Bunks",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0554M",
+    "description": "CATTLE CONFINEMENT",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0555M",
+    "description": "Processing CATTLE SHED",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0563M",
+    "description": "Pen 12 Dwight's CONCRETE FLOOR - SECTION 18",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0564M",
+    "description": "Pen 13 Dwight's FEED FLOORS",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0565M",
+    "description": "Hoop Bldg HAY SHED",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0582M",
+    "description": "MACHINE SHED - SECT 12",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0601M",
+    "description": "Machine Shed - Feucht Farm",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0001",
+    "description": "2020 Robotic Power Washer (Wash Hand 2.0)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0002",
+    "description": "2011 JD 244J loader",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0003",
+    "description": "2020 Hog Carcass Processor - Rio Grinder",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0018",
+    "description": "2020 ESF Feed Stations - Sow Farm",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0020",
+    "description": "15 KW Generator",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0022",
+    "description": "JD 4555 Tractor",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0023",
+    "description": "Fenceline Bunk-Cattle",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0024",
+    "description": "Cattle Gates & Waterers",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0025",
+    "description": "Leica Rugby Dual Grade Laser",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0026",
+    "description": "Fencing-  Pipe & Rods",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0028",
+    "description": "Cattle processing system (Real Mfg.)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0031",
+    "description": "MacDon Bale Carrier",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0032",
+    "description": "Bale King Shredder",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0034",
+    "description": "JD 7520 Tractor",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0037",
+    "description": "Concrete Power Screed 22.5'",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0050",
+    "description": "2020 Houle 7300 Manure Tank 15'",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0053",
+    "description": "Demco Wagon-300 bu",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0055",
+    "description": "Alloway Stalk Shredder",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0057",
+    "description": "1966 Butler Tanker Trailer",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0059",
+    "description": "JD 510 Ripper",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0061",
+    "description": "2007 Crown Stand-Up Forklift",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0064",
+    "description": "1997 JD 8400T Tractor",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0069",
+    "description": "Houle 12' pump",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0070",
+    "description": "Kuhn Mower",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0071",
+    "description": "2021 Action Trackporter Mortality Cart",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0072",
+    "description": "Kinze 850 Grain Cart",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0074",
+    "description": "JD 637 29.3' Disc",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0075",
+    "description": "DB48 Planter",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0076",
+    "description": "Balzer Transfer Pump",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0077",
+    "description": "2310 Mulcher/Finisher",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0078",
+    "description": "Upright Fuel Tank (East One)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0082",
+    "description": "Wilmar 800 fertilizer spreader",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0083",
+    "description": "Kuhn 4220 Rake",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0084",
+    "description": "2013 Hardi 4400 Commander sprayer",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0087",
+    "description": "JD 612C Corn Head",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0088",
+    "description": "2014 Sunflower finisher 28'",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0089",
+    "description": "Roll-off dumpster",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0092",
+    "description": "Dirt Carrier",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0093",
+    "description": "Wildcat Snowblower",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0096",
+    "description": "12' Snodozer",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0100",
+    "description": "JD Z930M Mower",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0101",
+    "description": "MDS pallet forks from DMI",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0102",
+    "description": "Jumper Compactor",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0107",
+    "description": "West Finisher 2012 Remodel-Equipment",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0108",
+    "description": "Equipment-Perry's Tunnel Barn",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0135",
+    "description": "1999 Cargo Trailer (Teunissen white)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0143",
+    "description": "2014 Propane tank 1000 gal - Truck Wash",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0144",
+    "description": "2014 Power washer-truck wash",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0146",
+    "description": "10 used propane tanks",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0150",
+    "description": "2015 Filters- new sow farm",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0163",
+    "description": "2000 Boar Bot",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0167",
+    "description": "2002 Boar Bot",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0190",
+    "description": "Forklift",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0192",
+    "description": "Shop equipment",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0193",
+    "description": "Shop lift",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0198",
+    "description": "Upright Fuel Tank (West One)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0210",
+    "description": "2016 Batco fertilizer conveyor",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0212",
+    "description": "Manure pusher",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0215",
+    "description": "2016 black PJ Trailer mounted manure pump",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0216",
+    "description": "2006 Daewoo G25E-3 Forklift",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0217",
+    "description": "Kifco traveling gun (13.5%)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0221",
+    "description": "Pressure washer-finishers",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0234",
+    "description": "2019 CWS Ozone System",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0247E",
+    "description": "JLG 135SP Lift (orange)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0248E",
+    "description": "JD 322 Skid Loader",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0249E",
+    "description": "JD 323E Skid Loader",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0250E",
+    "description": "JD 331G Skid Loader",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0257E",
+    "description": "JD Z930M Mower",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0258E",
+    "description": "JD F687 Mower 60 in",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0259E",
+    "description": "JD F687 Mower 54 in",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0260E",
+    "description": "JD F687 Mower 54 in",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0261E",
+    "description": "JD Z960R Mower",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0262E",
+    "description": "Cat 304CR Mini Ex",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0266",
+    "description": "2016 20 HP Red Power Washer",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0267",
+    "description": "2016 20 HP Yellow Power Washer",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0268",
+    "description": "2024 2-10 HP Green Pump Power Washer",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0270",
+    "description": "S Gestation Cold Pump",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0271",
+    "description": "Tool Room  Cold Pump",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0302",
+    "description": "2020 JD 8400R Tractor",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0303",
+    "description": "JD Combine S770",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0305",
+    "description": "Kinze 1051 Grain Cart",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0308",
+    "description": "2015 Freightliner bulk feed truck Walinga",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0310",
+    "description": "White Propane Fuel Cart",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0312",
+    "description": "Demco Hay Rack",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0320",
+    "description": "2021 JCB 427 Agri Payloader",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0322",
+    "description": "HR 880 PIK RITE SPREADER - Disposed",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0329E",
+    "description": "6140 JD Rodney",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0331",
+    "description": "2023 Eby Maverick LS 20' Stock Trailer",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0340",
+    "description": "2020 Vermeer 605N round baler",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0348",
+    "description": "2021 BTR Trailer",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0351",
+    "description": "2022 JCB 427 Wheel Loader",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0352",
+    "description": "2024 JCB Telehandler 560-80AG+",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0355",
+    "description": "2020 Chevy Express G2500",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0356",
+    "description": "2013 Chevy Equinox (Tan)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0357",
+    "description": "UV Biosecurity Lighting",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0361",
+    "description": "Buhler Inland Bale Mover",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0362",
+    "description": "Puck Hose cart green with supply hose",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0363",
+    "description": "Bazooka Hose cart yellow with drag hose",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0364",
+    "description": "Bazooka Dragline toolbar",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0365",
+    "description": "Sullivan Air Compressor orange",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0366",
+    "description": "Zoske Manure Pump",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0367",
+    "description": "Zoske Hose Mover Red",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0368",
+    "description": "Grow Finish Robotic Power Washer Washpower",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0369",
+    "description": "2023 Polaris Sportsman",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0370",
+    "description": "2001 Isuzu Reefer Truck",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0378",
+    "description": "2024 JD S780 Combine",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0379",
+    "description": "JD 635 HFD Bean Head",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0381",
+    "description": "2019 Black Mack",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0382",
+    "description": "2022 White Mack",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0383",
+    "description": "JBS 3048E Spreader",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0500M",
+    "description": "4020 JD TRACTOR 1970",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0501M",
+    "description": "4020 JD TRACTOR 1968",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0502M",
+    "description": "4440 JD TRACTOR - Powershift",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0503M",
+    "description": "4440 JD TRACTOR - Quad",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0504M",
+    "description": "4450 JD TRACTOR",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0505M",
+    "description": "CHALLENGER 65C Tractor",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0506M",
+    "description": "7920 TRACTOR  ",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0507M",
+    "description": "2008 JD 8430T Tractor",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0508M",
+    "description": "6215 JD TRACTOR    ",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0522M",
+    "description": "Brillion ALF SEEDER",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0524M",
+    "description": "Rowse Wheel RAKE",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0526M",
+    "description": "CHOPPER",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0527M",
+    "description": "JD 844 Corn Head",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0528M",
+    "description": "Kemper CORN HEAD",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0531M",
+    "description": "KUHN MOWER GMD 20",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0533M",
+    "description": "635 FD JD BEAN HEAD",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0534M",
+    "description": "6\" x 8' Houle CHOPPER PUMP",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0536M",
+    "description": "Syrup CHOPPER PUMP",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0537M",
+    "description": "8\" x 12' Houle CHOPPER PUMP",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0538M",
+    "description": "HOULE Transfer PUMP",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0540M",
+    "description": "HOULE 8\" x 8'   PUMP",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0541M",
+    "description": "Kuhn Knight SLC 141 (2015)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0543M",
+    "description": "2018 7300 GAL HOULE LIQ MANURE TANK 20'",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0556M",
+    "description": "CATTLE HY CHUTE",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0557M",
+    "description": "BUNKS",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0558M",
+    "description": "CATTLE PROCESSING EQUIPMENT",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0559M",
+    "description": "Cattle Chute - Tub",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0560M",
+    "description": "Vermeer BALE SHREDDER",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0566M",
+    "description": "Cattle Chute",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0570M",
+    "description": "Syrup Feed Tank",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0572M",
+    "description": "BUNK SNOWBLOWER",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0577M",
+    "description": "Batco UNLOADING HOPPER Blower",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0581M",
+    "description": "KUBOTA TRACTOR",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0585M",
+    "description": "GATOR",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0586M",
+    "description": "SKID LOADER Attachments",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0587M",
+    "description": "504 TRACTOR",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0588M",
+    "description": "Welder & STANDBY GENERATOR  ",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0589M",
+    "description": "POST HOLE DIGGER",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0591M",
+    "description": "575 J.D. SKID LOADER",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0593M",
+    "description": "KOMATSU SKID LOADER",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0594M",
+    "description": "3 PH GENERATOR",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0595M",
+    "description": "2014 Yamaha Grizzly (4-wheeler Red)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0596M",
+    "description": "Rotary Tiller",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0597M",
+    "description": "JD MX7 Rotary Mower",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0598M",
+    "description": "Red 6' RIDING MOWER -Ferris",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0599M",
+    "description": "Stump GRAPPLE       ",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0600M",
+    "description": "1/2 SCISSOR LIFT w Knoblochs - 2013 Skyjack",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA9999",
+    "description": "General Asset",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0199",
+    "description": "2012 Timpte grain trailer-tandem ",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0201",
+    "description": "1995 Freightliner (Goldie)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0333",
+    "description": "2012 Freightliner Cascadia (Purple)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0334",
+    "description": "2010 Kenworth T800 (Red)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0345",
+    "description": "2023 White Kenworth-Cattle-Roto-Mix Feed Truck",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0350",
+    "description": "2024 JCB TM320",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0354",
+    "description": "2016 Mack Truck (Yellow)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0067",
+    "description": "1980 Fruehauf \"Syrup\" Tanker Trailer",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0085",
+    "description": "2013 Thunder Creek green fuel trailer",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0095",
+    "description": "ProCleaner Slim XS100 Robotic Washer",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0098",
+    "description": "2005 Cargo mate white trailer (Borman)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0099",
+    "description": "2013 DCT Tiltbed Trailer",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0185",
+    "description": "1989 Dry Van Trailer",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0186",
+    "description": "2013 Enclosed trailer (Andres)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0207",
+    "description": "2015 Wilson Livestock Trailer (spread)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0208",
+    "description": "1996 Fruehauf Dry Van (Chuck)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0209",
+    "description": "2019 PJ Dump Trailer (50% PHC/ 50% Doug VantHof)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0235",
+    "description": "2014 Bravo Trailer (mobile power washer trailer)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0248",
+    "description": "2023 Gestation Stir Fans",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0252",
+    "description": "2023 36\" Single Brush Sander (Cool Cell Cleaner)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0272",
+    "description": "GDU Building",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0274",
+    "description": "G-Barn North",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0276",
+    "description": "G-Barn South",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0278",
+    "description": "Farrowing East",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0280",
+    "description": "Farrowing - West",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0283",
+    "description": "2023 Bio Security Fan Windbreaks",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0316",
+    "description": "2013 GMC Terrain",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0332",
+    "description": "Eby triple axle grain trailer P95",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0339",
+    "description": "Eby triple axle grain trailer R94",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0346",
+    "description": "2024 Boar Bot",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0347",
+    "description": "2024 Contact-O-Max Jr. 22\" boar cart",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0349",
+    "description": "2024 Action Trackporter H24R",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0375",
+    "description": "1986 Freightliner Vacuum Tank",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0539M",
+    "description": "1960 Heil Tanker (manure)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0544M",
+    "description": "1961 Trailmobile Tanker (manure)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0578",
+    "description": "2005 Merritt Livestock Trailer Spread",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0590",
+    "description": "1991 Top Hand flat bed trailer - triple axle",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0602",
+    "description": "2012 Delta flat bed trailer 36' (sprayer trailer)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0603",
+    "description": "2016 SmithCo Side Dump",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0016",
+    "description": "2005 Chevy 1 Ton K3500-White",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0017",
+    "description": "2006 Chevy K2500-Gray (Lalo)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0046",
+    "description": "2000 Buick Lesabre",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0051",
+    "description": "2011 Chevy Tahoe LT (brown)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0052",
+    "description": "2012 Chevy Wht Silverado K2500 (Rodney Old)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0114",
+    "description": "2003 Chevy K1500-Red (Ross)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0115",
+    "description": "2006 Chevy Silverado K1500-White (Dwight)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0131",
+    "description": "2000 Kenworth/Sudenga Bulk Feed Truck",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0206",
+    "description": "2002 Chevy 2500 Silverado-Gray (50% w/Chet)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0222",
+    "description": "2005 Freightliner-white (pig truck)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0232",
+    "description": "2002 Chevy Tahoe K1500 (maroon)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0241",
+    "description": "2006 Chevy Trailblazer (white)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0254E",
+    "description": "Gator 6 wheeler",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0286",
+    "description": "2010 Red IH Truck w/Flatbed",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0304",
+    "description": "2006 Chevy Uplander - Chet's",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0307",
+    "description": "2015 Chevy Captiva LS (Red)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0309E",
+    "description": "2004 Chevy 3/4 Ton Pickup (Aaron's)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0311",
+    "description": "2001 Dodge Dakota-Black",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0314",
+    "description": "2002 Chevy Silverado 2500HD-Red",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0317",
+    "description": "1996 Freightliner Feed Truck (Green)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0318E",
+    "description": "2001 Ford F150-Black",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0321E",
+    "description": "2017 Maroon Chevy (Rosalee)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0324",
+    "description": "1998 Chevy C1500-Maroon ",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0338",
+    "description": "1998 Cadillac-Red",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0341",
+    "description": "2008 GMC Sierra K1500 (blue)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0343",
+    "description": "2014 Dodge Caravan (blue or gray)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0344",
+    "description": "2008 Chevy Silverado K1500-Silver (Rier's old)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0353",
+    "description": "2013 GMC Sierra K2500 Black",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0359",
+    "description": "2018 Chevy Equinox Lt (Black)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0360",
+    "description": "2012 Chevy Traverse (Dwight)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0371",
+    "description": "2013 Chevy Silverado 3500 - Jeff",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0372",
+    "description": "2017 Chevy Silverado K1500 - Liz",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0374",
+    "description": "2023 Chevy Silverado 1500 (Adam)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0376",
+    "description": "2025 White Chevy 3/4 Ton",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0377",
+    "description": "2025 Silver Chevy 3/4 Ton (Rodney)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0568",
+    "description": "2007 Chevy Silverado 1500-White (Vance)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0579",
+    "description": "2003 Freightliner FL112 white day cab",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0605",
+    "description": "2009 Buick Lucerne",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0607",
+    "description": "2018 Chevy Silverado 1500 (Jason's)",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0263E",
+    "description": "825i JD Gator",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0265E",
+    "description": "Gator Deluxe",
+    "__typename": "MaintenanceAsset"
+  },
+  {
+    "number": "FA0342E",
+    "description": "2012 VW Passat",
+    "__typename": "MaintenanceAsset"
+  }
+]

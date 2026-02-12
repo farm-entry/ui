@@ -12,6 +12,7 @@ import CustomFormsLayout from "../../../layouts/forms";
 import { PostingGroup } from "../../../services/postingGroupsApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
+import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
@@ -19,6 +20,9 @@ import { MOVE_STORAGE_KEY } from "./constants-livestock.json";
 import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { useNavigate } from "react-router";
 import { FormData } from "../../../store/types/forms";
+import GlobalAlert from "../../../components/framework/GlobalAlert";
+
+const FORM_STORAGE_HOURS = 48;
 
 interface MoveFormData extends FormData {
   fromJob: string | number | null;
@@ -54,6 +58,7 @@ export default function MovePage() {
   const { getPostingGroups, postingGroups } = usePostingGroupsStore();
   const { getEvents, eventTypes, currentTemplate } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
+  const { setAlert } = useGlobalAlertStore();
   const { saveForm } = useFormStorageStore();
   const [deads, setDeads] = useState<{ toJob: number; fromJob: number }>({
     toJob: 0,
@@ -79,34 +84,47 @@ export default function MovePage() {
   });
 
   useEffect(() => {
+    let isMounted = true;
     setInitLoading(true);
     const promises = [];
     if (!(eventTypes.length > 0 && currentTemplate === "MOVE")) promises.push(getEvents("MOVE"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
 
     Promise.all(promises).then(() => {
-      setInitLoading(false);
+      if (isMounted) {
+        setInitLoading(false);
+      }
     });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const onSubmit = async (data: MoveFormData) => {
-    console.log("All required fields validated successfully!");
+    if (process.env.NODE_ENV === 'development') {
+      console.log("All required fields validated successfully!");
+    }
     setInitLoading(true);
     const state = { formData: data, section: "livestock-activity" };
     livestockActivityApi
       .postLivestockEvent(data)
       .then(() => {
-        console.log("Form submitted:", data);
+        if (process.env.NODE_ENV === 'development') {
+          console.log("Form submitted:", data);
+        }
         navigate("/post-success", { state });
       })
-      .catch((e: any) => {
+      .catch((error: Error) => {
         console.error("Unable to post form.");
-        const error = {
-          code: e.code || data.form + "_SUBMISSION_ERROR",
-          message: e.message || "Unable to submit form. Please try again.",
-          details: e.details || JSON.stringify(e, null, 2)
+        const errorInfo = {
+          code: (error as any).code || data.form + "_SUBMISSION_ERROR",
+          message: error.message || "Unable to submit form. Please try again.",
+          details: (error as any).details || JSON.stringify(error, null, 2)
         };
-        navigate("/post-error", { state: { ...state, error } });
+        const errorMessage = errorInfo.message || "Unable to submit form. Please try again.";
+        const errorTitle = errorInfo.code + "Unable to submit your form." || data.form + "_SUBMISSION_ERROR";
+        setAlert("error", errorMessage, errorTitle);
       })
       .finally(() => {
         setInitLoading(false);
@@ -115,7 +133,7 @@ export default function MovePage() {
 
   const onSave = () => {
     const formData = getValues();
-    saveForm(MOVE_STORAGE_KEY, formData, 48);
+    saveForm(MOVE_STORAGE_KEY, formData, FORM_STORAGE_HOURS);
   };
 
   const handleReset = () => {

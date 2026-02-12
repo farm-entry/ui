@@ -26,6 +26,8 @@ import { useNavigate } from "react-router";
 import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
 import { FormData } from "../../../store/types/forms";
 
+const FORM_STORAGE_HOURS = 48;
+
 interface GradeOffFormData extends FormData {
   job: string | number | null;
   healthStatus: string | number | null;
@@ -82,17 +84,21 @@ export default function GradeOffPage() {
     mode: "onSubmit"
   });
 
+  const eventValue = watch("event");
   useEffect(() => {
-    setEventReasons(eventTypes.find((et) => et.code === watch("event"))?.reasons || []);
+    setEventReasons(eventTypes.find((et) => et.code === eventValue)?.reasons || []);
     setValue("quantities", []);
-  }, [watch("event")]);
+  }, [eventValue, eventTypes, setValue]);
+
+  const jobValue = watch("job");
+  useEffect(() => {
+    if (jobValue) {
+      getPostingGroupDetails(jobValue);
+    }
+  }, [jobValue, getPostingGroupDetails]);
 
   useEffect(() => {
-    const job = watch("job");
-    job && getPostingGroupDetails(job);
-  }, [watch("job")]);
-
-  useEffect(() => {
+    let isMounted = true;
     setInitLoading(true);
     const promises = [];
     if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "GRADEOFF"))
@@ -100,24 +106,34 @@ export default function GradeOffPage() {
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
 
     Promise.all(promises).finally(() => {
-      setInitLoading(false);
+      if (isMounted) {
+        setInitLoading(false);
+      }
     });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const onSubmit = async (data: GradeOffFormData) => {
-    console.log("All required fields validated successfully!");
+    if (process.env.NODE_ENV === 'development') {
+      console.log("All required fields validated successfully!");
+    }
     setInitLoading(true);
     const state = { formData: data, section: "livestock-activity" };
     livestockActivityApi
       .postLivestockEvent(data)
       .then(() => {
-        console.log("Form submitted:", data);
+        if (process.env.NODE_ENV === 'development') {
+          console.log("Form submitted:", data);
+        }
         navigate("/post-success", { state });
       })
-      .catch((e: any) => {
+      .catch((error: Error) => {
         console.error("Unable to post form.");
-        const errorMessage = e.message || "Unable to submit form. Please try again.";
-        const errorTitle = e.code || data.form + "_SUBMISSION_ERROR";
+        const errorMessage = error.message || "Unable to submit form. Please try again.";
+        const errorTitle = (error as any).code || data.form + "_SUBMISSION_ERROR";
         setAlert("error", errorMessage, errorTitle);
       })
       .finally(() => {
@@ -127,7 +143,7 @@ export default function GradeOffPage() {
 
   const onSave = () => {
     const formData = getValues();
-    saveForm(GRADEOFF_STORAGE_KEY, formData, 48);
+    saveForm(GRADEOFF_STORAGE_KEY, formData, FORM_STORAGE_HOURS);
   };
 
   const handleReset = () => {
@@ -194,8 +210,7 @@ export default function GradeOffPage() {
                         : null
                     }
                     placeholder={
-                      (postingGroupDetails && postingGroupDetails.healthStatus?.Description) ||
-                      healthStatuses.length
+                      postingGroupDetails?.healthStatus?.Description || healthStatuses.length > 0
                         ? "Health Status"
                         : "Select a valid job"
                     }
