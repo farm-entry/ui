@@ -10,4 +10,6 @@ export type ActivityType =
   | "QTYADJ"
   | "PURCHASE"
   | "SHIPMENT"
-  | "INVENTORY";
+  | "INVENTORY"
+  | "FUEL"
+  | "MAINTENANCE";

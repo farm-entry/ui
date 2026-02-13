@@ -102,7 +102,7 @@ export default function MovePage() {
   }, []);
 
   const onSubmit = async (data: MoveFormData) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.log("All required fields validated successfully!");
     }
     setInitLoading(true);
@@ -110,7 +110,7 @@ export default function MovePage() {
     livestockActivityApi
       .postLivestockEvent(data)
       .then(() => {
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log("Form submitted:", data);
         }
         navigate("/post-success", { state });
@@ -123,7 +123,8 @@ export default function MovePage() {
           details: (error as any).details || JSON.stringify(error, null, 2)
         };
         const errorMessage = errorInfo.message || "Unable to submit form. Please try again.";
-        const errorTitle = errorInfo.code + "Unable to submit your form." || data.form + "_SUBMISSION_ERROR";
+        const errorTitle =
+          errorInfo.code + "Unable to submit your form." || data.form + "_SUBMISSION_ERROR";
         setAlert("error", errorMessage, errorTitle);
       })
       .finally(() => {
@@ -263,6 +264,7 @@ export default function MovePage() {
                     <TextField
                       placeholder="Total"
                       type="number"
+                      value={watch("quantity")}
                       {...register("quantity", {
                         required: "Total quantity is required",
                         min: {

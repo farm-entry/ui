@@ -1,6 +1,6 @@
 import { HandleError } from "./handleError";
 
-export interface PostingGroup {
+export interface PostingGroup extends Record<string, unknown> {
   number: string;
   description: string;
   inventory: number;
@@ -12,7 +12,7 @@ export interface PostingGroup {
 }
 
 // Detailed Posting Group with nested objects
-export interface PostingGroupDetails {
+export interface PostingGroupDetails extends Record<string, unknown> {
   number: string;
   description: string;
   personResponsible: {

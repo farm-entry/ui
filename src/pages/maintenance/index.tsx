@@ -99,7 +99,7 @@ export default function MaintenancePage() {
     <CustomFormsLayout>
       <CustomHeader
         icon={Build}
-        title="Record Maintenance Activity"
+        title="Maintenance Activity"
         button={{ label: "reset", onClick: handleReset }}
       />
       <FormProvider {...formContext}>

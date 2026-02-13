@@ -261,6 +261,7 @@ export default function MortalityPage() {
                 <Divider />
 
                 <TextArea
+                  value={watch("comments")}
                   {...register("comments", {
                     maxLength: {
                       value: 50,

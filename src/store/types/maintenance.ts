@@ -1,4 +1,4 @@
-export interface MaintenanceAsset {
+export interface MaintenanceAsset extends Record<string, unknown> {
     number: string;
     description: string;
     __typename: string;

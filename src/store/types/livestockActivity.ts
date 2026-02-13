@@ -22,14 +22,14 @@ export interface Reason {
   code: string;
   description: string;
 }
-export interface EventType {
+export interface EventType extends Record<string, unknown> {
   journal_template_name?: ActivityType;
   code: string;
   description: string;
   reasons?: Reason[];
 }
 
-export interface HealthStatus {
+export interface HealthStatus extends Record<string, unknown> {
   code: string;
   description: string;
   color?: string | null;

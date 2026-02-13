@@ -24,7 +24,7 @@ export interface TypeAheadProps<T extends Record<string, unknown> = Record<strin
   labelKey: keyof T;
   valueKey: keyof T;
   defaultValue?: TypeAheadOption | null;
-  labelFormatter?: (item: T) => string;
+  labelFormatter?: (item: any) => string;
 }
 
 // Memoize the selected group value

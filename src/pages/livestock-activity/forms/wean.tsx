@@ -263,6 +263,7 @@ export default function WeanPage() {
               <Stack spacing={2} direction="row">
                 <Stack sx={{ width: "100%" }}>
                   <TextField
+                    value={watch("quantity")}
                     placeholder="Total"
                     type="number"
                     {...register("quantity", {
@@ -278,6 +279,7 @@ export default function WeanPage() {
                 </Stack>
                 <Stack sx={{ width: "100%" }}>
                   <TextField
+                    value={watch("smallLivestockQuantity")}
                     placeholder="Smalls"
                     type="number"
                     {...register("smallLivestockQuantity", {
@@ -292,6 +294,7 @@ export default function WeanPage() {
 
               <Stack>
                 <TextField
+                  value={watch("totalWeight")}
                   {...register("totalWeight", {
                     required: "Total weight is required",
                     min: { value: 1, message: "Weight must be greater than 0" }
@@ -304,6 +307,7 @@ export default function WeanPage() {
               </Stack>
               <Divider />
               <TextArea
+                value={watch("comments")}
                 {...register("comments", {
                   maxLength: { value: 50, message: "Comments cannot exceed 50 characters" }
                 })}

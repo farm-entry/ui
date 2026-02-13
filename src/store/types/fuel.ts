@@ -1,3 +1,5 @@
+import { FormData } from "../../store/types/forms";
+
 export interface FuelAsset extends Record<string, unknown> {
   number: string;
   code: string;
@@ -35,7 +37,7 @@ export interface FuelEntry {
   createdAt: string;
 }
 
-export interface FuelFormData {
+export interface FuelFormData extends FormData {
   asset: string;
   postingDate: string;
   gallons: number | null;

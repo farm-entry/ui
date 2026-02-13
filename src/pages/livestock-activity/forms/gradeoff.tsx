@@ -285,6 +285,7 @@ export default function GradeOffPage() {
 
                 <Stack>
                   <TextField
+                    value={watch("livestockWeight")}
                     {...register("livestockWeight", {
                       required: "Average weight per head is required",
                       min: {
@@ -300,6 +301,7 @@ export default function GradeOffPage() {
                 </Stack>
                 <Divider />
                 <TextArea
+                  value={watch("comments")}
                   {...register("comments", {
                     maxLength: {
                       value: 50,
