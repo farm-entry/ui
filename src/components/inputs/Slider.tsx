@@ -17,9 +17,24 @@ interface SliderProps extends Omit<MUISliderProps, "onChange"> {
 }
 
 export const Slider = forwardRef<HTMLInputElement, SliderProps>(
-  ({ withInput = false, valueChip = false, name, onChange, onBlur, min = 0, max = 100, ...sliderProps }, ref) => {
+  (
+    {
+      withInput = false,
+      valueChip = false,
+      name,
+      onChange,
+      onBlur,
+      min = 0,
+      max = 100,
+      ...sliderProps
+    },
+    ref
+  ) => {
     const { watch } = useFormContext();
-    const value = name ? watch(name) ?? 0 : 0;
+
+    const value = name ? (watch(name) ?? min) : 0;
+
+    console.log({ sliderValue: value });
 
     const handleChange = (_: Event, newValue: number | number[]) => {
       const numValue = Array.isArray(newValue) ? newValue[0] : newValue;
@@ -29,14 +44,16 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
     return (
       <Stack direction="row" spacing={2} alignItems="center">
         <input type="hidden" ref={ref} name={name} defaultValue={value} />
-        {valueChip && <Chip label={value} />}
+        {valueChip && <Chip label={value || min} />}
         {withInput && (
           <TextField
             value={value}
             onChange={(e) => {
               const val = Number(e.target.value);
               if (!isNaN(val)) {
-                onChange?.({ target: { name, value: Math.min(Math.max(val, min as number), max as number) } });
+                onChange?.({
+                  target: { name, value: Math.min(Math.max(val, min as number), max as number) }
+                });
               }
             }}
             onBlur={onBlur}

@@ -1,6 +1,5 @@
 import { History, LocalGasStation } from "@mui/icons-material";
 import { Box, FormHelperText, Paper, Stack, Tab, Tabs } from "@mui/material";
-import * as React from "react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import CustomHeader from "../../components/framework/CustomHeader";
@@ -18,14 +17,12 @@ interface TabPanelProps {
 }
 
 const defaultValues: FuelFormData = {
-  fuelAsset: "",
-  activityDate: new Date().toLocaleDateString("en-CA"),
-  gallons: 0,
-  currentMiles: 0,
+  asset: "",
+  postingDate: new Date().toLocaleDateString("en-CA"),
+  gallons: null,
+  mileage: null,
   comments: ""
 };
-
-console.log("Default values:", defaultValues);
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
@@ -57,7 +54,6 @@ export default function FuelPage() {
   const formContext = useForm<FuelFormData>({ defaultValues });
 
   const {
-    register,
     watch,
     reset,
     setValue,
@@ -65,29 +61,28 @@ export default function FuelPage() {
   } = formContext;
 
   useEffect(() => {
-    // setInitLoading(true);
+    if (fuelAssets.length === 0) {
+      getFuelAssets();
+    }
+  }, [fuelAssets.length, getFuelAssets]);
 
-    const promises = [];
-    if (!(fuelAssets.length > 0)) promises.push(getFuelAssets());
-
-    Promise.all(promises).finally(() => {
-      // setInitLoading(false);
-    });
-  }, []);
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
-  const setFuelAsset = (value: TypeAheadOption | null) => {
-    console.log("Selected fuel asset changed:", value?.value, selectedFuelAsset?.number);
-    if (value?.value && value?.value !== selectedFuelAsset?.number) {
-      getFuelAssetDetails(`${value.value}`).then((asset) => {
-        setValue("fuelAsset", asset?.number || "");
-        setSelectedFuelAsset(asset);
-      });
-    } else if (!value) {
+  const setFuelAsset = async (value: TypeAheadOption | null) => {
+    if (!value) {
       setSelectedFuelAsset(null);
+      setValue("asset", "");
+      return;
+    }
+
+    if (value.value && value.value !== selectedFuelAsset?.number) {
+      const asset = await getFuelAssetDetails(String(value.value));
+      if (asset) {
+        setValue("asset", asset.number);
+        setSelectedFuelAsset(asset);
+      }
     }
   };
 
@@ -107,16 +102,15 @@ export default function FuelPage() {
         <Paper elevation={0} sx={{ p: 1 }}>
           <Stack>
             <TypeAhead
-              {...register("fuelAsset", { required: "Fuel asset is required" })}
-              handleChange={(v) => setFuelAsset(v)}
+              handleChange={setFuelAsset}
               watch={watch}
-              fieldName={"fuelAsset"}
-              labelKey={"description"}
-              valueKey={"number"}
+              fieldName="asset"
+              labelKey="description"
+              valueKey="number"
               valueList={fuelAssets}
               placeholder="Select an Asset..."
             />
-            {errors.fuelAsset && <FormHelperText error>{errors.fuelAsset.message}</FormHelperText>}
+            {errors.asset && <FormHelperText error>{errors.asset.message}</FormHelperText>}
           </Stack>
         </Paper>
 

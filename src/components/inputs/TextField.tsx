@@ -13,6 +13,7 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>((pro
     <MuiTextField
       ref={ref}
       variant="outlined"
+      label={placeholder}
       placeholder={placeholder}
       helperText={helperText}
       fullWidth

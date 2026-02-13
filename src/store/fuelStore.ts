@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { fuelService as api } from "../services/fuelApi";
-import { FuelAsset, FuelAssetDetails } from "./types/fuel";
+import { FuelAsset, FuelAssetDetails, FuelFormData } from "./types/fuel";
 
 interface FuelState {
   fuelAssets: FuelAsset[];
@@ -17,6 +17,8 @@ interface FuelActions {
   getFuelAssetDetails: (number: string) => Promise<FuelAsset | null>;
   setSelectedFuelAsset: (asset: FuelAsset | null) => void;
   clearSelectedFuelAsset: () => void;
+  postFuel: (data: FuelFormData) => Promise<void>;
+  autoPostFuelMaintenance: () => Promise<void>;
 }
 
 type FuelStore = FuelState & FuelActions;
@@ -103,6 +105,52 @@ export const useFuelStore = create<FuelStore>()(
 
       clearSelectedFuelAsset: () => {
         set((state) => ({ ...state, selectedFuelAsset: null }));
+      },
+
+      postFuel: async (data: FuelFormData) => {
+        try {
+          set((state) => ({ ...state, isLoading: true, error: null }));
+
+          await api.postFuel(data);
+
+          // After successful post, refresh the selected fuel asset details to show new history
+          if (data.asset) {
+            const updatedAsset = await api.getFuelAssetDetails(data.asset);
+            set((state) => ({
+              ...state,
+              selectedFuelAsset: updatedAsset,
+              isLoading: false,
+            }));
+          } else {
+            set((state) => ({ ...state, isLoading: false }));
+          }
+        } catch (error) {
+          console.error("Error posting fuel entry:", error);
+          set((state) => ({
+            ...state,
+            error: error instanceof Error ? error.message : "Unknown error occurred",
+            isLoading: false,
+          }));
+          throw error;
+        }
+      },
+
+      autoPostFuelMaintenance: async () => {
+        try {
+          set((state) => ({ ...state, isLoading: true, error: null }));
+
+          await api.autoPostFuelMaintenance();
+
+          set((state) => ({ ...state, isLoading: false }));
+        } catch (error) {
+          console.error("Error auto-posting fuel maintenance:", error);
+          set((state) => ({
+            ...state,
+            error: error instanceof Error ? error.message : "Unknown error occurred",
+            isLoading: false,
+          }));
+          throw error;
+        }
       }
     }),
     {

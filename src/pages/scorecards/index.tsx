@@ -21,11 +21,13 @@ export default function ScorecardsPage() {
     postingGroups,
     isLoading: postingGroupsLoading
   } = usePostingGroupsStore();
+
   const [submitStatus, setSubmitStatus] = useState<{
     open: boolean;
     message: string;
     severity: "success" | "error";
   }>({ open: false, message: "", severity: "success" });
+  
   const [initLoading, setInitLoading] = useState(true);
 
   const scorecardData = scorecardPages as ScorecardPages;

@@ -1,11 +1,4 @@
-import {
-  Button,
-  ButtonGroup,
-  FormHelperText,
-  FormLabel,
-  Stack,
-  TextField
-} from "@mui/material";
+import { Button, ButtonGroup, FormHelperText, FormLabel, Stack, TextField } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
 import { Slider, TextArea, TypeAhead } from "../../../components/inputs";
 import { ScorecardElement } from "../../../store/types/scorecards";
@@ -43,8 +36,10 @@ export default function ScorecardElementRenderer({ element }: ScorecardElementRe
       case "SLIDER":
         return (
           <Stack spacing={2}>
+            MIN {codeConfig.min}
             <Slider
               {...register(`${element.id}.numericValue`, { required: "This field is required" })}
+              defaultValue={codeConfig.min}
               min={codeConfig.min}
               max={codeConfig.max}
               step={codeConfig.step}

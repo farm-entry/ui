@@ -1,8 +1,10 @@
-export interface FuelAsset {
+export interface FuelAsset extends Record<string, unknown> {
   number: string;
   code: string;
   description: string;
   fuelType: string;
+  fuelCost: number;
+  unitOfMeasureCode: string;
 }
 
 export interface FuelHistory {
@@ -15,12 +17,9 @@ export interface FuelHistory {
   quantity: number;
   meta: number;
   description: string;
-  __typename: string;
 }
 
 export interface FuelAssetDetails extends FuelAsset {
-  fuelCost: number;
-  unitOfMeasureCode: string;
   history: FuelHistory[];
 }
 
@@ -37,10 +36,9 @@ export interface FuelEntry {
 }
 
 export interface FuelFormData {
-  fuelAsset: string;
-  activityDate: string;
-  gallons: number;
-  currentMiles: number;
+  asset: string;
+  postingDate: string;
+  gallons: number | null;
+  mileage: number | null;
   comments?: string;
 }
-
