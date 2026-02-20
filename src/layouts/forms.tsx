@@ -1,4 +1,4 @@
-import { Box, Card, Container, Link, Tooltip } from "@mui/material";
+import { Box, Button, Card, Container, Link, Stack, Tooltip } from "@mui/material";
 import * as React from "react";
 import { useNavigate } from "react-router";
 import CustomConfirmation from "../components/framework/CustomConfirmation";
@@ -21,17 +21,22 @@ export default function CustomFormsLayout({ children }: { children: React.ReactN
 
   return (
     <Container>
-      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-        <Tooltip title="Exit">
-          <Link onClick={handleExit} aria-label="exit">
-            Exit
-          </Link>
-        </Tooltip> 
-      </Box>
+      <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ my: 1 }}>
+        <Button variant="text" color="primary" onClick={handleExit}>
+          Exit
+        </Button>
+      </Stack>
       <Card variant="outlined" sx={{ mt: 0, mb: 2, p: 2 }}>
         {children}
       </Card>
       <CustomConfirmation />
+      <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 2 }}>
+        <Tooltip title="Exit">
+          <Button variant="text" color="primary" fullWidth onClick={handleExit}>
+            Cancel
+          </Button>
+        </Tooltip>
+      </Stack>
     </Container>
   );
 }
