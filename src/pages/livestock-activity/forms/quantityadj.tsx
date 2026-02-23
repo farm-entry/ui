@@ -100,7 +100,7 @@ export default function QuantityAdjPage() {
     setInitLoading(true);
     const promises = [];
     if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "QTYADJ"))
-      promises.push(getEvents("QTYADJ"));
+      promises.push(getEvents("QTYADJ", postingGroupDetails.number));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
 
     Promise.all(promises).then(() => {
@@ -118,7 +118,7 @@ export default function QuantityAdjPage() {
   useEffect(() => {
     if (groupValue) {
       getPostingGroupDetails(groupValue).then((details) => {
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log({ details });
         }
         setInventory({ group: details?.inventory ?? 0 });
@@ -134,7 +134,7 @@ export default function QuantityAdjPage() {
   }, [quantityValue, setValue, getValues]);
 
   const onSubmit = async (data: QuantityAdjFormData) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.log("All required fields validated successfully!");
     }
     setInitLoading(true);
@@ -146,7 +146,7 @@ export default function QuantityAdjPage() {
     livestockActivityApi
       .postLivestockEvent(data)
       .then(() => {
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log("Form submitted:", data);
         }
         navigate("/post-success", { state });
@@ -295,10 +295,10 @@ export default function QuantityAdjPage() {
                   onChange={(_, newValue) => setMultiplier(newValue)}
                   aria-label="quantity addition or removal"
                 >
-                  <ToggleButton value={1} aria-label="positive">
+                  <ToggleButton value={1} aria-label="positive" color="primary">
                     + Add
                   </ToggleButton>
-                  <ToggleButton value={-1} aria-label="negative">
+                  <ToggleButton value={-1} aria-label="negative" color="error">
                     - Remove
                   </ToggleButton>
                 </ToggleButtonGroup>
