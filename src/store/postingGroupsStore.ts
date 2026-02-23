@@ -14,8 +14,8 @@ interface PostingGroupsDataState {
   getPostingGroupDetails: (group: string | number) => Promise<PostingGroupDetails | undefined>;
   getPostingGroups: () => Promise<PostingGroup[] | undefined>;
   setPostingGroups: (postingGroups: PostingGroup[]) => void;
-  setPostingGroupDetails: (postingGroupDetails: PostingGroupDetails) => void;
   clearPostingGroups: () => void;
+  clearPostingGroupDetails: () => void;
   fetchPostingGroups: () => Promise<void>;
 }
 
@@ -82,8 +82,8 @@ export const usePostingGroupsStore = create<PostingGroupsDataState>()(
       setPostingGroups: (postingGroups: PostingGroup[]) =>
         set((state) => ({ ...state, postingGroups })),
 
-      clearPostingGroups: () =>
-        set((state) => ({ ...state, postingGroups: [] })),
+      clearPostingGroupDetails: () =>
+        set({ postingGroupDetails: {} as PostingGroupDetails }),
 
       fetchPostingGroups: async () => {
         try {

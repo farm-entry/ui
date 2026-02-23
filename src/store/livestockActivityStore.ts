@@ -31,7 +31,7 @@ interface LivestockActivityStore {
   setError: (error: string | null) => void;
 
   //get data
-  getEvents: (template: ActivityType) => Promise<EventsType | undefined>;
+  getEvents: (template: ActivityType, job: string) => Promise<EventsType | undefined>;
 }
 
 export const useLivestockActivityStore = create<LivestockActivityStore>()(
@@ -44,28 +44,24 @@ export const useLivestockActivityStore = create<LivestockActivityStore>()(
       healthStatuses: [],
 
       //get data
-      getEvents: async (template: ActivityType): Promise<EventsType | undefined> => {
-        console.log(`Fetching events for template: ${template}`);
+      getEvents: async (template: ActivityType, job: string): Promise<EventsType | undefined> => {
+        console.log(`Fetching events for template: ${template}, job: ${job}`);
         try {
-          if (
-            get().healthStatuses.length === 0 ||
-            get().eventTypes.length === 0 ||
-            get().eventTypes[0].journal_template_name !== template
-          ) {
-            // Set loading state
-            set({ isLoading: true, error: null });
+          // Set loading state
+          set({ isLoading: true, error: null });
 
-            // Make API call
-            const { events, healthStatuses } = await api.fetchEventTypes(template);
+          // Make API call with job parameter
+          const { events, healthStatuses } = await api.fetchEventTypes(template, job);
 
-            // Update state with fetched data
-            set((state) => ({
-              ...state,
-              eventTypes: events,
-              healthStatuses,
-              isLoading: false
-            }));
-          }
+          // Update state with fetched data
+          set((state) => ({
+            ...state,
+            currentTemplate: template,
+            eventTypes: events,
+            healthStatuses,
+            isLoading: false
+          }));
+
           return { template, events: get().eventTypes, healthStatuses: get().healthStatuses };
         } catch (error) {
           // Handle error
@@ -74,6 +70,7 @@ export const useLivestockActivityStore = create<LivestockActivityStore>()(
             error: error instanceof Error ? error.message : "An error occurred",
             isLoading: false
           }));
+          throw error;
         }
       },
       setJobs: (jobs) => set({ jobs }),

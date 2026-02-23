@@ -15,9 +15,9 @@ import { useFormStorageStore } from "../../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { FormData } from "../../../store/types/forms";
 import type { EventType } from "../../../store/types/livestockActivity";
 import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
-import { FormData } from "../../../store/types/forms";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { MORTALITY_STORAGE_KEY } from "./constants-livestock.json";
 
@@ -46,20 +46,21 @@ export default function MortalityPage() {
     getPostingGroups,
     postingGroups,
     getPostingGroupDetails,
+    clearPostingGroupDetails,
     postingGroupDetails,
     isLoading: postingGroupsLoading
   } = usePostingGroupsStore();
   const {
     getEvents,
-    eventTypes,
     healthStatuses,
-    isLoading: livestockActivityLoading,
-    currentTemplate
+    setHealthStatuses,
+    isLoading: livestockActivityLoading
   } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
-  const { setAlert } = useGlobalAlertStore();
+  const { setAlert, clearAlert } = useGlobalAlertStore();
   const { saveForm } = useFormStorageStore();
   const [initLoading, setInitLoading] = useState(true);
+  const [eventsLoading, setEventsLoading] = useState(false);
   const [eventReasons, setEventReasons] = useState<Reason[]>([]);
 
   const {
@@ -76,45 +77,55 @@ export default function MortalityPage() {
   });
 
   const jobValue = watch("job");
-  useEffect(() => {
-    if (jobValue) {
-      getPostingGroupDetails(jobValue);
-    }
-  }, [jobValue, getPostingGroupDetails]);
 
+  // Fetch posting groups on mount
   useEffect(() => {
     let isMounted = true;
     setInitLoading(true);
-    const promises = [];
-    if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "MORTALITY"))
-      promises.push(
-        getEvents("MORTALITY").then((x) => {
-          if (isMounted) {
-            setEventReasons(filterEventReasons(x?.events));
-          }
-        })
-      );
-    else {
-      setEventReasons(filterEventReasons(eventTypes));
-    }
-    if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
 
-    Promise.all(promises).then(() => {
-      if (isMounted) {
-        setInitLoading(false);
-      }
-    });
+    if (!(postingGroups.length > 0)) {
+      getPostingGroups().then(() => {
+        if (isMounted) {
+          setInitLoading(false);
+        }
+      });
+    } else {
+      setInitLoading(false);
+    }
 
     return () => {
       isMounted = false;
     };
   }, []);
 
+  // Fetch events when job is selected
+  useEffect(() => {
+    if (!jobValue) {
+      setEventReasons([]);
+      return;
+    }
+
+    // Fetch posting group details
+    getPostingGroupDetails(jobValue);
+
+    // Fetch events for the selected job
+    setEventsLoading(true);
+    getEvents("MORTALITY", `${jobValue}`)
+      .then((x) => {
+        setEventReasons(filterEventReasons(x?.events));
+        setEventsLoading(false);
+      })
+      .catch(() => {
+        setAlert("error", "Unable to get events for this job");
+        setEventsLoading(false);
+      });
+  }, [jobValue]);
+
   const filterEventReasons = (ev: EventType[] = []) =>
-    ev?.find((et) => et.code === "MORTALITY")?.reasons || [];
+    ev?.find((et) => et.code === "MORTALITY")?.reasons || ev[0]?.reasons || [];
 
   const onSubmit = async (data: MortalityFormData) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.log("All required fields validated successfully!");
     }
     setInitLoading(true);
@@ -140,11 +151,19 @@ export default function MortalityPage() {
     saveForm(MORTALITY_STORAGE_KEY, formData, FORM_STORAGE_HOURS);
   };
 
+  useEffect(() => {
+    clearAlert();
+  }, [jobValue]);
+
   const handleReset = () => {
     showConfirmation(
       "Are you sure?",
       "This will reset all form fields to their default values.",
-      () => reset(defaultValues)
+      () => {
+        setHealthStatuses([]);
+        clearPostingGroupDetails();
+        reset(defaultValues);
+      }
     );
   };
 
@@ -181,98 +200,113 @@ export default function MortalityPage() {
                   {errors.job && <FormHelperText error>{errors.job.message}</FormHelperText>}
                 </Stack>
 
-                <Stack>
-                  <TypeAhead
-                    {...register("healthStatus", {
-                      required: "Health Status is required"
-                    })}
-                    handleChange={(v) =>
-                      setValue("healthStatus", v?.value ? String(v.value) : null)
-                    }
-                    loading={postingGroupsLoading}
-                    watch={watch}
-                    valueList={healthStatuses}
-                    fieldName={"healthStatus"}
-                    labelKey={"description"}
-                    valueKey={"code"}
-                    defaultValue={
-                      postingGroupDetails?.healthStatus?.Code
-                        ? {
-                            label: postingGroupDetails.healthStatus.Description,
-                            value: postingGroupDetails.healthStatus.Code
-                          }
-                        : null
-                    }
-                    placeholder={
-                      postingGroupDetails?.healthStatus?.Description || healthStatuses.length > 0
-                        ? "Health Status"
-                        : "Select a valid job"
-                    }
-                  />
-                  {errors.healthStatus && (
-                    <FormHelperText error>{errors.healthStatus.message}</FormHelperText>
-                  )}
-                </Stack>
+                {eventsLoading && (
+                  <Stack alignItems="center" py={2}>
+                    <LoadingSpinner />
+                  </Stack>
+                )}
 
-                <Divider />
-                <Typography>Event Details</Typography>
-                <Stack>
-                  <DatePicker
-                    {...register("postingDate", {
-                      required: "Activity Date is required"
-                    })}
-                    value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
-                    onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
-                    label="Activity Date"
-                    error={!!errors.postingDate}
-                    helperText={errors.postingDate?.message}
-                  />
-                </Stack>
+                {!eventsLoading && (
+                  <>
+                    <Stack>
+                      <TypeAhead
+                        {...register("healthStatus", {
+                          required: "Health Status is required"
+                        })}
+                        handleChange={(v) =>
+                          setValue("healthStatus", v?.value ? String(v.value) : null)
+                        }
+                        disabled={!jobValue || eventsLoading}
+                        loading={eventsLoading}
+                        watch={watch}
+                        valueList={healthStatuses}
+                        fieldName={"healthStatus"}
+                        labelKey={"description"}
+                        valueKey={"code"}
+                        defaultValue={
+                          postingGroupDetails?.healthStatus?.Code
+                            ? {
+                                label: postingGroupDetails.healthStatus.Description,
+                                value: postingGroupDetails.healthStatus.Code
+                              }
+                            : null
+                        }
+                        placeholder={
+                          postingGroupDetails?.healthStatus?.Description ||
+                          healthStatuses.length > 0
+                            ? "Health Status"
+                            : "Select a valid job"
+                        }
+                      />
+                      {errors.healthStatus && (
+                        <FormHelperText error>{errors.healthStatus.message}</FormHelperText>
+                      )}
+                    </Stack>
 
-                <Stack spacing={2}>
-                  {eventReasons.map((reason, index) => (
-                    <EventNumberInput
-                      key={reason.code}
-                      codeRegistration={{
-                        ...register(`quantities.${index}.code`),
-                        value: reason.code
-                      }}
-                      quantityRegistration={register(`quantities.${index}.quantity`, {
-                        valueAsNumber: true
+                    <Divider />
+                    <Typography>Event Details</Typography>
+
+                    <Stack>
+                      <DatePicker
+                        {...register("postingDate", {
+                          required: "Activity Date is required"
+                        })}
+                        value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
+                        onChange={(v) =>
+                          setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))
+                        }
+                        label="Activity Date"
+                        error={!!errors.postingDate}
+                        helperText={errors.postingDate?.message}
+                      />
+                    </Stack>
+
+                    <Stack spacing={2}>
+                      {eventReasons.map((reason, index) => (
+                        <EventNumberInput
+                          key={reason.code}
+                          codeRegistration={{
+                            ...register(`quantities.${index}.code`),
+                            value: reason.code
+                          }}
+                          quantityRegistration={register(`quantities.${index}.quantity`, {
+                            valueAsNumber: true
+                          })}
+                          value={watch("quantities")?.[index]?.quantity || ""}
+                          label={reason?.description}
+                          placeholder="Quantity"
+                          type="number"
+                        />
+                      ))}
+                    </Stack>
+                    <Divider />
+
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <Typography variant="subtitle2" sx={{ fontWeight: 300 }}>
+                        Total Quantity
+                      </Typography>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                        {watch("quantities")?.reduce((sum, q) => sum + (q?.quantity || 0), 0) ?? 0}
+                      </Typography>
+                    </Stack>
+
+                    <Divider />
+
+                    <TextArea
+                      value={watch("comments")}
+                      {...register("comments", {
+                        maxLength: {
+                          value: 50,
+                          message: "Comments cannot exceed 50 characters"
+                        }
                       })}
-                      value={watch("quantities")?.[index]?.quantity || ""}
-                      label={reason?.description}
-                      placeholder="Quantity"
-                      type="number"
+                      placeholder="Comments"
+                      type="text"
+                      error={!!errors.comments}
+                      helperText={errors.comments?.message}
                     />
-                  ))}
-                </Stack>
-                <Divider />
-
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Typography variant="subtitle2" sx={{ fontWeight: 300 }}>
-                    Total Quantity
-                  </Typography>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                    {watch("quantities")?.reduce((sum, q) => sum + (q?.quantity || 0), 0) ?? 0}
-                  </Typography>
-                </Stack>
-
-                <Divider />
-
-                <TextArea
-                  value={watch("comments")}
-                  {...register("comments", {
-                    maxLength: {
-                      value: 50,
-                      message: "Comments cannot exceed 50 characters"
-                    }
-                  })}
-                  placeholder="Comments"
-                  type="text"
-                  error={!!errors.comments}
-                  helperText={errors.comments?.message}
-                />
+                  </>
+                )}
                 <Stack direction="row" spacing={2} justifyContent="flex-end">
                   <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
                     Save
