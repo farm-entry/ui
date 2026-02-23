@@ -1,26 +1,33 @@
-import { History, LocalGasStation } from "@mui/icons-material";
-import { Box, FormHelperText, Paper, Stack, Tab, Tabs } from "@mui/material";
+import { LocalGasStation } from "@mui/icons-material";
+import { Button, Divider, FormHelperText, InputAdornment, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import CustomConfirmation from "../../components/framework/CustomConfirmation";
 import CustomHeader from "../../components/framework/CustomHeader";
 import CustomNotice from "../../components/framework/CustomNotice";
 import LoadingSpinner from "../../components/framework/LoadingSpinner";
-import { TypeAhead, TypeAheadOption } from "../../components/inputs";
+import Overlay from "../../components/framework/Overlay";
+import {
+  DatePicker,
+  TextArea,
+  TextField,
+  TypeAhead,
+  TypeAheadOption
+} from "../../components/inputs";
 import CustomFormsLayout from "../../layouts/forms";
+import { fuelService } from "../../services/fuelApi";
 import { useConfirmationStore } from "../../store/confirmationStore";
+import { useFormStorageStore } from "../../store/formStorageStore";
 import { useFuelStore } from "../../store/fuelStore";
+import { useGlobalAlertStore } from "../../store/globalAlertStore";
 import { FuelFormData } from "../../store/types/fuel";
-import FuelEntryForm from "./FuelEntryForm";
+import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
+import { toCamelCase } from "../../utils/strings";
 import FuelHistory from "./FuelHistory";
 
 const FUEL_STORAGE_KEY = "fuel-form";
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
+const FORM_STORAGE_HOURS = 48;
 
 const defaultValues: FuelFormData = {
   form: "FUEL",
@@ -31,27 +38,14 @@ const defaultValues: FuelFormData = {
   comments: ""
 };
 
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`fuel-tabpanel-${index}`}
-      aria-labelledby={`fuel-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
-}
-
 export default function FuelPage() {
-  const [tabValue, setTabValue] = useState(0);
+  const navigate = useNavigate();
   const [initLoading, setInitLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [overlayOpen, setOverlayOpen] = useState(false);
 
   const {
+    isLoading: isFuelLoading,
     fuelAssets,
     selectedFuelAsset,
     getFuelAssetDetails,
@@ -60,14 +54,18 @@ export default function FuelPage() {
   } = useFuelStore();
 
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
-  const formContext = useForm<FuelFormData>({ defaultValues });
+  const { setAlert } = useGlobalAlertStore();
+  const { saveForm } = useFormStorageStore();
 
   const {
     watch,
     reset,
+    register,
+    getValues,
     setValue,
+    handleSubmit,
     formState: { errors }
-  } = formContext;
+  } = useForm<FuelFormData>({ defaultValues });
 
   useEffect(() => {
     let isMounted = true;
@@ -85,10 +83,6 @@ export default function FuelPage() {
       isMounted = false;
     };
   }, []);
-
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
 
   const setFuelAsset = async (value: TypeAheadOption | null) => {
     if (!value) {
@@ -117,64 +111,191 @@ export default function FuelPage() {
     );
   };
 
+  const onSave = () => {
+    const formData = getValues();
+    saveForm(FUEL_STORAGE_KEY, formData, FORM_STORAGE_HOURS);
+  };
+
+  const onSubmit = async (data: FuelFormData) => {
+    setIsSubmitting(true);
+    const state = { formData: data, section: "fuel" };
+    fuelService
+      .postFuel(data)
+      .then(() => {
+        if (process.env.NODE_ENV === "development") {
+          console.log("Form submitted:", data);
+        }
+        navigate("/post-success", { state });
+      })
+      .catch((error: Error) => {
+        console.error("Unable to post form.");
+        const errorInfo = {
+          code: (error as any).code || "FUEL_SUBMISSION_ERROR",
+          message: error.message || "Unable to submit form. Please try again.",
+          details: (error as any).details || JSON.stringify(error, null, 2)
+        };
+        const errorMessage = errorInfo.message || "Unable to submit form. Please try again.";
+        const errorTitle = errorInfo.code || "Unable to submit your form.";
+        setAlert("error", errorMessage, errorTitle);
+      })
+      .finally(() => {
+        setIsSubmitting(false);
+      });
+  };
+
+  const gallons = watch("gallons");
+  const totalCost =
+    gallons && selectedFuelAsset ? (gallons * selectedFuelAsset.fuelCost).toFixed(2) : "0.00";
+
+  const mileageUnitLabel = () => {
+    const label = toCamelCase(selectedFuelAsset?.unitOfMeasureCode || "miles");
+    if (selectedFuelAsset?.unitOfMeasureCode.toLowerCase() === "gal") return "Gallons";
+    return label + (label.endsWith("s") ? "" : "s");
+  };
+
   return (
     <>
-      {initLoading && <LoadingSpinner />}
-      {!initLoading && (
-        <>
-          <CustomNotice<FuelFormData> formType={FUEL_STORAGE_KEY} onLoad={(data) => reset(data)} />
-          <CustomFormsLayout>
-            <CustomHeader
-              icon={LocalGasStation}
-              title="Fuel Activity"
-              button={{ label: "reset", onClick: handleReset }}
-            />
-            <FormProvider {...formContext}>
-              <Paper elevation={0} sx={{ p: 1 }}>
-                <Stack>
-                  <TypeAhead
-                    handleChange={setFuelAsset}
-                    watch={watch}
-                    fieldName="asset"
-                    labelKey="description"
-                    valueKey="number"
-                    valueList={fuelAssets}
-                    placeholder="Select an Asset..."
+      <CustomNotice<FuelFormData>
+        formType={FUEL_STORAGE_KEY}
+        onLoad={(data) => {
+          reset(data);
+        }}
+      />
+      <CustomFormsLayout>
+        <CustomHeader
+          icon={LocalGasStation}
+          title="Fuel Activity"
+          button={{ label: "reset", onClick: handleReset }}
+        />
+        {(initLoading || isSubmitting) && <LoadingSpinner />}
+        {!initLoading && !isSubmitting && (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Stack spacing={2}>
+              <Stack>
+                <TypeAhead
+                  {...register("asset", { required: "Fuel asset is required." })}
+                  handleChange={setFuelAsset}
+                  watch={watch}
+                  fieldName="asset"
+                  labelKey="description"
+                  valueKey="number"
+                  valueList={fuelAssets}
+                  placeholder="Select an Asset..."
+                />
+                {errors.asset && <FormHelperText error>{errors.asset.message}</FormHelperText>}
+              </Stack>
+              {selectedFuelAsset && (
+                <Button variant="outlined" fullWidth onClick={() => setOverlayOpen(true)}>
+                  Fuel History
+                </Button>
+              )}
+              <Divider />
+              <Typography>Activity Details</Typography>
+              <Stack>
+                <DatePicker
+                  {...register("postingDate", { required: "Posting date is required" })}
+                  value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
+                  onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
+                  label="Activity Date"
+                  error={!!errors.postingDate}
+                  helperText={errors.postingDate?.message}
+                />
+              </Stack>
+
+              {!selectedFuelAsset && !isFuelLoading && (
+                <Typography align="center" sx={{ pt: 2 }}>
+                  Select a fuel asset to enter details.
+                </Typography>
+              )}
+
+              {isFuelLoading && <LoadingSpinner />}
+
+              {selectedFuelAsset && !isFuelLoading && (
+                <>
+                  <Divider />
+                  <Typography>
+                    Fuel Type: <strong>{selectedFuelAsset.fuelType}</strong>
+                  </Typography>
+
+                  <Stack>
+                    <TextField
+                      value={watch("gallons")}
+                      {...register("gallons", {
+                        required: "Number of gallons field is required.",
+                        min: { value: 0.01, message: "Must be greater than 0" },
+                        valueAsNumber: true
+                      })}
+                      placeholder="# of Gallons"
+                      type="number"
+                      slotProps={{
+                        input: {
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              ${selectedFuelAsset.fuelCost.toFixed(2)}
+                            </InputAdornment>
+                          )
+                        }
+                      }}
+                      error={!!errors.gallons}
+                      helperText={errors.gallons?.message}
+                    />
+                  </Stack>
+
+                  <Typography variant="body2" color="text.secondary">
+                    Total Cost: ${totalCost}
+                  </Typography>
+
+                  <Stack>
+                    <TextField
+                      value={watch("mileage")}
+                      placeholder={`Current Mileage/${mileageUnitLabel()}`}
+                      {...register("mileage", {
+                        required: `Mileage/${mileageUnitLabel()} field is required.`,
+                        min: {
+                          value: 0,
+                          message: `Mileage/${mileageUnitLabel()} cannot be negative`
+                        },
+                        valueAsNumber: true
+                      })}
+                      type="number"
+                      error={!!errors.mileage}
+                      helperText={errors.mileage?.message}
+                    />
+                  </Stack>
+
+                  <Divider />
+                  <TextArea
+                    value={watch("comments")}
+                    placeholder="Comments"
+                    {...register("comments", {
+                      maxLength: { value: 100, message: "Comments cannot exceed 100 characters" }
+                    })}
+                    label="Comments"
+                    type="text"
+                    error={!!errors.comments}
+                    helperText={errors.comments?.message}
                   />
-                  {errors.asset && <FormHelperText error>{errors.asset.message}</FormHelperText>}
-                </Stack>
-              </Paper>
+                </>
+              )}
 
-              <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                <Tabs value={tabValue} onChange={handleTabChange} aria-label="fuel management tabs">
-                  <Tab
-                    icon={<LocalGasStation />}
-                    label="Fuel Entry"
-                    id="fuel-tab-0"
-                    aria-controls="fuel-tabpanel-0"
-                  />
-                  <Tab
-                    icon={<History />}
-                    label="Fuel History"
-                    id="fuel-tab-1"
-                    aria-controls="fuel-tabpanel-1"
-                  />
-                </Tabs>
-              </Box>
+              <Stack direction="row" spacing={2} justifyContent="flex-end">
+                <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
+                  Save
+                </Button>
+                <Button variant="contained" color="primary" fullWidth type="submit">
+                  Submit
+                </Button>
+              </Stack>
+            </Stack>
+          </form>
+        )}
 
-              <TabPanel value={tabValue} index={0}>
-                <FuelEntryForm />
-              </TabPanel>
+        <Overlay open={overlayOpen} onClose={() => setOverlayOpen(false)} title="Fuel History">
+          <FuelHistory />
+        </Overlay>
 
-              <TabPanel value={tabValue} index={1}>
-                <FuelHistory />
-              </TabPanel>
-            </FormProvider>
-
-            <CustomConfirmation />
-          </CustomFormsLayout>
-        </>
-      )}
+        <CustomConfirmation />
+      </CustomFormsLayout>
     </>
   );
 }
