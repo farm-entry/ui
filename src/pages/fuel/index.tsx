@@ -23,6 +23,7 @@ import { useFuelStore } from "../../store/fuelStore";
 import { useGlobalAlertStore } from "../../store/globalAlertStore";
 import { FuelFormData } from "../../store/types/fuel";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
+import { toCamelCase } from "../../utils/strings";
 import FuelHistory from "./FuelHistory";
 
 const FUEL_STORAGE_KEY = "fuel-form";
@@ -146,9 +147,20 @@ export default function FuelPage() {
   const totalCost =
     gallons && selectedFuelAsset ? (gallons * selectedFuelAsset.fuelCost).toFixed(2) : "0.00";
 
+  const mileageUnitLabel = () => {
+    const label = toCamelCase(selectedFuelAsset?.unitOfMeasureCode || "miles");
+    if (selectedFuelAsset?.unitOfMeasureCode.toLowerCase() === "gal") return "Gallons";
+    return label + (label.endsWith("s") ? "" : "s");
+  };
+
   return (
     <>
-      <CustomNotice<FuelFormData> formType={FUEL_STORAGE_KEY} onLoad={(data) => reset(data)} />
+      <CustomNotice<FuelFormData>
+        formType={FUEL_STORAGE_KEY}
+        onLoad={(data) => {
+          reset(data);
+        }}
+      />
       <CustomFormsLayout>
         <CustomHeader
           icon={LocalGasStation}
@@ -236,10 +248,13 @@ export default function FuelPage() {
                   <Stack>
                     <TextField
                       value={watch("mileage")}
-                      placeholder="Current Miles"
+                      placeholder={`Current Mileage/${mileageUnitLabel()}`}
                       {...register("mileage", {
-                        required: "Number of miles field is required.",
-                        min: { value: 0, message: "Miles cannot be negative" },
+                        required: `Mileage/${mileageUnitLabel()} field is required.`,
+                        min: {
+                          value: 0,
+                          message: `Mileage/${mileageUnitLabel()} cannot be negative`
+                        },
                         valueAsNumber: true
                       })}
                       type="number"
