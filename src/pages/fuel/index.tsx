@@ -44,6 +44,7 @@ export default function FuelPage() {
   const [overlayOpen, setOverlayOpen] = useState(false);
 
   const {
+    isLoading: isFuelLoading,
     fuelAssets,
     selectedFuelAsset,
     getFuelAssetDetails,
@@ -189,13 +190,15 @@ export default function FuelPage() {
                 />
               </Stack>
 
-              {!selectedFuelAsset && (
+              {!selectedFuelAsset && !isFuelLoading && (
                 <Typography align="center" sx={{ pt: 2 }}>
                   Select a fuel asset to enter details.
                 </Typography>
               )}
 
-              {selectedFuelAsset && (
+              {isFuelLoading && <LoadingSpinner />}
+
+              {selectedFuelAsset && !isFuelLoading && (
                 <>
                   <Divider />
                   <Typography>
