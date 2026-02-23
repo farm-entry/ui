@@ -1,6 +1,6 @@
 import maintenanceAssetDetails from "../mock/maintenanceAsset.json";
 import maintenanceData from "../mock/maintenanceAssets.json";
-import { MaintenanceAsset, MaintenanceAssetDetails } from "../store/types/maintenance";
+import { MaintenanceAsset, MaintenanceAssetDetails, MaintenanceFormData } from "../store/types/maintenance";
 import { HandleError } from "./handleError";
 
 class MaintenanceService {
@@ -33,6 +33,31 @@ class MaintenanceService {
         } catch (error) {
             console.log("Caught error while fetching maintenance asset:", error);
             throw new HandleError().handleApiError(error as any, "MaintenanceService.getMaintenanceAsset");
+        }
+    }
+
+    /* Post maintenance entry */
+    async postMaintenance(data: MaintenanceFormData): Promise<void> {
+        try {
+            console.log("Posting maintenance entry:", data);
+
+            const response = await fetch("/api/maintenance", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                await new HandleError().handleApiError(response, "MaintenanceService.postMaintenance");
+            }
+
+            console.log("Maintenance entry posted successfully");
+        } catch (error) {
+            console.error("Error posting maintenance entry:", error);
+            throw error;
         }
     }
 }
