@@ -26,6 +26,14 @@ const FuelHistorySummary: React.FC = () => {
     return num.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
+  const fuelMeasurementUnitOfMeasurementLabel = selectedFuelAsset
+    ? `${
+        selectedFuelAsset.unitOfMeasureCode.charAt(0).toUpperCase() +
+        selectedFuelAsset.unitOfMeasureCode.slice(1).toLowerCase() +
+        (!selectedFuelAsset.unitOfMeasureCode.endsWith("S") ? "s" : "")
+      }`
+    : "miles";
+
   const getUoM = (calc: number) => {
     switch (unitOfMeasureCode.toUpperCase()) {
       case "MILES":
@@ -78,7 +86,8 @@ const FuelHistorySummary: React.FC = () => {
 
   return (
     <Stack>
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={1} justifyContent="space-between">
+      {/* <Stack direction={{ xs: "column", sm: "row" }} spacing={1} justifyContent="space-between"> */}
+      <Stack direction="row" spacing={1} justifyContent="space-between">
         {reverse(yearlyTotals).map((yearData, index) => (
           <Card key={index} sx={{ flex: 1 }}>
             <CardContent>
@@ -87,50 +96,70 @@ const FuelHistorySummary: React.FC = () => {
               </Typography>
 
               <Stack spacing={1}>
-                <Box display="flex" justifyContent="space-between">
+                <Stack
+                  display="flex"
+                  justifyContent="space-between"
+                  direction={{ xs: "column", sm: "row" }}
+                >
                   <Typography variant="body2" color="text.secondary">
-                    Total Cost
+                    Cost
                   </Typography>
                   <Typography variant="body2" fontWeight="medium">
                     {yearData.totalCost}
                   </Typography>
-                </Box>
+                </Stack>
 
-                <Box display="flex" justifyContent="space-between">
+                <Stack
+                  display="flex"
+                  justifyContent="space-between"
+                  direction={{ xs: "column", sm: "row" }}
+                >
                   <Typography variant="body2" color="text.secondary">
-                    Miles/Hours
+                    {fuelMeasurementUnitOfMeasurementLabel}
                   </Typography>
                   <Typography variant="body2" fontWeight="medium">
                     {numberWithCommas(yearData.milesHoursSum.toString())}
                   </Typography>
-                </Box>
+                </Stack>
 
-                <Box display="flex" justifyContent="space-between">
+                <Stack
+                  display="flex"
+                  justifyContent="space-between"
+                  direction={{ xs: "column", sm: "row" }}
+                >
                   <Typography variant="body2" color="text.secondary">
                     Quantity
                   </Typography>
                   <Typography variant="body2" fontWeight="medium">
                     {yearData.fuelSum}
                   </Typography>
-                </Box>
+                </Stack>
 
-                <Box display="flex" justifyContent="space-between">
+                <Stack
+                  display="flex"
+                  justifyContent="space-between"
+                  direction={{ xs: "column", sm: "row" }}
+                >
                   <Typography variant="body2" color="text.secondary">
-                    Avg Cost
+                    Average
                   </Typography>
                   <Typography variant="body2" fontWeight="medium">
                     {yearData.aveFuelCost}
                   </Typography>
-                </Box>
+                </Stack>
 
-                <Box display="flex" justifyContent="space-between">
+                <Stack
+                  display="flex"
+                  justifyContent="space-between"
+                  direction={{ xs: "column", sm: "row" }}
+                >
                   <Typography variant="body2" color="text.secondary">
                     Efficiency
                   </Typography>
                   <Typography variant="body2" fontWeight="medium">
                     {yearData.efficiencySum}
                   </Typography>
-                </Box>
+                </Stack>
               </Stack>
             </CardContent>
           </Card>
