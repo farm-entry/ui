@@ -54,8 +54,20 @@ const columns = [
 
 export default function WeanPage() {
   const navigate = useNavigate();
-  const { isLoading: postingGroupsLoading, getPostingGroups, getPostingGroupDetails, postingGroups, postingGroupDetails } = usePostingGroupsStore();
-  const { getEvents, eventTypes, healthStatuses, isLoading: livestockActivityLoading, currentTemplate } = useLivestockActivityStore();
+  const {
+    isLoading: postingGroupsLoading,
+    getPostingGroups,
+    getPostingGroupDetails,
+    postingGroups,
+    postingGroupDetails
+  } = usePostingGroupsStore();
+  const {
+    getEvents,
+    eventTypes,
+    healthStatuses,
+    isLoading: livestockActivityLoading,
+    currentTemplate
+  } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const { setAlert } = useGlobalAlertStore();
   const [deads, setDeads] = useState<{ group: number }>({ group: 0 });
@@ -80,6 +92,7 @@ export default function WeanPage() {
     let isMounted = true;
     setInitLoading(true);
     const promises = [];
+
     if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "WEAN"))
       promises.push(getEvents("WEAN"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
@@ -99,9 +112,6 @@ export default function WeanPage() {
   useEffect(() => {
     if (groupValue) {
       getPostingGroupDetails(groupValue).then((details) => {
-        if (process.env.NODE_ENV === 'development') {
-          console.log({ details });
-        }
         setInventory({ group: details?.inventory ?? 0 });
         setDeads({ group: details?.deadQuantity ?? 0 });
       });
@@ -109,7 +119,7 @@ export default function WeanPage() {
   }, [groupValue, getPostingGroupDetails]);
 
   const onSubmit = async (data: WeanFormData) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.log("All required fields validated successfully!");
     }
     setInitLoading(true);
@@ -120,7 +130,7 @@ export default function WeanPage() {
     livestockActivityApi
       .postLivestockEvent(data)
       .then(() => {
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log("Form submitted:", data);
         }
         navigate("/post-success", { state });

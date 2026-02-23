@@ -21,12 +21,13 @@ class LivestockActivityApi {
   }
 
   async fetchEventTypes(
-    template: string
+    template: string,
+    job: string
   ): Promise<{ events: EventType[]; healthStatuses: HealthStatus[]; template: ActivityType }> {
     try {
-      console.log("Fetching event types from API...");
+      console.log(`Fetching event types from API for template: ${template}, job: ${job}`);
 
-      const response = await fetch(`/api/livestock/events?template=${template}`, {
+      const response = await fetch(`/api/livestock/events?template=${template}&job=${job}`, {
         method: "GET",
         credentials: "include"
       });

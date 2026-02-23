@@ -74,7 +74,7 @@ export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props
       handleChange({ label: newValue, value: newValue });
     } else {
       // Handle option selection
-      handleChange(newValue);
+      handleChange(newValue || null);
     }
   };
 
