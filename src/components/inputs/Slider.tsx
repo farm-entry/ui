@@ -8,7 +8,7 @@ import {
 import { forwardRef } from "react";
 import { useFormContext } from "react-hook-form";
 
-interface SliderProps extends Omit<MUISliderProps, "onChange"> {
+export interface SliderProps extends Omit<MUISliderProps, "onChange"> {
   withInput?: boolean;
   valueChip?: boolean;
   name?: string;

@@ -6,9 +6,9 @@ import { FormProvider, useForm } from "react-hook-form";
 import CustomHeader from "../../components/framework/CustomHeader";
 import LoadingSpinner from "../../components/framework/LoadingSpinner";
 import CustomFormsLayout from "../../layouts/forms";
-import { scorecardPages } from "../../mock";
 import { usePostingGroupsStore } from "../../store/postingGroupsStore";
-import { ScorecardPages } from "../../store/types/scorecards";
+import { useScorecardStore } from "../../store/scorecardStore";
+import { ScorecardPage } from "../../store/types/scorecards";
 import ScorecardElementRenderer from "./components/ScorecardElementRenderer";
 import ScorecardSetup from "./components/ScorecardSetup";
 import { transformScorecardFormData } from "./helpers";
@@ -27,11 +27,12 @@ export default function ScorecardsPage() {
     message: string;
     severity: "success" | "error";
   }>({ open: false, message: "", severity: "success" });
-  
+
   const [initLoading, setInitLoading] = useState(true);
 
-  const scorecardData = scorecardPages as ScorecardPages;
-  const pages = scorecardData;
+  const { scorecardConfig, getScorecardConfig, isLoading: scorecardLoading } = useScorecardStore();
+
+  const pages: ScorecardPage[] = scorecardConfig?.pages || [];
 
   const methods = useForm<Record<string, any>>({
     mode: "onChange",
@@ -47,6 +48,19 @@ export default function ScorecardsPage() {
     watch,
     formState: { errors }
   } = methods;
+
+  const job = watch("job");
+  const scorecardType = watch("scorecardType");
+
+  useEffect(() => {
+    if (!scorecardType || !job) {
+      console.log(
+        `Job (${job}) or scorecard type (${scorecardType}) not selected, skipping config fetch`
+      );
+    } else {
+      getScorecardConfig(job, scorecardType);
+    }
+  }, [scorecardType]);
 
   const handleNext = async () => {
     console.log({ formState: getValues() });
@@ -145,8 +159,6 @@ export default function ScorecardsPage() {
                     setValue={setValue}
                     watch={watch}
                     errors={errors}
-                    postingGroups={postingGroups}
-                    postingGroupsLoading={postingGroupsLoading}
                   />
                 )}
 
@@ -180,8 +192,9 @@ export default function ScorecardsPage() {
                   onClick={handleNext}
                   variant="contained"
                   size="large"
-                  disabled={isLastStep}
+                  disabled={isLastStep || scorecardLoading || isSubmitting}
                   fullWidth
+                  loading={scorecardLoading}
                 >
                   Next
                 </Button>

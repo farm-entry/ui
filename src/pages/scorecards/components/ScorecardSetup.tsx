@@ -1,46 +1,51 @@
 import { FormHelperText, Stack } from "@mui/material";
 import { PageContainer } from "@toolpad/core";
+import { useEffect } from "react";
 import { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
 import { TypeAhead } from "../../../components/inputs";
+import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { useScorecardStore } from "../../../store/scorecardStore";
 
 interface ScorecardSetupProps {
   register: UseFormRegister<any>;
   setValue: UseFormSetValue<any>;
   watch: UseFormWatch<any>;
   errors: any;
-  postingGroups: any[];
-  postingGroupsLoading: boolean;
 }
 
-export default function ScorecardSetup({
-  register,
-  setValue,
-  watch,
-  errors,
-  postingGroups,
-  postingGroupsLoading
-}: ScorecardSetupProps) {
+export default function ScorecardSetup({ register, setValue, watch, errors }: ScorecardSetupProps) {
+  const { postingGroups, isLoading: postingGroupsLoading } = usePostingGroupsStore();
+  const job: string = watch("job");
+
+  const { scorecardTypes, getScorecardTypes, isLoading: isScorecardLoading } = useScorecardStore();
+
+  useEffect(() => {
+    if (!job) {
+      console.log("No job selected, skipping setup");
+      return;
+    }
+    getScorecardTypes(job);
+  }, [job]);
+
   return (
     <PageContainer>
       <Stack spacing={3}>
         <Stack spacing={2}>
           <TypeAhead
-            {...register("postingGroup", { required: "Posting Group is required" })}
+            {...register("job", { required: "Job selection is required" })}
             handleChange={(v) => {
-              setValue("postingGroup", v?.value ?? null);
+              setValue("job", v?.value ?? null);
               setValue("scorecardType", null);
             }}
             watch={watch}
-            fieldName={"postingGroup"}
+            fieldName={"job"}
             labelKey={"description"}
             valueKey={"number"}
             valueList={postingGroups}
             loading={postingGroupsLoading}
-            placeholder="Posting Group"
+            placeholder="Select Job"
           />
-          {errors.postingGroup && (
-            <FormHelperText error>{errors.postingGroup.message}</FormHelperText>
-          )}
+          {errors.job && <FormHelperText error>{errors.job.message}</FormHelperText>}
         </Stack>
 
         <Stack spacing={2}>
@@ -51,10 +56,10 @@ export default function ScorecardSetup({
             fieldName={"scorecardType"}
             labelKey={"description"}
             valueKey={"code"}
-            valueList={TYPEVALUES}
-            loading={postingGroupsLoading}
+            valueList={scorecardTypes}
+            loading={isScorecardLoading}
             placeholder="Scorecard Type"
-            disabled={!watch("postingGroup")}
+            disabled={!watch("job")}
           />
           {errors.scorecardType && (
             <FormHelperText error>{errors.scorecardType.message}</FormHelperText>
