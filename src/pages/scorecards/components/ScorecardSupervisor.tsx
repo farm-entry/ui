@@ -15,6 +15,8 @@ export default function ScorecardSupervisor({ element }: ScorecardSupervisorProp
     formState: { errors }
   } = useFormContext();
 
+  console.log({ USERS });
+
   return (
     <Stack spacing={2}>
       <TypeAhead
@@ -22,9 +24,9 @@ export default function ScorecardSupervisor({ element }: ScorecardSupervisorProp
         handleChange={(v) => setValue(`${element.id}.stringValue`, v?.value ?? null)}
         watch={watch}
         fieldName={`${element.id}.stringValue`}
-        valueList={[]}
-        labelKey="label"
-        valueKey="value"
+        valueList={USERS}
+        labelKey="name"
+        valueKey="username"
         placeholder="Select supervisor"
       />
       {errors[`${element.id}.stringValue`] && (
@@ -36,554 +38,441 @@ export default function ScorecardSupervisor({ element }: ScorecardSupervisorProp
   );
 }
 
-const USERS = {
-  data: {
-    users: [
-      {
-        username: "MOGLERFARMS\\ALEX",
-        name: "Alex Ita",
-        __typename: "User"
-      },
-      {
-        username: "APP",
-        name: "App",
-        __typename: "User"
-      },
-      {
-        username: "AHAYENGA",
-        name: "Austin Hayenga",
-        __typename: "User"
-      },
-      {
-        username: "JALONS",
-        name: "Joy Alons",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\RODNEY",
-        name: "Rodney",
-        __typename: "User"
-      },
-      {
-        username: "AMADIZ",
-        name: "Amadiz",
-        __typename: "User"
-      },
-      {
-        username: "WPETERS",
-        name: "Wes Peters",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\SOLUTIONDYNAMICS",
-        name: "",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\KENT",
-        name: "Kent",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\LOIS",
-        name: "Lois Mogler",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\CADE",
-        name: "Cade Knobloch",
-        __typename: "User"
-      },
-      {
-        username: "TPETERSEN",
-        name: "Tim Petersen",
-        __typename: "User"
-      },
-      {
-        username: "PATTIA",
-        name: "Patti",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\JANAE",
-        name: "Janae",
-        __typename: "User"
-      },
-      {
-        username: "HUNTER",
-        name: "Hunter Koolstra",
-        __typename: "User"
-      },
-      {
-        username: "ALEUTHOLD",
-        name: "Adam Leuthold",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\MATTW",
-        name: "Matt Woelfel",
-        __typename: "User"
-      },
-      {
-        username: "KYLEK",
-        name: "Kyle Knoblock",
-        __typename: "User"
-      },
-      {
-        username: "AMY",
-        name: "Amy Hettinga",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\KENDRA",
-        name: "Kendra Ita",
-        __typename: "User"
-      },
-      {
-        username: "SHOEKSTRA",
-        name: "Scott Hoekstra",
-        __typename: "User"
-      },
-      {
-        username: "PTHOLE",
-        name: "Paul Thole",
-        __typename: "User"
-      },
-      {
-        username: "DMOSER",
-        name: "Dustin Moser",
-        __typename: "User"
-      },
-      {
-        username: "JGIL",
-        name: "Jose Cano Gil",
-        __typename: "User"
-      },
-      {
-        username: "BDEBOER",
-        name: "Bradon DeBoer",
-        __typename: "User"
-      },
-      {
-        username: "JANAE",
-        name: "Janae Metzger",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\BMETZGER",
-        name: "Brian Metzger",
-        __typename: "User"
-      },
-      {
-        username: "DRECK",
-        name: "Dustin Reck",
-        __typename: "User"
-      },
-      {
-        username: "LVANROEKEL",
-        name: "Larry VanRoekel",
-        __typename: "User"
-      },
-      {
-        username: "CRISTOBAL",
-        name: "Cristobal Velez Gonzale",
-        __typename: "User"
-      },
-      {
-        username: "MPOTTEBAUM",
-        name: "Marty Pottebaum",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\AMY",
-        name: "Amy Hettinga",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\APRIL",
-        name: "April Monen",
-        __typename: "User"
-      },
-      {
-        username: "MICAH",
-        name: "Micah Metzger",
-        __typename: "User"
-      },
-      {
-        username: "SSCHEMMEL",
-        name: "Steve Schemmel",
-        __typename: "User"
-      },
-      {
-        username: "VANCE",
-        name: "Vance",
-        __typename: "User"
-      },
-      {
-        username: "DEVAN",
-        name: "Devan",
-        __typename: "User"
-      },
-      {
-        username: "HVANWYHE",
-        name: "Halden Van Wyhe",
-        __typename: "User"
-      },
-      {
-        username: "BJ",
-        name: "BJ VanRoekel",
-        __typename: "User"
-      },
-      {
-        username: "TEVANS",
-        name: "Tiffany Evans",
-        __typename: "User"
-      },
-      {
-        username: "JHANSEN",
-        name: "John Hansen",
-        __typename: "User"
-      },
-      {
-        username: "LIZ",
-        name: "Lizeth Serrano Rosas",
-        __typename: "User"
-      },
-      {
-        username: "APRIL",
-        name: "April Monen",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\STONERIDGE1",
-        name: "Stoneridge Support 1",
-        __typename: "User"
-      },
-      {
-        username: "MPETERS",
-        name: "Mitch Peters",
-        __typename: "User"
-      },
-      {
-        username: "JUSTIN",
-        name: "Justin",
-        __typename: "User"
-      },
-      {
-        username: "ROSE",
-        name: "Rosalee Anderson",
-        __typename: "User"
-      },
-      {
-        username: "BOEKE",
-        name: "Matt Boeke",
-        __typename: "User"
-      },
-      {
-        username: "LEVIK",
-        name: "Levi Kuperschmidt",
-        __typename: "User"
-      },
-      {
-        username: "LMEYER",
-        name: "Laura Meyer",
-        __typename: "User"
-      },
-      {
-        username: "GBERG",
-        name: "Gerald Berg",
-        __typename: "User"
-      },
-      {
-        username: "JHURTIG",
-        name: "Justin Hurtig",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\ADRIAN",
-        name: "Adrian Rocke",
-        __typename: "User"
-      },
-      {
-        username: "MSTEINEKE",
-        name: "Marcus Steineke",
-        __typename: "User"
-      },
-      {
-        username: "GDENHOED",
-        name: "Gerald Den Hoed",
-        __typename: "User"
-      },
-      {
-        username: "RIER",
-        name: "Rier Mogler",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\BRIAN",
-        name: "Brian Mogler",
-        __typename: "User"
-      },
-      {
-        username: "BFICK",
-        name: "Bruce Fick",
-        __typename: "User"
-      },
-      {
-        username: "EMMA",
-        name: "Emma Knobloch",
-        __typename: "User"
-      },
-      {
-        username: "BRUGS",
-        name: "Matt Bruggeman",
-        __typename: "User"
-      },
-      {
-        username: "JVANZEE",
-        name: "Jody Van Zee",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\CHET",
-        name: "Chet",
-        __typename: "User"
-      },
-      {
-        username: "KMOSER",
-        name: "Kathy Moser",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\STONERIDGE2",
-        name: "Stoneridge Support 2",
-        __typename: "User"
-      },
-      {
-        username: "LWATTERSON",
-        name: "Lindsay Watterson",
-        __typename: "User"
-      },
-      {
-        username: "BHOOGENDOORN",
-        name: "Brent Hoogendoorn",
-        __typename: "User"
-      },
-      {
-        username: "CGERBER",
-        name: "Carl Gerber",
-        __typename: "User"
-      },
-      {
-        username: "ERICAM",
-        name: "Erica Metzger",
-        __typename: "User"
-      },
-      {
-        username: "SAWYER",
-        name: "Sawyer Hrdlicka",
-        __typename: "User"
-      },
-      {
-        username: "JKIEL",
-        name: "Jeff Kiel",
-        __typename: "User"
-      },
-      {
-        username: "KKUYPER",
-        name: "Korrie Kuyper",
-        __typename: "User"
-      },
-      {
-        username: "JENNA",
-        name: "Jenna Van Ginkel",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\ADMINISTRATOR",
-        name: "",
-        __typename: "User"
-      },
-      {
-        username: "JASON",
-        name: "Jason Balster",
-        __typename: "User"
-      },
-      {
-        username: "GREGG",
-        name: "Gregg Metzger",
-        __typename: "User"
-      },
-      {
-        username: "LOREN",
-        name: "Loren Van Roekel",
-        __typename: "User"
-      },
-      {
-        username: "REECE",
-        name: "Reece",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\MICAHM",
-        name: "Micah Mogler",
-        __typename: "User"
-      },
-      {
-        username: "SDORHOUT",
-        name: "Steve Dorhout",
-        __typename: "User"
-      },
-      {
-        username: "DIEGO",
-        name: "Diego Lara Cruz",
-        __typename: "User"
-      },
-      {
-        username: "BLEUTHOLD",
-        name: "Brent Leuthold",
-        __typename: "User"
-      },
-      {
-        username: "CMARCO",
-        name: "Curt Marco",
-        __typename: "User"
-      },
-      {
-        username: "ZACH",
-        name: "Zach Klaassen",
-        __typename: "User"
-      },
-      {
-        username: "CVANROEKEL",
-        name: "Chuck VanRoekel",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\ANGIE",
-        name: "Angie Metzger",
-        __typename: "User"
-      },
-      {
-        username: "EUITTENBOGAARD",
-        name: "Eric Uittenbogaard",
-        __typename: "User"
-      },
-      {
-        username: "MLAIS",
-        name: "Mike Lais",
-        __typename: "User"
-      },
-      {
-        username: "PHW",
-        name: "PHW",
-        __typename: "User"
-      },
-      {
-        username: "MHOOGLAND",
-        name: "Mike Hoogland",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\ROSS",
-        name: "Ross",
-        __typename: "User"
-      },
-      {
-        username: "DBERG",
-        name: "Dan Berg",
-        __typename: "User"
-      },
-      {
-        username: "DREWK",
-        name: "Drew Kupferschmid",
-        __typename: "User"
-      },
-      {
-        username: "AARON",
-        name: "Aaron Metzger",
-        __typename: "User"
-      },
-      {
-        username: "EVAN",
-        name: "Evan",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\ULTRA",
-        name: "",
-        __typename: "User"
-      },
-      {
-        username: "DDEBOER",
-        name: "Dawson DeBoer",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\DWIGHT",
-        name: "Dwight",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\CASEY",
-        name: "Casey Morgan",
-        __typename: "User"
-      },
-      {
-        username: "CHRIS",
-        name: "Chris Sievers",
-        __typename: "User"
-      },
-      {
-        username: "DUDEBOER",
-        name: "Dustin DeBoer",
-        __typename: "User"
-      },
-      {
-        username: "JEDUARDO",
-        name: "Jose Eduardo",
-        __typename: "User"
-      },
-      {
-        username: "ERICK",
-        name: "Eric Kupferschmid",
-        __typename: "User"
-      },
-      {
-        username: "CASEY",
-        name: "Casey Morgan",
-        __typename: "User"
-      },
-      {
-        username: "KALENK",
-        name: "Kalen Kuyper",
-        __typename: "User"
-      },
-      {
-        username: "MARVH",
-        name: "Marv Hoogland",
-        __typename: "User"
-      },
-      {
-        username: "ADAM",
-        name: "Adam Knoblock",
-        __typename: "User"
-      },
-      {
-        username: "CHET",
-        name: "Chet Mogler",
-        __typename: "User"
-      },
-      {
-        username: "DODEBOER",
-        name: "Doug DeBoer",
-        __typename: "User"
-      },
-      {
-        username: "MOGLERFARMS\\JEFF",
-        name: "Jeff Kiel",
-        __typename: "User"
-      }
-    ]
+const USERS = [
+  {
+    username: "MOGLERFARMS\\ALEX",
+    name: "Alex Ita"
+  },
+  {
+    username: "APP",
+    name: "App"
+  },
+  {
+    username: "AHAYENGA",
+    name: "Austin Hayenga"
+  },
+  {
+    username: "JALONS",
+    name: "Joy Alons"
+  },
+  {
+    username: "MOGLERFARMS\\RODNEY",
+    name: "Rodney"
+  },
+  {
+    username: "AMADIZ",
+    name: "Amadiz"
+  },
+  {
+    username: "WPETERS",
+    name: "Wes Peters"
+  },
+  {
+    username: "MOGLERFARMS\\SOLUTIONDYNAMICS",
+    name: ""
+  },
+  {
+    username: "MOGLERFARMS\\KENT",
+    name: "Kent"
+  },
+  {
+    username: "MOGLERFARMS\\LOIS",
+    name: "Lois Mogler"
+  },
+  {
+    username: "MOGLERFARMS\\CADE",
+    name: "Cade Knobloch"
+  },
+  {
+    username: "TPETERSEN",
+    name: "Tim Petersen"
+  },
+  {
+    username: "PATTIA",
+    name: "Patti"
+  },
+  {
+    username: "MOGLERFARMS\\JANAE",
+    name: "Janae"
+  },
+  {
+    username: "HUNTER",
+    name: "Hunter Koolstra"
+  },
+  {
+    username: "ALEUTHOLD",
+    name: "Adam Leuthold"
+  },
+  {
+    username: "MOGLERFARMS\\MATTW",
+    name: "Matt Woelfel"
+  },
+  {
+    username: "KYLEK",
+    name: "Kyle Knoblock"
+  },
+  {
+    username: "AMY",
+    name: "Amy Hettinga"
+  },
+  {
+    username: "MOGLERFARMS\\KENDRA",
+    name: "Kendra Ita"
+  },
+  {
+    username: "SHOEKSTRA",
+    name: "Scott Hoekstra"
+  },
+  {
+    username: "PTHOLE",
+    name: "Paul Thole"
+  },
+  {
+    username: "DMOSER",
+    name: "Dustin Moser"
+  },
+  {
+    username: "JGIL",
+    name: "Jose Cano Gil"
+  },
+  {
+    username: "BDEBOER",
+    name: "Bradon DeBoer"
+  },
+  {
+    username: "JANAE",
+    name: "Janae Metzger"
+  },
+  {
+    username: "MOGLERFARMS\\BMETZGER",
+    name: "Brian Metzger"
+  },
+  {
+    username: "DRECK",
+    name: "Dustin Reck"
+  },
+  {
+    username: "LVANROEKEL",
+    name: "Larry VanRoekel"
+  },
+  {
+    username: "CRISTOBAL",
+    name: "Cristobal Velez Gonzale"
+  },
+  {
+    username: "MPOTTEBAUM",
+    name: "Marty Pottebaum"
+  },
+  {
+    username: "MOGLERFARMS\\AMY",
+    name: "Amy Hettinga"
+  },
+  {
+    username: "MOGLERFARMS\\APRIL",
+    name: "April Monen"
+  },
+  {
+    username: "MICAH",
+    name: "Micah Metzger"
+  },
+  {
+    username: "SSCHEMMEL",
+    name: "Steve Schemmel"
+  },
+  {
+    username: "VANCE",
+    name: "Vance"
+  },
+  {
+    username: "DEVAN",
+    name: "Devan"
+  },
+  {
+    username: "HVANWYHE",
+    name: "Halden Van Wyhe"
+  },
+  {
+    username: "BJ",
+    name: "BJ VanRoekel"
+  },
+  {
+    username: "TEVANS",
+    name: "Tiffany Evans"
+  },
+  {
+    username: "JHANSEN",
+    name: "John Hansen"
+  },
+  {
+    username: "LIZ",
+    name: "Lizeth Serrano Rosas"
+  },
+  {
+    username: "APRIL",
+    name: "April Monen"
+  },
+  {
+    username: "MOGLERFARMS\\STONERIDGE1",
+    name: "Stoneridge Support 1"
+  },
+  {
+    username: "MPETERS",
+    name: "Mitch Peters"
+  },
+  {
+    username: "JUSTIN",
+    name: "Justin"
+  },
+  {
+    username: "ROSE",
+    name: "Rosalee Anderson"
+  },
+  {
+    username: "BOEKE",
+    name: "Matt Boeke"
+  },
+  {
+    username: "LEVIK",
+    name: "Levi Kuperschmidt"
+  },
+  {
+    username: "LMEYER",
+    name: "Laura Meyer"
+  },
+  {
+    username: "GBERG",
+    name: "Gerald Berg"
+  },
+  {
+    username: "JHURTIG",
+    name: "Justin Hurtig"
+  },
+  {
+    username: "MOGLERFARMS\\ADRIAN",
+    name: "Adrian Rocke"
+  },
+  {
+    username: "MSTEINEKE",
+    name: "Marcus Steineke"
+  },
+  {
+    username: "GDENHOED",
+    name: "Gerald Den Hoed"
+  },
+  {
+    username: "RIER",
+    name: "Rier Mogler"
+  },
+  {
+    username: "MOGLERFARMS\\BRIAN",
+    name: "Brian Mogler"
+  },
+  {
+    username: "BFICK",
+    name: "Bruce Fick"
+  },
+  {
+    username: "EMMA",
+    name: "Emma Knobloch"
+  },
+  {
+    username: "BRUGS",
+    name: "Matt Bruggeman"
+  },
+  {
+    username: "JVANZEE",
+    name: "Jody Van Zee"
+  },
+  {
+    username: "MOGLERFARMS\\CHET",
+    name: "Chet"
+  },
+  {
+    username: "KMOSER",
+    name: "Kathy Moser"
+  },
+  {
+    username: "MOGLERFARMS\\STONERIDGE2",
+    name: "Stoneridge Support 2"
+  },
+  {
+    username: "LWATTERSON",
+    name: "Lindsay Watterson"
+  },
+  {
+    username: "BHOOGENDOORN",
+    name: "Brent Hoogendoorn"
+  },
+  {
+    username: "CGERBER",
+    name: "Carl Gerber"
+  },
+  {
+    username: "ERICAM",
+    name: "Erica Metzger"
+  },
+  {
+    username: "SAWYER",
+    name: "Sawyer Hrdlicka"
+  },
+  {
+    username: "JKIEL",
+    name: "Jeff Kiel"
+  },
+  {
+    username: "KKUYPER",
+    name: "Korrie Kuyper"
+  },
+  {
+    username: "JENNA",
+    name: "Jenna Van Ginkel"
+  },
+  {
+    username: "MOGLERFARMS\\ADMINISTRATOR",
+    name: ""
+  },
+  {
+    username: "JASON",
+    name: "Jason Balster"
+  },
+  {
+    username: "GREGG",
+    name: "Gregg Metzger"
+  },
+  {
+    username: "LOREN",
+    name: "Loren Van Roekel"
+  },
+  {
+    username: "REECE",
+    name: "Reece"
+  },
+  {
+    username: "MOGLERFARMS\\MICAHM",
+    name: "Micah Mogler"
+  },
+  {
+    username: "SDORHOUT",
+    name: "Steve Dorhout"
+  },
+  {
+    username: "DIEGO",
+    name: "Diego Lara Cruz"
+  },
+  {
+    username: "BLEUTHOLD",
+    name: "Brent Leuthold"
+  },
+  {
+    username: "CMARCO",
+    name: "Curt Marco"
+  },
+  {
+    username: "ZACH",
+    name: "Zach Klaassen"
+  },
+  {
+    username: "CVANROEKEL",
+    name: "Chuck VanRoekel"
+  },
+  {
+    username: "MOGLERFARMS\\ANGIE",
+    name: "Angie Metzger"
+  },
+  {
+    username: "EUITTENBOGAARD",
+    name: "Eric Uittenbogaard"
+  },
+  {
+    username: "MLAIS",
+    name: "Mike Lais"
+  },
+  {
+    username: "PHW",
+    name: "PHW"
+  },
+  {
+    username: "MHOOGLAND",
+    name: "Mike Hoogland"
+  },
+  {
+    username: "MOGLERFARMS\\ROSS",
+    name: "Ross"
+  },
+  {
+    username: "DBERG",
+    name: "Dan Berg"
+  },
+  {
+    username: "DREWK",
+    name: "Drew Kupferschmid"
+  },
+  {
+    username: "AARON",
+    name: "Aaron Metzger"
+  },
+  {
+    username: "EVAN",
+    name: "Evan"
+  },
+  {
+    username: "MOGLERFARMS\\ULTRA",
+    name: ""
+  },
+  {
+    username: "DDEBOER",
+    name: "Dawson DeBoer"
+  },
+  {
+    username: "MOGLERFARMS\\DWIGHT",
+    name: "Dwight"
+  },
+  {
+    username: "MOGLERFARMS\\CASEY",
+    name: "Casey Morgan"
+  },
+  {
+    username: "CHRIS",
+    name: "Chris Sievers"
+  },
+  {
+    username: "DUDEBOER",
+    name: "Dustin DeBoer"
+  },
+  {
+    username: "JEDUARDO",
+    name: "Jose Eduardo"
+  },
+  {
+    username: "ERICK",
+    name: "Eric Kupferschmid"
+  },
+  {
+    username: "CASEY",
+    name: "Casey Morgan"
+  },
+  {
+    username: "KALENK",
+    name: "Kalen Kuyper"
+  },
+  {
+    username: "MARVH",
+    name: "Marv Hoogland"
+  },
+  {
+    username: "ADAM",
+    name: "Adam Knoblock"
+  },
+  {
+    username: "CHET",
+    name: "Chet Mogler"
+  },
+  {
+    username: "DODEBOER",
+    name: "Doug DeBoer"
+  },
+  {
+    username: "MOGLERFARMS\\JEFF",
+    name: "Jeff Kiel"
   }
-};
+];

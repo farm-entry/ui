@@ -2,6 +2,7 @@ import { Button, ButtonGroup, FormHelperText, FormLabel, Stack, TextField } from
 import { Controller, useFormContext } from "react-hook-form";
 import { Slider, TextArea, TypeAhead } from "../../../components/inputs";
 import { ScorecardElement } from "../../../store/types/scorecards";
+import ScorecardSupervisor from "./ScorecardSupervisor";
 
 interface ScorecardElementRendererProps {
   element: ScorecardElement;
@@ -41,15 +42,9 @@ export default function ScorecardElementRenderer({ element }: ScorecardElementRe
       case "SUPERVISOR":
         return (
           <Stack spacing={2}>
-            <TypeAhead
+            <ScorecardSupervisor
               {...register(`${element.id}.stringValue`, { required: "Supervisor is required" })}
-              handleChange={(v) => setValue(`${element.id}.stringValue`, v?.value ?? null)}
-              watch={watch}
-              fieldName={`${element.id}.stringValue`}
-              valueList={[]}
-              labelKey="label"
-              valueKey="value"
-              placeholder="Select supervisor"
+              element={element}
             />
             {errors[`${element.id}.stringValue`] && (
               <FormHelperText error>

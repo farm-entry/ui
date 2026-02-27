@@ -36,7 +36,7 @@ export default function ScorecardsPage() {
     defaultValues: {}
   });
 
-  const { handleSubmit, trigger, getValues, watch } = methods;
+  const { handleSubmit, trigger, getValues, watch, setValue } = methods;
 
   const job = watch("job");
   const scorecardType = watch("scorecardType");
@@ -54,6 +54,17 @@ export default function ScorecardsPage() {
       getScorecardConfig(job, scorecardType);
     }
   }, [scorecardType]);
+
+  useEffect(() => {
+    if (!scorecardConfig) return;
+    for (const page of scorecardConfig.pages) {
+      for (const element of page.elements) {
+        if (element.min !== undefined) {
+          setValue(`${element.id}.numericValue`, element.min);
+        }
+      }
+    }
+  }, [scorecardConfig]);
 
   const handleNext = async () => {
     console.log({ formState: getValues() });
@@ -82,8 +93,8 @@ export default function ScorecardsPage() {
   const handleFormSubmit = async (formData: any) => {
     setIsSubmitting(true);
     try {
-      const { postingGroup, scorecardType, ...scorecardData } = formData;
-      const payload = transformScorecardFormData(scorecardData, postingGroup, scorecardType);
+      const { postingGroup, scorecardType, job: jobValue, ...scorecardData } = formData;
+      const payload = transformScorecardFormData(scorecardData, jobValue, postingGroup);
 
       console.log("Submitting scorecard data:", payload);
       await new Promise((resolve) => setTimeout(resolve, 1000));
