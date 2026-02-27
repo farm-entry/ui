@@ -12,4 +12,5 @@ export type ActivityType =
   | "SHIPMENT"
   | "INVENTORY"
   | "FUEL"
-  | "MAINTENANCE";
+  | "MAINTENANCE"
+  | "SCORECARDS";

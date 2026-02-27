@@ -1,45 +1,60 @@
 import { Assignment } from "@mui/icons-material";
-import { Alert, Button, Snackbar, Stack, Step, StepLabel, Stepper } from "@mui/material";
+import { Button, Stack, Step, StepLabel, Stepper } from "@mui/material";
 import { PageContainer } from "@toolpad/core";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import CustomHeader from "../../components/framework/CustomHeader";
 import LoadingSpinner from "../../components/framework/LoadingSpinner";
 import CustomFormsLayout from "../../layouts/forms";
+import { scorecardApi } from "../../services/scorecardApi";
+import { useGlobalAlertStore } from "../../store/globalAlertStore";
 import { usePostingGroupsStore } from "../../store/postingGroupsStore";
 import { useScorecardStore } from "../../store/scorecardStore";
+import { FormData } from "../../store/types/forms";
 import { ScorecardPage } from "../../store/types/scorecards";
 import ScorecardElementRenderer from "./components/ScorecardElementRenderer";
 import ScorecardReview from "./components/ScorecardReview";
 import ScorecardSetup from "./components/ScorecardSetup";
 import { transformScorecardFormData } from "./helpers";
 
+export interface ScorecardFormData extends FormData {
+  job: string | null;
+  postingGroup: string | null;
+  data: Array<{
+    elementId: string;
+    numericValue?: number;
+    stringValue?: string;
+  }>;
+}
+
 export default function ScorecardsPage() {
+  const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { getPostingGroups, postingGroups } = usePostingGroupsStore();
-
-  const [submitStatus, setSubmitStatus] = useState<{
-    open: boolean;
-    message: string;
-    severity: "success" | "error";
-  }>({ open: false, message: "", severity: "success" });
-
+  const { setAlert, clearAlert } = useGlobalAlertStore();
   const [initLoading, setInitLoading] = useState(true);
 
-  const { scorecardConfig, getScorecardConfig, isLoading: scorecardLoading } = useScorecardStore();
+  const {
+    clearScorecardConfig,
+    scorecardConfig,
+    getScorecardConfig,
+    isLoading: scorecardLoading,
+    currentJob,
+    currentPostingGroup
+  } = useScorecardStore();
 
   const pages: ScorecardPage[] = scorecardConfig?.pages || [];
 
-  const methods = useForm<Record<string, any>>({
+  const methods = useForm<ScorecardFormData>({
     mode: "onChange",
-    defaultValues: {}
+    defaultValues: { form: "SCORECARDS" }
   });
 
-  const { handleSubmit, trigger, getValues, watch, setValue } = methods;
+  const { handleSubmit, trigger, reset, watch, setValue } = methods;
 
   const job = watch("job");
-  const scorecardType = watch("scorecardType");
+  const scorecardType = watch("postingGroup");
 
   // Review step is always the last step, after all scorecard pages
   const reviewStepIndex = pages.length + 1;
@@ -56,28 +71,20 @@ export default function ScorecardsPage() {
   }, [scorecardType]);
 
   useEffect(() => {
+    console.log("Scorecard config updated, resetting form values");
+    reset({ job, postingGroup: scorecardType });
     if (!scorecardConfig) return;
     for (const page of scorecardConfig.pages) {
       for (const element of page.elements) {
         if (element.min !== undefined) {
-          setValue(`${element.id}.numericValue`, element.min);
+          setValue(`${element.id}.numericValue` as any, element.min);
         }
       }
     }
   }, [scorecardConfig]);
 
   const handleNext = async () => {
-    console.log({ formState: getValues() });
-
-    let fieldsToValidate: string[];
-    if (activeStep === 0) {
-      fieldsToValidate = ["postingGroup", "scorecardType"];
-    } else {
-      const currentPageElements = pages[activeStep - 1]?.elements || [];
-      fieldsToValidate = currentPageElements.map((element) => element.id);
-    }
-
-    const isStepValid = await trigger(fieldsToValidate);
+    const isStepValid = await trigger(["postingGroup"]);
 
     if (isStepValid && activeStep < reviewStepIndex) {
       setActiveStep((prevStep) => prevStep + 1);
@@ -90,34 +97,28 @@ export default function ScorecardsPage() {
     }
   };
 
-  const handleFormSubmit = async (formData: any) => {
-    setIsSubmitting(true);
-    try {
-      const { postingGroup, scorecardType, job: jobValue, ...scorecardData } = formData;
-      const payload = transformScorecardFormData(scorecardData, jobValue, postingGroup);
-
-      console.log("Submitting scorecard data:", payload);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      setSubmitStatus({
-        open: true,
-        message: "Scorecard submitted successfully!",
-        severity: "success"
+  const handleFormSubmit = async (formData: ScorecardFormData) => {
+    clearAlert();
+    setInitLoading(true);
+    const state = {
+      formData: { Job: formData.job, Type: formData.postingGroup, form: "SCORECARDS" },
+      section: "scorecards"
+    };
+    await scorecardApi
+      .postScorecard(formData.job!, transformScorecardFormData(formData))
+      .then(() => {
+        handleReset();
+        navigate("/post-success", { state });
+      })
+      .catch((error: Error) => {
+        console.error("Unable to post form.");
+        const errorMessage = error.message || "Unable to submit form. Please try again.";
+        const errorTitle = (error as any).code || formData.form + "_SUBMISSION_ERROR";
+        setAlert("error", errorMessage, errorTitle);
+      })
+      .finally(() => {
+        setInitLoading(false);
       });
-    } catch (error) {
-      console.error("Error submitting scorecard:", error);
-      setSubmitStatus({
-        open: true,
-        message: "Failed to submit scorecard. Please try again.",
-        severity: "error"
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleCloseSnackbar = () => {
-    setSubmitStatus((prev) => ({ ...prev, open: false }));
   };
 
   useEffect(() => {
@@ -126,6 +127,11 @@ export default function ScorecardsPage() {
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
 
     Promise.all(promises).finally(() => {
+      if (scorecardConfig && currentJob && currentPostingGroup) {
+        setValue("job", currentJob);
+        setValue("postingGroup", currentPostingGroup);
+        setActiveStep(1);
+      }
       setInitLoading(false);
     });
   }, []);
@@ -136,12 +142,23 @@ export default function ScorecardsPage() {
     return pages[activeStep - 1]?.title ?? "";
   };
 
+  const handleReset = () => {
+    setActiveStep(0);
+    clearScorecardConfig();
+    setValue("job", null);
+    setValue("postingGroup", null);
+  };
+
   return (
     <PageContainer>
       {initLoading && <LoadingSpinner />}
       {!initLoading && (
         <CustomFormsLayout>
-          <CustomHeader icon={Assignment} title={headerTitle()} />
+          <CustomHeader
+            icon={Assignment}
+            title={headerTitle()}
+            button={{ label: "reset", onClick: handleReset }}
+          />
 
           <Stepper activeStep={activeStep} sx={{ mb: 4, justifyContent: "center" }}>
             <Step>
@@ -153,7 +170,19 @@ export default function ScorecardsPage() {
               </Step>
             ))}
             <Step>
-              <StepLabel>Review</StepLabel>
+              <StepLabel
+                onClick={() => setActiveStep(reviewStepIndex)}
+                sx={{
+                  cursor: "pointer",
+                  "& .MuiStepLabel-label": {
+                    color: "primary.main",
+                    fontWeight: 600,
+                    "&:hover": { textDecoration: "underline" }
+                  }
+                }}
+              >
+                Review
+              </StepLabel>
             </Step>
           </Stepper>
 
@@ -172,13 +201,13 @@ export default function ScorecardsPage() {
                   </>
                 )}
 
-                {isReviewStep && <ScorecardReview />}
+                {isReviewStep && <ScorecardReview onGoToStep={setActiveStep} />}
               </Stack>
 
               <Stack direction="row" spacing={2} justifyContent="flex-end">
                 <Button
                   onClick={handleBack}
-                  disabled={activeStep === 0 || isSubmitting}
+                  disabled={activeStep === 0 || initLoading}
                   variant="text"
                   size="large"
                   fullWidth
@@ -193,17 +222,17 @@ export default function ScorecardsPage() {
                     size="large"
                     color="primary"
                     fullWidth
-                    disabled={isSubmitting}
-                    loading={isSubmitting}
+                    disabled={initLoading}
+                    loading={initLoading}
                   >
-                    {isSubmitting ? "Submitting..." : "Submit"}
+                    {initLoading ? "Submitting..." : "Submit"}
                   </Button>
                 ) : (
                   <Button
                     onClick={handleNext}
                     variant="outlined"
                     size="large"
-                    disabled={scorecardLoading || isSubmitting}
+                    disabled={scorecardLoading || initLoading}
                     fullWidth
                     loading={scorecardLoading}
                   >
@@ -213,20 +242,6 @@ export default function ScorecardsPage() {
               </Stack>
             </form>
           </FormProvider>
-          <Snackbar
-            open={submitStatus.open}
-            autoHideDuration={6000}
-            onClose={handleCloseSnackbar}
-            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-          >
-            <Alert
-              onClose={handleCloseSnackbar}
-              severity={submitStatus.severity}
-              sx={{ width: "100%" }}
-            >
-              {submitStatus.message}
-            </Alert>
-          </Snackbar>
         </CustomFormsLayout>
       )}
     </PageContainer>

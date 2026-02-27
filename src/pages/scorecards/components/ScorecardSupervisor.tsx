@@ -2,6 +2,7 @@ import { FormHelperText, Stack } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 import { TypeAhead } from "../../../components/inputs";
 import { ScorecardElement } from "../../../store/types/scorecards";
+import { useUserStore } from "../../../store/userStore";
 
 interface ScorecardSupervisorProps {
   element: ScorecardElement;
@@ -15,7 +16,7 @@ export default function ScorecardSupervisor({ element }: ScorecardSupervisorProp
     formState: { errors }
   } = useFormContext();
 
-  console.log({ USERS });
+  const { username, name } = useUserStore();
 
   return (
     <Stack spacing={2}>
@@ -24,6 +25,7 @@ export default function ScorecardSupervisor({ element }: ScorecardSupervisorProp
         handleChange={(v) => setValue(`${element.id}.stringValue`, v?.value ?? null)}
         watch={watch}
         fieldName={`${element.id}.stringValue`}
+        defaultValue={{ value: username, label: name }}
         valueList={USERS}
         labelKey="name"
         valueKey="username"

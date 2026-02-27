@@ -1,6 +1,11 @@
 /**
  * Represents an individual element within a scorecard page section
  */
+export interface ScorecardType extends Record<string, any> {
+  code: string;
+  description: string;
+}
+
 export interface ScorecardElement {
   /** Unique identifier for the element (e.g., "NG00SUPERVISOR", "NG01SLIDER-1-5-2") */
   id: string;

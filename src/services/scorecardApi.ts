@@ -1,26 +1,8 @@
-import { ScorecardConfig } from "../store/types/scorecards";
+import { ScorecardFormData } from "../pages/scorecards";
+import { ScorecardConfig, ScorecardType } from "../store/types/scorecards";
 import { HandleError } from "./handleError";
 
-// Type definitions based on OpenAPI spec
-
-export interface ScorecardType extends Record<string, any> {
-  code: string;
-  description: string;
-}
-
-
-export interface ScorecardElementData {
-  elementId: string;
-  numericValue?: number;
-  stringValue?: string;
-}
-
-export interface ScorecardInput {
-  postingGroup: string;
-  data: ScorecardElementData[];
-}
-
-class ScorecardService {
+class ScorecardApi {
   /**
    * Get scorecard types for a job
    * GET /api/scorecard/types?job={job}
@@ -78,7 +60,7 @@ class ScorecardService {
    * Post scorecard to NAV
    * POST /api/scorecard/{jobNo}
    */
-  async postScorecard(jobNo: string, input: ScorecardInput): Promise<void> {
+  async postScorecard(jobNo: string, input: ScorecardFormData): Promise<void> {
     try {
       console.log(`Posting scorecard for job ${jobNo}:`, input);
 
@@ -136,4 +118,4 @@ class ScorecardService {
 }
 
 // Export a singleton instance
-export const scorecardService = new ScorecardService();
+export const scorecardApi = new ScorecardApi();

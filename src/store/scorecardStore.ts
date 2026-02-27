@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import {
-  scorecardService as api,
+  scorecardApi as api,
   ScorecardInput, ScorecardType
 } from "../services/scorecardApi";
 import { ScorecardConfig, ScorecardPage } from "./types/scorecards";

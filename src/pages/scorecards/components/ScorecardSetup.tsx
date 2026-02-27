@@ -14,6 +14,7 @@ export default function ScorecardSetup() {
     watch,
     setError,
     clearErrors,
+    trigger,
     formState: { errors }
   } = useFormContext();
 
@@ -43,12 +44,12 @@ export default function ScorecardSetup() {
   return (
     <PageContainer>
       <Stack spacing={3}>
-        <Stack spacing={2}>
+        <Stack>
           <TypeAhead
             {...register("job", { required: "Job selection is required" })}
             handleChange={(v) => {
               setValue("job", v?.value ?? null);
-              setValue("scorecardType", null);
+              setValue("postingGroup", null);
             }}
             watch={watch}
             fieldName={"job"}
@@ -63,10 +64,13 @@ export default function ScorecardSetup() {
 
         <Stack spacing={2}>
           <TypeAhead
-            {...register("scorecardType", { required: "Scorecard Type is required" })}
-            handleChange={(v) => setValue("scorecardType", v?.value ?? null)}
+            {...register("postingGroup", { required: "Scorecard Type is required" })}
+            handleChange={(v) => {
+              setValue("postingGroup", v?.value ?? null);
+              trigger(["job", "postingGroup"]);
+            }}
             watch={watch}
-            fieldName={"scorecardType"}
+            fieldName={"postingGroup"}
             labelKey={"description"}
             valueKey={"code"}
             valueList={scorecardTypes}
@@ -74,8 +78,8 @@ export default function ScorecardSetup() {
             placeholder="Scorecard Type"
             disabled={!watch("job") && isScorecardLoading}
           />
-          {errors.scorecardType && (
-            <FormHelperText error>{errors.scorecardType.message as string}</FormHelperText>
+          {errors.postingGroup && (
+            <FormHelperText error>{errors.postingGroup.message as string}</FormHelperText>
           )}
         </Stack>
       </Stack>

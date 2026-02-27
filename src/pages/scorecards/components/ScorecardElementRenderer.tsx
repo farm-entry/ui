@@ -1,6 +1,6 @@
 import { Button, ButtonGroup, FormHelperText, FormLabel, Stack, TextField } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
-import { Slider, TextArea, TypeAhead } from "../../../components/inputs";
+import { Slider, TextArea } from "../../../components/inputs";
 import { ScorecardElement } from "../../../store/types/scorecards";
 import ScorecardSupervisor from "./ScorecardSupervisor";
 

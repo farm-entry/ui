@@ -22,11 +22,11 @@ class LivestockActivityApi {
 
   async fetchEventTypes(
     template: ActivityType,
-    job: string
+    job?: string
   ): Promise<{ events: EventType[]; healthStatuses: HealthStatus[]; template: ActivityType }> {
     try {
       console.log(`Fetching event types from API for template: ${template}, job: ${job}`);
-      
+
       if (template === "MORTALITY" && !job) { throw new Error("Job parameter is required for MORTALITY template"); }
 
       const response = await fetch(`/api/livestock/events?template=${template}${job ? `&job=${job}` : ""}`, {
