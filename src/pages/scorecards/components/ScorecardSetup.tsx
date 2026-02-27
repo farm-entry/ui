@@ -1,30 +1,43 @@
 import { FormHelperText, Stack } from "@mui/material";
 import { PageContainer } from "@toolpad/core";
 import { useEffect } from "react";
-import { UseFormRegister, UseFormSetValue, UseFormWatch } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { TypeAhead } from "../../../components/inputs";
+import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
 import { useScorecardStore } from "../../../store/scorecardStore";
 
-interface ScorecardSetupProps {
-  register: UseFormRegister<any>;
-  setValue: UseFormSetValue<any>;
-  watch: UseFormWatch<any>;
-  errors: any;
-}
+export default function ScorecardSetup() {
+  const {
+    register,
+    setValue,
+    watch,
+    setError,
+    clearErrors,
+    formState: { errors }
+  } = useFormContext();
 
-export default function ScorecardSetup({ register, setValue, watch, errors }: ScorecardSetupProps) {
   const { postingGroups, isLoading: postingGroupsLoading } = usePostingGroupsStore();
   const job: string = watch("job");
 
   const { scorecardTypes, getScorecardTypes, isLoading: isScorecardLoading } = useScorecardStore();
+  const { setAlert } = useGlobalAlertStore();
 
   useEffect(() => {
     if (!job) {
       console.log("No job selected, skipping setup");
       return;
     }
-    getScorecardTypes(job);
+    getScorecardTypes(job).then((result) => {
+      if (result === undefined) {
+        const { error } = useScorecardStore.getState();
+        setAlert("error", error ?? "Failed to load scorecard types");
+      } else if (result.length === 0) {
+        setError("job", { type: "manual", message: "No scorecard types found for this job" });
+      } else {
+        clearErrors("job");
+      }
+    });
   }, [job]);
 
   return (
@@ -45,7 +58,7 @@ export default function ScorecardSetup({ register, setValue, watch, errors }: Sc
             loading={postingGroupsLoading}
             placeholder="Select Job"
           />
-          {errors.job && <FormHelperText error>{errors.job.message}</FormHelperText>}
+          {errors.job && <FormHelperText error>{errors.job.message as string}</FormHelperText>}
         </Stack>
 
         <Stack spacing={2}>
@@ -59,31 +72,13 @@ export default function ScorecardSetup({ register, setValue, watch, errors }: Sc
             valueList={scorecardTypes}
             loading={isScorecardLoading}
             placeholder="Scorecard Type"
-            disabled={!watch("job")}
+            disabled={!watch("job") && isScorecardLoading}
           />
           {errors.scorecardType && (
-            <FormHelperText error>{errors.scorecardType.message}</FormHelperText>
+            <FormHelperText error>{errors.scorecardType.message as string}</FormHelperText>
           )}
         </Stack>
       </Stack>
     </PageContainer>
   );
 }
-
-const TYPEVALUES = [
-  {
-    code: "SURVEYBIO",
-    description: "Biosecurity Evaluation",
-    __typename: "ScorecardType"
-  },
-  {
-    code: "SURVEYNG",
-    description: "Nursey & Finish Site Evaluation",
-    __typename: "ScorecardType"
-  },
-  {
-    code: "SURVEYPRE",
-    description: "Pre-Fill Barn Checklist",
-    __typename: "ScorecardType"
-  }
-];

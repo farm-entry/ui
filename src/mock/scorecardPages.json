@@ -1,259 +1,197 @@
 [
   {
-    "title": "Basic Field Types",
+    "title": "Herd Health (<2%, 2-5%, 5%+)",
     "elements": [
       {
-        "id": "01SUPERVISOR",
-        "label": "Supervisor Selector",
+        "id": "NG00SUPERVISOR",
+        "label": "Person Completing Survey",
         "code": "SUPERVISOR",
-        "order": 0,
-        "max": 0
+        "min": 0,
+        "max": 0,
+        "defaultValue": null
       },
       {
-        "id": "02YN",
-        "label": "Yes/No Question",
-        "code": "YN",
-        "order": 0,
-        "max": 0
+        "id": "NG01SLIDER-1-5-2",
+        "label": "Respitory",
+        "code": "SLIDER",
+        "min": 1,
+        "max": 50,
+        "defaultValue": 1
       },
       {
-        "id": "03PASSFAIL",
-        "label": "Pass/Fail Assessment",
-        "code": "PASSFAIL",
-        "order": 0,
-        "max": 0
+        "id": "NG02SLIDER-1-5-2",
+        "label": "Lameness",
+        "code": "SLIDER",
+        "min": 1,
+        "max": 5,
+        "defaultValue": 1
       },
       {
-        "id": "04HEALTH",
-        "label": "Health Status Selector",
-        "code": "HEALTH",
-        "order": 0,
-        "max": 5
+        "id": "NG03SLIDER-1-5-2",
+        "label": "Loose Stool",
+        "code": "SLIDER",
+        "min": 1,
+        "max": 5,
+        "defaultValue": 1
       },
       {
         "id": "NG04SLIDER-1-5-2",
         "label": "Other",
-        "code": "SLIDER-1-5-2",
-        "order": 0,
-        "max": 5
-      },
-      {
-        "id": "NG04AHEALTH",
-        "label": "Overall Health Status",
-        "code": "HEALTH",
-        "order": 0,
-        "max": 0
+        "code": "SLIDER",
+        "min": 1,
+        "max": 5,
+        "defaultValue": 1
       }
     ]
   },
   {
-    "title": "Slider Fields",
+    "title": "Caretaker Management Evaluation",
     "elements": [
       {
-        "id": "05SLIDER-1-5-1",
-        "label": "Slider (1-5, step 1)",
-        "code": "SLIDER-1-5-1",
-        "order": 0,
-        "max": 5
-      },
-      {
-        "id": "06SLIDER-1-5-2",
-        "label": "Slider (1-5, step 2)",
-        "code": "SLIDER-1-5-2",
-        "order": 0,
-        "max": 5
-      },
-      {
-        "id": "07SLIDER-1-10-1",
-        "label": "Slider (1-10, step 1)",
-        "code": "SLIDER-1-10-1",
-        "order": 0,
-        "max": 10
+        "id": "NG05SLIDER-1-10-1",
+        "label": "Feed adjustment & available",
+        "code": "SLIDER",
+        "min": 1,
+        "max": 10,
+        "defaultValue": 1
       },
       {
         "id": "NG06SLIDER-1-10-1",
         "label": "Water flow rate & quality",
-        "code": "SLIDER-1-10-1",
-        "order": 0,
-        "max": 10
+        "code": "SLIDER",
+        "min": 1,
+        "max": 10,
+        "defaultValue": 1
       },
       {
         "id": "NG07SLIDER-1-10-1",
         "label": "Environment-temp, RH, speed",
-        "code": "SLIDER-1-10-1",
-        "order": 0,
-        "max": 10
+        "code": "SLIDER",
+        "min": 1,
+        "max": 10,
+        "defaultValue": 1
       },
       {
         "id": "NG08SLIDER-1-10-1",
         "label": "Individual pig care & treats",
-        "code": "SLIDER-1-10-1",
-        "order": 0,
-        "max": 10
-      },
-      {
-        "id": "NG08AYN",
-        "label": "Are pigs comfortable?",
-        "code": "YN",
-        "order": 0,
-        "max": 0
-      },
-      {
-        "id": "NG08BPASSFAIL",
-        "label": "Bio-security checklist complete?",
-        "code": "PASSFAIL",
-        "order": 0,
-        "max": 0
+        "code": "SLIDER",
+        "min": 1,
+        "max": 10,
+        "defaultValue": 1
       },
       {
         "id": "NG09SLIDER-1-5",
         "label": "Sorts & pull pen utilization",
-        "code": "SLIDER-1-5",
-        "order": 0,
-        "max": 5
+        "code": "SLIDER",
+        "min": 1,
+        "max": 5,
+        "defaultValue": 1
       },
       {
         "id": "NG10SLIDER-1-5",
         "label": "Timely euthanasia & welfare",
-        "code": "SLIDER-1-5",
-        "order": 0,
-        "max": 5
+        "code": "SLIDER",
+        "min": 1,
+        "max": 5,
+        "defaultValue": 1
       },
       {
         "id": "NG11SLIDER-1-5",
         "label": "Dead removal & disposal",
-        "code": "SLIDER-1-5",
-        "order": 0,
-        "max": 5
+        "code": "SLIDER",
+        "min": 1,
+        "max": 5,
+        "defaultValue": 1
       },
       {
         "id": "NG12SLIDER-1-5",
         "label": "Entry cleanliness & organization",
-        "code": "SLIDER-1-5",
-        "order": 0,
-        "max": 5
+        "code": "SLIDER",
+        "min": 1,
+        "max": 5,
+        "defaultValue": 1
       },
       {
         "id": "NG13SLIDER-1-5",
         "label": "Communication with supervisor",
-        "code": "SLIDER-1-5",
-        "order": 0,
-        "max": 5
+        "code": "SLIDER",
+        "min": 1,
+        "max": 5,
+        "defaultValue": 1
       },
       {
         "id": "NG14SLIDER-1-5",
         "label": "Logging temp, mort, H2O, treats",
-        "code": "SLIDER-1-5",
-        "order": 0,
-        "max": 5
+        "code": "SLIDER",
+        "min": 1,
+        "max": 5,
+        "defaultValue": 1
       }
     ]
   },
   {
-    "title": "Score and Range Fields",
+    "title": "Facility Management Evaluation",
     "elements": [
       {
-        "id": "08SCORE5",
-        "label": "Score 1-5",
-        "code": "SCORE5",
-        "order": 0,
-        "max": 5
+        "id": "NG16SLIDER-1-5",
+        "label": "Maintenance & repairs",
+        "code": "SLIDER",
+        "min": 1,
+        "max": 5,
+        "defaultValue": 1
       },
       {
-        "id": "09SCORE10",
-        "label": "Score 1-10",
-        "code": "SCORE10",
-        "order": 0,
-        "max": 10
-      },
-      {
-        "id": "NG17ASCORE5",
-        "label": "Overall equipment condition (1-5)",
-        "code": "SCORE5",
-        "order": 0,
-        "max": 5
-      },
-      {
-        "id": "NG17BSCORE10",
-        "label": "Facility cleanliness (1-10)",
-        "code": "SCORE10",
-        "order": 0,
-        "max": 10
+        "id": "NG17SLIDER-1-5",
+        "label": "Handling equipment",
+        "code": "SLIDER",
+        "min": 1,
+        "max": 5,
+        "defaultValue": 1
       },
       {
         "id": "NG18SLIDER-1-5",
         "label": "Appearance outside",
-        "code": "SLIDER-1-5",
-        "order": 0,
-        "max": 5
+        "code": "SLIDER",
+        "min": 1,
+        "max": 5,
+        "defaultValue": 1
       },
       {
         "id": "NG19SLIDER-1-5",
         "label": "Rodent control",
-        "code": "SLIDER-1-5",
-        "order": 0,
-        "max": 5
-      },
-      {
-        "id": "NG19ARANGE-0-100",
-        "label": "Feed usage percentage",
-        "code": "RANGE-0-100",
-        "order": 0,
-        "max": 100
+        "code": "SLIDER",
+        "min": 1,
+        "max": 5,
+        "defaultValue": 1
       },
       {
         "id": "NG20SLIDER-1-5",
         "label": "Bio-security, bench, boots, clothing",
-        "code": "SLIDER-1-5",
-        "order": 0,
-        "max": 5
+        "code": "SLIDER",
+        "min": 1,
+        "max": 5,
+        "defaultValue": 1
       },
       {
         "id": "NG21SLIDER-1-5",
         "label": "Monthly generator test and run",
-        "code": "SLIDER-1-5",
-        "order": 0,
-        "max": 5
+        "code": "SLIDER",
+        "min": 1,
+        "max": 5,
+        "defaultValue": 1
       }
     ]
   },
   {
-    "title": "Special Input Fields",
+    "title": "Summary Evaluation Commenthead",
     "elements": [
       {
-        "id": "11WEEKSONFEED",
-        "label": "Weeks on Feed",
-        "code": "WEEKSONFEED",
-        "order": 0,
-        "max": 0
-      },
-      {
-        "id": "12MORTALITY",
-        "label": "Mortality Count",
-        "code": "MORTALITY",
-        "order": 0,
-        "max": 0
-      },
-      {
-        "id": "13POSTDATE",
-        "label": "Posting Date Picker",
-        "code": "POSTDATE",
-        "order": 0,
-        "max": 0
-      },
-      {
-        "id": "14TARGETTEMP",
-        "label": "Target Temperature",
-        "code": "TARGETTEMP",
-        "order": 0,
-        "max": 0
-      },
-      {
-        "id": "15TEMP",
-        "label": "Current Temperature",
-        "code": "TEMP",
-        "order": 0,
-        "max": 0
+        "id": "NG23SLIDER-1-1",
+        "label": "Additional comments",
+        "code": "SLIDER",
+        "min": 1,
+        "max": 1,
+        "defaultValue": 1
       }
     ]
   }

@@ -25,6 +25,7 @@ import { FuelFormData } from "../../store/types/fuel";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
 import { toCamelCase } from "../../utils/strings";
 import FuelHistory from "./FuelHistory";
+import { PageContainer } from "@toolpad/core";
 
 const FUEL_STORAGE_KEY = "fuel-form";
 const FORM_STORAGE_HOURS = 48;
@@ -154,7 +155,7 @@ export default function FuelPage() {
   };
 
   return (
-    <>
+    <PageContainer>
       <CustomNotice<FuelFormData>
         formType={FUEL_STORAGE_KEY}
         onLoad={(data) => {
@@ -296,6 +297,6 @@ export default function FuelPage() {
 
         <CustomConfirmation />
       </CustomFormsLayout>
-    </>
+    </PageContainer>
   );
 }

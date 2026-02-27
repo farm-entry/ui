@@ -1,4 +1,4 @@
-import { ScorecardPage } from "../store/types/scorecards";
+import { ScorecardConfig } from "../store/types/scorecards";
 import { HandleError } from "./handleError";
 
 // Type definitions based on OpenAPI spec
@@ -50,7 +50,7 @@ class ScorecardService {
    * Get scorecard configuration for a job
    * GET /api/scorecard/{jobNo}?postingGroup={postingGroup}
    */
-  async getScorecardConfig(jobNo: string, postingGroup: string): Promise<ScorecardPage> {
+  async getScorecardConfig(jobNo: string, postingGroup: string): Promise<ScorecardConfig> {
     try {
       console.log(`Fetching scorecard config for job ${jobNo}, posting group ${postingGroup}...`);
 
@@ -66,7 +66,7 @@ class ScorecardService {
         await new HandleError().handleApiError(response, "ScorecardService.getScorecardConfig");
       }
 
-      const data: ScorecardPage = await response.json();
+      const data: ScorecardConfig = await response.json();
       return data;
     } catch (error) {
       console.error("Error fetching scorecard config:", error);

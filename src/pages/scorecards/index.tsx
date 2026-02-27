@@ -10,17 +10,14 @@ import { usePostingGroupsStore } from "../../store/postingGroupsStore";
 import { useScorecardStore } from "../../store/scorecardStore";
 import { ScorecardPage } from "../../store/types/scorecards";
 import ScorecardElementRenderer from "./components/ScorecardElementRenderer";
+import ScorecardReview from "./components/ScorecardReview";
 import ScorecardSetup from "./components/ScorecardSetup";
 import { transformScorecardFormData } from "./helpers";
 
 export default function ScorecardsPage() {
   const [activeStep, setActiveStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const {
-    getPostingGroups,
-    postingGroups,
-    isLoading: postingGroupsLoading
-  } = usePostingGroupsStore();
+  const { getPostingGroups, postingGroups } = usePostingGroupsStore();
 
   const [submitStatus, setSubmitStatus] = useState<{
     open: boolean;
@@ -39,18 +36,14 @@ export default function ScorecardsPage() {
     defaultValues: {}
   });
 
-  const {
-    handleSubmit,
-    trigger,
-    getValues,
-    register,
-    setValue,
-    watch,
-    formState: { errors }
-  } = methods;
+  const { handleSubmit, trigger, getValues, watch } = methods;
 
   const job = watch("job");
   const scorecardType = watch("scorecardType");
+
+  // Review step is always the last step, after all scorecard pages
+  const reviewStepIndex = pages.length + 1;
+  const isReviewStep = activeStep === reviewStepIndex;
 
   useEffect(() => {
     if (!scorecardType || !job) {
@@ -65,18 +58,17 @@ export default function ScorecardsPage() {
   const handleNext = async () => {
     console.log({ formState: getValues() });
 
-    // let fieldsToValidate: string[];
-    // if (activeStep === 0) {
-    //   fieldsToValidate = ["postingGroup", "scorecardType"];
-    // } else {
-    //   const currentPageElements = pages[activeStep - 1]?.elements || [];
-    //   fieldsToValidate = currentPageElements.map((element) => element.id);
-    // }
+    let fieldsToValidate: string[];
+    if (activeStep === 0) {
+      fieldsToValidate = ["postingGroup", "scorecardType"];
+    } else {
+      const currentPageElements = pages[activeStep - 1]?.elements || [];
+      fieldsToValidate = currentPageElements.map((element) => element.id);
+    }
 
-    // const isStepValid = await trigger(fieldsToValidate);
-    const isStepValid = true;
+    const isStepValid = await trigger(fieldsToValidate);
 
-    if (isStepValid && activeStep < pages.length) {
+    if (isStepValid && activeStep < reviewStepIndex) {
       setActiveStep((prevStep) => prevStep + 1);
     }
   };
@@ -117,8 +109,6 @@ export default function ScorecardsPage() {
     setSubmitStatus((prev) => ({ ...prev, open: false }));
   };
 
-  const isLastStep = activeStep === pages.length;
-
   useEffect(() => {
     setInitLoading(true);
     const promises = [];
@@ -129,17 +119,20 @@ export default function ScorecardsPage() {
     });
   }, []);
 
+  const headerTitle = () => {
+    if (activeStep === 0) return "Scorecard Setup";
+    if (isReviewStep) return "Review";
+    return pages[activeStep - 1]?.title ?? "";
+  };
+
   return (
-    <>
+    <PageContainer>
       {initLoading && <LoadingSpinner />}
       {!initLoading && (
         <CustomFormsLayout>
-          <CustomHeader
-            icon={Assignment}
-            title={activeStep === 0 ? "Scorecard Setup" : pages[activeStep - 1].title}
-          />
+          <CustomHeader icon={Assignment} title={headerTitle()} />
 
-          <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+          <Stepper activeStep={activeStep} sx={{ mb: 4, justifyContent: "center" }}>
             <Step>
               <StepLabel>Setup</StepLabel>
             </Step>
@@ -148,56 +141,64 @@ export default function ScorecardsPage() {
                 <StepLabel />
               </Step>
             ))}
+            <Step>
+              <StepLabel>Review</StepLabel>
+            </Step>
           </Stepper>
 
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(handleFormSubmit)}>
               <Stack>
-                {activeStep === 0 && (
-                  <ScorecardSetup
-                    register={register}
-                    setValue={setValue}
-                    watch={watch}
-                    errors={errors}
-                  />
-                )}
+                {activeStep === 0 && <ScorecardSetup />}
 
-                {activeStep > 0 && pages[activeStep - 1] && (
-                  <PageContainer>
+                {activeStep > 0 && activeStep <= pages.length && pages[activeStep - 1] && (
+                  <>
                     {pages[activeStep - 1].elements.map((element, index) => (
                       <Stack key={element.id} spacing={2} mb={2}>
                         <ScorecardElementRenderer element={element} elementIndex={index} />
                       </Stack>
                     ))}
-                  </PageContainer>
+                  </>
                 )}
+
+                {isReviewStep && <ScorecardReview />}
               </Stack>
 
               <Stack direction="row" spacing={2} justifyContent="flex-end">
                 <Button
                   onClick={handleBack}
                   disabled={activeStep === 0 || isSubmitting}
-                  variant="outlined"
+                  variant="text"
                   size="large"
                   fullWidth
                 >
                   Back
                 </Button>
 
-                <Button type="submit" variant="contained" size="large" color="primary" fullWidth>
-                  {isSubmitting ? "Submitting..." : "Submit"}
-                </Button>
-
-                <Button
-                  onClick={handleNext}
-                  variant="contained"
-                  size="large"
-                  disabled={isLastStep || scorecardLoading || isSubmitting}
-                  fullWidth
-                  loading={scorecardLoading}
-                >
-                  Next
-                </Button>
+                {isReviewStep ? (
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    size="large"
+                    color="primary"
+                    fullWidth
+                    disabled={isSubmitting}
+                    loading={isSubmitting}
+                  >
+                    {isSubmitting ? "Submitting..." : "Submit"}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleNext}
+                    variant="outlined"
+                    size="large"
+                    disabled={scorecardLoading || isSubmitting}
+                    fullWidth
+                    loading={scorecardLoading}
+                  >
+                    Next
+                  </Button>
+                )}
               </Stack>
             </form>
           </FormProvider>
@@ -217,6 +218,6 @@ export default function ScorecardsPage() {
           </Snackbar>
         </CustomFormsLayout>
       )}
-    </>
+    </PageContainer>
   );
 }

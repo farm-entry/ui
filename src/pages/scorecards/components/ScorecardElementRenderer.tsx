@@ -22,17 +22,15 @@ export default function ScorecardElementRenderer({ element }: ScorecardElementRe
       case "SLIDER":
         return (
           <Stack spacing={2}>
-            MIN {element.min}
             <Slider
               {...register(`${element.id}.numericValue`, { required: "This field is required" })}
               defaultValue={element.min}
               min={element.min}
               max={element.max}
               step={element.step}
-              valueChip
               marks
             />
-            <TextField
+            <TextArea
               {...register(`${element.id}.stringValue`)}
               placeholder="Comments..."
               fullWidth

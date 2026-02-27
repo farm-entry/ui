@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import {
-  scorecardService as api, ScorecardConfig,
-  ScorecardInput, ScorecardType, SuccessResponse
+  scorecardService as api,
+  ScorecardInput, ScorecardType
 } from "../services/scorecardApi";
+import { ScorecardConfig, ScorecardPage } from "./types/scorecards";
 
 interface ScorecardState {
   // Data
@@ -32,10 +33,10 @@ interface ScorecardActions {
   clearScorecardConfig: () => void;
 
   // Post scorecard
-  postScorecard: (jobNo: string, input: ScorecardInput) => Promise<SuccessResponse>;
+  postScorecard: (jobNo: string, input: ScorecardInput) => Promise<void>;
 
   // Auto-post scorecard journals
-  autoPostScorecard: (postingGroup: string) => Promise<SuccessResponse>;
+  autoPostScorecard: (postingGroup: string) => Promise<void>;
 
   // Set current context
   setCurrentJob: (job: string | null) => void;
@@ -74,6 +75,7 @@ export const useScorecardStore = create<ScorecardStore>()(
         try {
           set((state) => ({
             ...state,
+            isLoading: true,
             error: null,
             currentJob: job
           }));
@@ -83,6 +85,7 @@ export const useScorecardStore = create<ScorecardStore>()(
           set((state) => ({
             ...state,
             scorecardTypes: types,
+            isLoading: false
           }));
 
           return types;
@@ -91,6 +94,7 @@ export const useScorecardStore = create<ScorecardStore>()(
           set((state) => ({
             ...state,
             error: error instanceof Error ? error.message : "Unknown error occurred",
+            isLoading: false
           }));
           return undefined;
         }
