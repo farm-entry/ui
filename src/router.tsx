@@ -146,7 +146,7 @@ export const router = createBrowserRouter([
           {
             path: "admin",
             Component: () => (
-              <RouteGuard requiredRole="app_admin">
+              <RouteGuard requiredRole="admin">
                 <AdminPage />
               </RouteGuard>
             )

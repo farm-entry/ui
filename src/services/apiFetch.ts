@@ -5,23 +5,33 @@ interface TokenPair {
   refreshToken: string;
 }
 
-async function tryRefresh(): Promise<boolean> {
-  const raw = tokenStorage.getRefresh();
-  if (!raw) return false;
+let refreshPromise: Promise<boolean> | null = null;
 
-  try {
-    const res = await fetch('/api/auth/refresh', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refreshToken: raw }),
-    });
-    if (!res.ok) return false;
-    const { accessToken, refreshToken }: TokenPair = await res.json();
-    tokenStorage.set(accessToken, refreshToken);
-    return true;
-  } catch {
-    return false;
-  }
+async function tryRefresh(): Promise<boolean> {
+  if (refreshPromise) return refreshPromise;
+
+  refreshPromise = (async () => {
+    const raw = tokenStorage.getRefresh();
+    if (!raw) return false;
+
+    try {
+      const res = await fetch('/api/auth/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken: raw }),
+      });
+      if (!res.ok) return false;
+      const { accessToken, refreshToken }: TokenPair = await res.json();
+      tokenStorage.set(accessToken, refreshToken);
+      return true;
+    } catch {
+      return false;
+    }
+  })().finally(() => {
+    refreshPromise = null;
+  });
+
+  return refreshPromise;
 }
 
 export async function apiFetch(url: string, options: RequestInit = {}): Promise<Response> {

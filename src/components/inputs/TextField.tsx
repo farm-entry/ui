@@ -11,25 +11,19 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>((pro
   const { placeholder, helperText, value, slotProps, ...rest } = props;
 
   // Auto-detect if label should shrink based on value presence
-  const shouldShrink = value !== undefined && value !== null && value !== '';
+  const shouldShrink = value !== undefined && value !== null && value !== "";
 
   return (
     <>
       <MuiTextField
         ref={ref}
         variant="outlined"
-        label={placeholder}
+        label={props.label}
         placeholder={placeholder}
         helperText={helperText}
         fullWidth
-        value={value}  // CRITICAL: Must pass value explicitly after extracting it
-        slotProps={{
-          inputLabel: {
-            shrink: shouldShrink,
-            ...slotProps?.inputLabel, // Allow manual override
-          },
-          ...slotProps,
-        }}
+        value={value} // CRITICAL: Must pass value explicitly after extracting it
+        slotProps={slotProps}
         {...rest}
       />
     </>

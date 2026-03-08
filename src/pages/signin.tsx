@@ -34,15 +34,20 @@ export default function SignIn() {
     <SignInPage
       slots={{
         emailField: (props: any) => (
-          <TextField label="Username or Email" placeholder="Enter username or email" name="username" {...props} />
+          <TextField
+            {...props}
+            label="Username or Email"
+            // placeholder="Enter username or email"
+            name="username"
+          />
         ),
         passwordField: (props: any) => (
           <TextField
+            {...props}
             label="Password"
-            placeholder="Enter password"
+            // placeholder="Enter password"
             type="password"
             name="password"
-            {...props}
           />
         ),
         submitButton: (props: any) => (

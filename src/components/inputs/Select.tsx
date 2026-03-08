@@ -14,6 +14,7 @@ export interface SelectProps extends Omit<MuiSelectProps, 'variant'> {
   options: SelectOption[];
   helperText?: string;
   onClear?: () => void;
+  onC?: () => void;
 }
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>((props, ref) => {
@@ -22,13 +23,14 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>((props, r
 
   return (
     <FormControl fullWidth>
-      <InputLabel id={labelId}>{label}</InputLabel>
+      <InputLabel id={labelId} shrink={!!value}>{label}</InputLabel>
       <MuiSelect
         ref={ref}
         labelId={labelId}
         label={label}
         variant="outlined"
-        value={value}
+        value={value ?? ""}
+        notched={!!value}
         endAdornment={
           value ? (
             <InputAdornment position="end">

@@ -13,7 +13,7 @@ export interface TokenPair {
   refreshToken: string;
 }
 
-class AuthApi {
+class UserApi {
   async login(credentials: LoginCredentials): Promise<TokenPair & UserType> {
     const res = await fetch('/api/auth/login', {
       method: 'POST',
@@ -60,7 +60,7 @@ class AuthApi {
     return res.json();
   }
 
-  async fetchUsers(domain: string): Promise<UserType[]> {
+  async fetchUsers(domain?: string): Promise<UserType[]> {
     const res = await apiFetch(`/api/admin/users?domain=${domain}`);
     if (!res.ok) throw new Error('Failed to fetch users');
     return res.json();
@@ -72,6 +72,15 @@ class AuthApi {
       body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error('Failed to create user');
+    return res.json();
+  }
+
+  async updateUser(userId: string, payload: Partial<Pick<UserType, 'email' | 'firstName' | 'lastName' | 'domain' | 'role'>>): Promise<UserType> {
+    const res = await apiFetch(`/api/admin/users/${userId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('Failed to update user');
     return res.json();
   }
 
@@ -89,4 +98,4 @@ class AuthApi {
   }
 }
 
-export const authApi = new AuthApi();
+export const userApi = new UserApi();

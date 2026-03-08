@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { tokenStorage } from '../services/tokenStorage';
-import { authApi, LoginCredentials } from '../services/userApi';
+import { userApi, LoginCredentials } from '../services/userApi';
 import { useUserStore } from '../store/userStore';
 
 export function useAuth() {
@@ -15,7 +15,7 @@ export function useAuth() {
       setIsAuthenticated(false);
       return;
     }
-    authApi.getMe()
+    userApi.getMe()
       .then((user) => {
         setUser({
           ...user,
@@ -34,7 +34,7 @@ export function useAuth() {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await authApi.login(credentials);
+      const response = await userApi.login(credentials);
       tokenStorage.set(response.accessToken, response.refreshToken);
       setUser({
         ...response,
@@ -56,7 +56,7 @@ export function useAuth() {
   const logout = useCallback(async () => {
     setIsLoading(true);
     try {
-      await authApi.logout();
+      await userApi.logout();
       resetUser();
       setIsAuthenticated(false);
     } finally {

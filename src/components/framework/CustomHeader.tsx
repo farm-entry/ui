@@ -17,7 +17,7 @@ interface CustomHeaderProps {
 
 export default function CustomHeader({ icon: Icon, button, title, sx, iconSx }: CustomHeaderProps) {
   return (
-    <Stack direction="row" alignItems={"center"} spacing={2} mb={4} sx={sx}>
+    <Stack direction={{ xs: "column", sm: "row" }} alignItems={"center"} spacing={2} mb={4} sx={sx}>
       {Icon && <Icon color="primary" sx={{ fontSize: 34, ...iconSx }} />}
       <Typography variant="h4">{title}</Typography>
       {button && (
