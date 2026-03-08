@@ -8,8 +8,10 @@ import { Box, CardActionArea, Typography } from "@mui/material";
 import { PageContainer } from "@toolpad/core/PageContainer";
 import { useNavigate } from "react-router";
 import { CustomCard } from "../components/framework";
+import { useUserStore } from "../store/userStore";
 
 export default function DashboardPage() {
+  const { role } = useUserStore();
   const dashboardOptions = [
     {
       label: "Livestock Activity",

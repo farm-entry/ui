@@ -1,5 +1,6 @@
 import { ScorecardFormData } from "../pages/scorecards";
 import { ScorecardConfig, ScorecardType } from "../store/types/scorecards";
+import { apiFetch } from "./apiFetch";
 import { HandleError } from "./handleError";
 
 class ScorecardApi {
@@ -11,9 +12,8 @@ class ScorecardApi {
     try {
       console.log(`Fetching scorecard types for job ${job}...`);
 
-      const response = await fetch(`/api/scorecard/types?job=${encodeURIComponent(job)}`, {
-        method: "GET",
-        credentials: "include"
+      const response = await apiFetch(`/api/scorecard/types?job=${encodeURIComponent(job)}`, {
+        method: "GET"
       });
 
       if (!response.ok) {
@@ -36,12 +36,9 @@ class ScorecardApi {
     try {
       console.log(`Fetching scorecard config for job ${jobNo}, posting group ${postingGroup}...`);
 
-      const response = await fetch(
+      const response = await apiFetch(
         `/api/scorecard/${encodeURIComponent(jobNo)}?postingGroup=${encodeURIComponent(postingGroup)}`,
-        {
-          method: "GET",
-          credentials: "include"
-        }
+        { method: "GET" }
       );
 
       if (!response.ok) {
@@ -64,12 +61,8 @@ class ScorecardApi {
     try {
       console.log(`Posting scorecard for job ${jobNo}:`, input);
 
-      const response = await fetch(`/api/scorecard/${encodeURIComponent(jobNo)}`, {
+      const response = await apiFetch(`/api/scorecard/${encodeURIComponent(jobNo)}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        credentials: "include",
         body: JSON.stringify(input)
       });
 
@@ -94,12 +87,8 @@ class ScorecardApi {
     try {
       console.log(`Auto-posting scorecard for posting group ${postingGroup}...`);
 
-      const response = await fetch("/api/scorecard/auto-post", {
+      const response = await apiFetch("/api/scorecard/auto-post", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        credentials: "include",
         body: JSON.stringify({ postingGroup })
       });
 

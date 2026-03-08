@@ -1,3 +1,4 @@
+import { apiFetch } from "./apiFetch";
 import { HandleError } from "./handleError";
 import { FuelAsset, FuelAssetDetails, FuelFormData } from "../store/types/fuel";
 
@@ -7,9 +8,8 @@ class FuelService {
     try {
       console.log("Fetching fuel assets from API...");
 
-      const response = await fetch(`/api/fuel/assets`, {
-        method: "GET",
-        credentials: "include"
+      const response = await apiFetch(`/api/fuel/assets`, {
+        method: "GET"
       });
 
       if (!response.ok) {
@@ -41,9 +41,8 @@ class FuelService {
     try {
       console.log(`Fetching fuel asset ${number} from API...`);
 
-      const response = await fetch(`/api/fuel/${number}`, {
-        method: "GET",
-        credentials: "include"
+      const response = await apiFetch(`/api/fuel/${number}`, {
+        method: "GET"
       });
 
       if (!response.ok) {
@@ -78,12 +77,8 @@ class FuelService {
     try {
       console.log("Posting fuel entry:", data);
 
-      const response = await fetch(`/api/fuel`, {
+      const response = await apiFetch(`/api/fuel`, {
         method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
         body: JSON.stringify(data)
       });
 
@@ -113,9 +108,8 @@ class FuelService {
     try {
       console.log("Auto-posting fuel maintenance...");
 
-      const response = await fetch(`/api/fuel/auto-post`, {
-        method: "POST",
-        credentials: "include"
+      const response = await apiFetch(`/api/fuel/auto-post`, {
+        method: "POST"
       });
 
       if (!response.ok) {

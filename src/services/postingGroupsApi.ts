@@ -1,3 +1,4 @@
+import { apiFetch } from "./apiFetch";
 import { HandleError } from "./handleError";
 
 export interface PostingGroup extends Record<string, unknown> {
@@ -50,9 +51,8 @@ class PostingGroupsApi {
     try {
       console.log("Fetching all posting groups from API...");
 
-      const response = await fetch(`/api/livestock/jobs`, {
+      const response = await apiFetch(`/api/livestock/jobs`, {
         method: "GET",
-        credentials: "include",
       });
 
       if (!response.ok) {
@@ -88,9 +88,8 @@ class PostingGroupsApi {
     try {
       console.log("Fetching posting group from API:", group);
 
-      const response = await fetch(`/api/livestock/jobs/${group}`, {
+      const response = await apiFetch(`/api/livestock/jobs/${group}`, {
         method: "GET",
-        credentials: "include",
       });
 
       if (!response.ok) {

@@ -25,6 +25,7 @@ import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { useNavigate } from "react-router";
 import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
 import { FormData } from "../../../store/types/forms";
+import { PageContainer } from "@toolpad/core";
 
 const FORM_STORAGE_HOURS = 48;
 
@@ -117,7 +118,7 @@ export default function GradeOffPage() {
   }, []);
 
   const onSubmit = async (data: GradeOffFormData) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.log("All required fields validated successfully!");
     }
     setInitLoading(true);
@@ -125,7 +126,7 @@ export default function GradeOffPage() {
     livestockActivityApi
       .postLivestockEvent(data)
       .then(() => {
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log("Form submitted:", data);
         }
         navigate("/post-success", { state });
@@ -155,7 +156,7 @@ export default function GradeOffPage() {
   };
 
   return (
-    <>
+    <PageContainer>
       {initLoading && <LoadingSpinner />}
       {!initLoading && (
         <>
@@ -328,6 +329,6 @@ export default function GradeOffPage() {
           </CustomFormsLayout>
         </>
       )}
-    </>
+    </PageContainer>
   );
 }

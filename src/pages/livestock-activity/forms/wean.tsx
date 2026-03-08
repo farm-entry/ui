@@ -20,6 +20,7 @@ import { FormData } from "../../../store/types/forms";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { WEAN_STORAGE_KEY } from "./constants-livestock.json";
 import { useNavigate } from "react-router";
+import { PageContainer } from "@toolpad/core";
 
 const FORM_STORAGE_HOURS = 48;
 
@@ -162,7 +163,7 @@ export default function WeanPage() {
   const formatLabel = (group: PostingGroup) => `${group.number} ${group.description}`;
 
   return (
-    <>
+    <PageContainer>
       <CustomNotice<WeanFormData>
         formType={WEAN_STORAGE_KEY}
         onLoad={(data) => reset({ ...getValues(), ...data })}
@@ -340,6 +341,6 @@ export default function WeanPage() {
 
         <CustomConfirmation />
       </CustomFormsLayout>
-    </>
+    </PageContainer>
   );
 }

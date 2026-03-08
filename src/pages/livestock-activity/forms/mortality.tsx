@@ -20,6 +20,7 @@ import type { EventType } from "../../../store/types/livestockActivity";
 import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { MORTALITY_STORAGE_KEY } from "./constants-livestock.json";
+import { PageContainer } from "@toolpad/core";
 
 const FORM_STORAGE_HOURS = 48;
 
@@ -168,7 +169,7 @@ export default function MortalityPage() {
   };
 
   return (
-    <>
+    <PageContainer>
       {initLoading && <LoadingSpinner />}
       {!initLoading && (
         <>
@@ -322,6 +323,6 @@ export default function MortalityPage() {
           </CustomFormsLayout>
         </>
       )}
-    </>
+    </PageContainer>
   );
 }

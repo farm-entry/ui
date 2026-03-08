@@ -21,6 +21,7 @@ import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { useNavigate } from "react-router";
 import { FormData } from "../../../store/types/forms";
 import GlobalAlert from "../../../components/framework/GlobalAlert";
+import { PageContainer } from "@toolpad/core";
 
 const FORM_STORAGE_HOURS = 48;
 
@@ -165,7 +166,7 @@ export default function MovePage() {
   const formatLabel = (job: PostingGroup) => `${job.number} ${job.description}`;
 
   return (
-    <>
+    <PageContainer>
       {initLoading && <LoadingSpinner />}
       {!initLoading && (
         <>
@@ -327,6 +328,6 @@ export default function MovePage() {
           </CustomFormsLayout>
         </>
       )}
-    </>
+    </PageContainer>
   );
 }

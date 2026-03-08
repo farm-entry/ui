@@ -28,6 +28,7 @@ import { FormData } from "../../../store/types/forms";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { QTYADJ_STORAGE_KEY } from "./constants-livestock.json";
 import { useNavigate } from "react-router";
+import { PageContainer } from "@toolpad/core";
 
 const FORM_STORAGE_HOURS = 48;
 
@@ -181,7 +182,7 @@ export default function QuantityAdjPage() {
   const formatLabel = (group: PostingGroup) => `${group.number} ${group.description}`;
 
   return (
-    <>
+    <PageContainer>
       <CustomNotice<QuantityAdjFormData>
         formType={QTYADJ_STORAGE_KEY}
         onLoad={(data) => reset({ ...getValues(), ...data })}
@@ -355,6 +356,6 @@ export default function QuantityAdjPage() {
 
         <CustomConfirmation />
       </CustomFormsLayout>
-    </>
+    </PageContainer>
   );
 }

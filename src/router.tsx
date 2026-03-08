@@ -3,10 +3,9 @@ import { createBrowserRouter, Outlet } from "react-router";
 import frontlineLogo from "./assets/frontlinesprout.svg";
 import RouteGuard from "./components/RouteGuard";
 import useDynamicNavigation from "./hooks/useDynamicNavigation";
-import { AuthProvider } from "./layouts/authContext";
 import CustomDashboardLayout from "./layouts/dashboard";
-import LEFTNAV_NAVIGATION from "./LeftNavConfig";
 import DashboardPage from "./pages";
+import AdminPage from "./pages/admin";
 import FuelPage from "./pages/fuel";
 import InventoryConsumptionPage from "./pages/inventory-consumption";
 import JobHeaderUpdatesPage from "./pages/job-header-updates";
@@ -25,7 +24,6 @@ import QRScanner from "./pages/qrscanner";
 import ScorecardsPage from "./pages/scorecards";
 import SignIn from "./pages/signin";
 import { customTheme } from "./theme";
-
 const Logo = () => <img src={frontlineLogo} alt="Frontline Farms Logo" />;
 
 const BRANDING = {
@@ -34,13 +32,11 @@ const BRANDING = {
 };
 
 export default function App() {
-  const navigation = useDynamicNavigation(LEFTNAV_NAVIGATION);
+  const navigation = useDynamicNavigation();
 
   return (
     <ReactRouterAppProvider navigation={navigation} branding={BRANDING} theme={customTheme}>
-      <AuthProvider>
-        <Outlet />
-      </AuthProvider>
+      <Outlet />
     </ReactRouterAppProvider>
   );
 }
@@ -146,6 +142,14 @@ export const router = createBrowserRouter([
           {
             path: "post-success",
             Component: PostSuccessPage
+          },
+          {
+            path: "admin",
+            Component: () => (
+              <RouteGuard requiredRole="app_admin">
+                <AdminPage />
+              </RouteGuard>
+            )
           }
         ]
       },

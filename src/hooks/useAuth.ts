@@ -1,80 +1,68 @@
 import { useCallback, useEffect, useState } from 'react';
-import { authApi, LoginCredentials, LoginResponse } from '../services/userApi';
+import { tokenStorage } from '../services/tokenStorage';
+import { authApi, LoginCredentials } from '../services/userApi';
+import { useUserStore } from '../store/userStore';
 
-export interface UseLoginResult {
-    login: (credentials: LoginCredentials) => Promise<LoginResponse>;
-    logout: () => Promise<void>;
-    isLoading: boolean;
-    error: string | null;
-    isAuthenticated: boolean | null;
-    clearError: () => void;
-}
+export function useAuth() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const { setUser, resetUser } = useUserStore();
 
-export function useAuth(): UseLoginResult {
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  useEffect(() => {
+    const token = tokenStorage.getAccess();
+    if (!token) {
+      setIsAuthenticated(false);
+      return;
+    }
+    authApi.getMe()
+      .then((user) => {
+        setUser({
+          ...user,
+          name: user.email,
+          loginTime: new Date().toISOString()
+        });
+        setIsAuthenticated(true);
+      })
+      .catch(() => {
+        tokenStorage.clear();
+        setIsAuthenticated(false);
+      });
+  }, []);
 
-    const clearError = useCallback(() => {
-        setError(null);
-    }, []);
+  const login = useCallback(async (credentials: LoginCredentials) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await authApi.login(credentials);
+      tokenStorage.set(response.accessToken, response.refreshToken);
+      setUser({
+        ...response,
+        loginTime: new Date().toISOString(),
+        menuOptions: [],
+      });
+      setIsAuthenticated(true);
+      return response;
+    } catch (err) {
+      setIsAuthenticated(false);
+      const msg = err instanceof Error ? err.message : 'Login failed';
+      setError(msg);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-    const login = useCallback(async (credentials: LoginCredentials): Promise<LoginResponse> => {
-        setIsLoading(true);
-        setError(null);
-        console.log('Attempting login with credentials:', credentials);
-        try {
-            const response = await authApi.login(credentials);
-            setIsAuthenticated(true);
-            return response;
-        } catch (err) {
-            setIsAuthenticated(false);
-            const errorMessage = err instanceof Error ? err.message : 'Login failed';
-            setError(errorMessage);
-            throw err;
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
+  const logout = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      await authApi.logout();
+      resetUser();
+      setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-    const logout = useCallback(async (): Promise<void> => {
-        setIsLoading(true);
-        setError(null);
-
-        try {
-            await authApi.logout();
-            setIsAuthenticated(false);
-        } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Logout failed';
-            setError(errorMessage);
-            throw err;
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
-    // Check authentication status on hook initialization
-    useEffect(() => {
-        const checkAuthStatus = async () => {
-            try {
-                // This will check if the sessionId cookie exists and is valid
-                const authenticated = await authApi.isAuthenticated();
-                setIsAuthenticated(authenticated);
-            } catch (err) {
-                console.error('Auth check failed:', err);
-                setIsAuthenticated(false);
-            }
-        };
-
-        checkAuthStatus();
-    }, []);
-
-    return {
-        login,
-        logout,
-        isLoading,
-        error,
-        isAuthenticated,
-        clearError,
-    };
+  return { login, logout, isLoading, error, isAuthenticated, clearError: () => setError(null) };
 }

@@ -12,44 +12,43 @@ export default defineConfig(({ mode }) => {
     plugins: [react(), qrcode()],
     server: {
       proxy: {
-        "/api/nav": {
-          target: env.FRONTLINE_NAV_API_URL,
-          rewrite: (path) => {
-            const newPath = path.replace(/^\/api\/nav/, "");
-            // Append $format=json if not already present
-            const separator = newPath.includes("?") ? "&" : "?";
-            return newPath.includes("$format=json")
-              ? newPath
-              : `${newPath}${separator}$format=json`;
-          },
-          changeOrigin: true,
-          secure: true,
-          configure: (proxy, _options) => {
-            proxy.on("error", (err, _req, _res) => {
-              console.log("proxy error", err);
-            });
-            proxy.on("proxyReq", (proxyReq, req, _res) => {
-              req.headers["Authorization"] =
-                "Basic YXBwOnBmVDkxczlKdkFDU3JqellsK1ZqL2M2aWtjdGNmbTNpZEJuSlFVVS9zSTg9";
-              console.log("headers:", req);
-              console.log(
-                "Sending Request to the Target:",
-                req.method,
-                req.url
-              );
-            });
-            proxy.on("proxyRes", (proxyRes, req, _res) => {
-              console.log(
-                "Received Response from the Target:",
-                proxyRes.statusCode,
-                req.url
-              );
-            });
-          },
-        },
+        // "/api/nav": {
+        //   target: env.FRONTLINE_NAV_API_URL,
+        //   rewrite: (path) => {
+        //     const newPath = path.replace(/^\/api\/nav/, "");
+        //     // Append $format=json if not already present
+        //     const separator = newPath.includes("?") ? "&" : "?";
+        //     return newPath.includes("$format=json")
+        //       ? newPath
+        //       : `${newPath}${separator}$format=json`;
+        //   },
+        //   changeOrigin: true,
+        //   secure: true,
+        //   configure: (proxy, _options) => {
+        //     proxy.on("error", (err, _req, _res) => {
+        //       console.log("proxy error", err);
+        //     });
+        //     proxy.on("proxyReq", (proxyReq, req, _res) => {
+        //       proxyReq.setHeader("Authorization",
+        //         "Basic YXBwOnBmVDkxczlKdkFDU3JqellsK1ZqL2M2aWtjdGNmbTNpZEJuSlFVVS9zSTg9");
+        //       console.log(
+        //         "Sending Request to the Target:",
+        //         req.method,
+        //         req.url
+        //       );
+        //     });
+        //     proxy.on("proxyRes", (proxyRes, req, _res) => {
+        //       console.log(
+        //         "Received Response from the Target:",
+        //         proxyRes.statusCode,
+        //         req.url
+        //       );
+        //     });
+        //   },
+        // },
         "/api/auth": {
           target: env.FRONTLINE_API_URL,
-          rewrite: (path) => path.replace(/^\/api\/auth/, ""),
+          rewrite: (path) => path.replace(/^\/api/, ""),
           changeOrigin: true,
           cookieDomainRewrite: "localhost", // Rewrite cookie domain for localhost
           configure: (proxy, _options) => {

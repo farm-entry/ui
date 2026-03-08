@@ -7,7 +7,7 @@ import { useUserStore } from "../../store/userStore";
 
 export default function AccountMenu() {
   const { logout } = useAuth();
-  const { username, name } = useUserStore();
+  const { firstName, username, role } = useUserStore();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -44,15 +44,15 @@ export default function AccountMenu() {
         onClose={handleMenuClose}
         anchorOrigin={{
           vertical: "bottom",
-          horizontal: "right",
+          horizontal: "right"
         }}
         transformOrigin={{
           vertical: "top",
-          horizontal: "right",
+          horizontal: "right"
         }}
       >
         <MenuItem disabled>
-          <ListItemText primary={name || username} />
+          <ListItemText primary={firstName || username} secondary={role} />
         </MenuItem>
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>

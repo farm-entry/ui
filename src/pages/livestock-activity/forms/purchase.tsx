@@ -20,6 +20,7 @@ import { FormData } from "../../../store/types/forms";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { PURCHASE_STORAGE_KEY } from "./constants-livestock.json";
 import { useNavigate } from "react-router";
+import { PageContainer } from "@toolpad/core";
 
 const FORM_STORAGE_HOURS = 48;
 
@@ -54,8 +55,20 @@ const columns = [
 
 export default function PurchasePage() {
   const navigate = useNavigate();
-  const { isLoading: postingGroupsLoading, getPostingGroups, getPostingGroupDetails, postingGroups, postingGroupDetails } = usePostingGroupsStore();
-  const { getEvents, eventTypes, healthStatuses, isLoading: livestockActivityLoading, currentTemplate } = useLivestockActivityStore();
+  const {
+    isLoading: postingGroupsLoading,
+    getPostingGroups,
+    getPostingGroupDetails,
+    postingGroups,
+    postingGroupDetails
+  } = usePostingGroupsStore();
+  const {
+    getEvents,
+    eventTypes,
+    healthStatuses,
+    isLoading: livestockActivityLoading,
+    currentTemplate
+  } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const { setAlert } = useGlobalAlertStore();
   const [deads, setDeads] = useState<{ group: number }>({ group: 0 });
@@ -99,7 +112,7 @@ export default function PurchasePage() {
   useEffect(() => {
     if (groupValue) {
       getPostingGroupDetails(groupValue).then((details) => {
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log({ details });
         }
         setInventory({ group: details?.inventory ?? 0 });
@@ -109,7 +122,7 @@ export default function PurchasePage() {
   }, [groupValue, getPostingGroupDetails]);
 
   const onSubmit = async (data: PurchaseFormData) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       console.log("All required fields validated successfully!");
     }
     setInitLoading(true);
@@ -120,7 +133,7 @@ export default function PurchasePage() {
     livestockActivityApi
       .postLivestockEvent(data)
       .then(() => {
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.log("Form submitted:", data);
         }
         navigate("/post-success", { state });
@@ -152,7 +165,7 @@ export default function PurchasePage() {
   const formatLabel = (group: PostingGroup) => `${group.number} ${group.description}`;
 
   return (
-    <>
+    <PageContainer>
       <CustomNotice<PurchaseFormData>
         formType={PURCHASE_STORAGE_KEY}
         onLoad={(data) => reset({ ...getValues(), ...data })}
@@ -330,6 +343,6 @@ export default function PurchasePage() {
 
         <CustomConfirmation />
       </CustomFormsLayout>
-    </>
+    </PageContainer>
   );
 }
