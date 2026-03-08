@@ -1,6 +1,11 @@
 /**
  * Represents an individual element within a scorecard page section
  */
+export interface ScorecardType extends Record<string, any> {
+  code: string;
+  description: string;
+}
+
 export interface ScorecardElement {
   /** Unique identifier for the element (e.g., "NG00SUPERVISOR", "NG01SLIDER-1-5-2") */
   id: string;
@@ -9,9 +14,12 @@ export interface ScorecardElement {
   /** Code identifier for the element type (e.g., "SUPERVISOR", "SLIDER-1-5-2") */
   code: string;
   /** Display order of the element */
-  order: number;
-  /** Maximum value allowed for the element */
+  min: number;
   max: number;
+
+  order?: number;
+  step?: number;
+  defaultValue?: any;
 }
 
 /**
@@ -24,7 +32,10 @@ export interface ScorecardPage {
   elements: ScorecardElement[];
 }
 
-/**
- * Type for the complete scorecard pages array
- */
 export type ScorecardPages = ScorecardPage[];
+
+export interface ScorecardConfig {
+  jobNo: string;
+  postingGroup: string;
+  pages: ScorecardPage[];
+}

@@ -21,22 +21,22 @@ export default function CustomFormsLayout({ children }: { children: React.ReactN
 
   return (
     <Container>
-      <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ my: 1 }}>
+      {/* <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ my: 1 }}>
         <Button variant="text" color="primary" onClick={handleExit}>
           Exit
         </Button>
-      </Stack>
+      </Stack> */}
       <Card variant="outlined" sx={{ mt: 0, mb: 2, p: 2 }}>
         {children}
       </Card>
       <CustomConfirmation />
-      <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 2 }}>
+      {/* <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 2 }}>
         <Tooltip title="Exit">
           <Button variant="text" color="primary" fullWidth onClick={handleExit}>
             Cancel
           </Button>
         </Tooltip>
-      </Stack>
+      </Stack> */}
     </Container>
   );
 }

@@ -1,5 +1,6 @@
 import { LocalGasStation } from "@mui/icons-material";
 import { Button, Divider, FormHelperText, InputAdornment, Stack, Typography } from "@mui/material";
+import { PageContainer } from "@toolpad/core";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -19,8 +20,8 @@ import CustomFormsLayout from "../../layouts/forms";
 import { maintenanceService } from "../../services/maintenanceApi";
 import { useConfirmationStore } from "../../store/confirmationStore";
 import { useFormStorageStore } from "../../store/formStorageStore";
-import { useMaintenanceStore } from "../../store/maintenanceStore";
 import { useGlobalAlertStore } from "../../store/globalAlertStore";
+import { useMaintenanceStore } from "../../store/maintenanceStore";
 import { MaintenanceFormData } from "../../store/types/maintenance";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
 import MaintenanceHistory from "./MaintenanceHistory";
@@ -146,7 +147,7 @@ export default function MaintenancePage() {
     gallons && selectedMaintenanceAsset ? (gallons * selectedMaintenanceAsset.item.cost).toFixed(2) : "0.00";
 
   return (
-    <>
+    <PageContainer>
       <CustomNotice<MaintenanceFormData>
         formType={MAINTENANCE_STORAGE_KEY}
         onLoad={(data) => {
@@ -288,6 +289,6 @@ export default function MaintenancePage() {
 
         <CustomConfirmation />
       </CustomFormsLayout>
-    </>
+    </PageContainer>
   );
 }

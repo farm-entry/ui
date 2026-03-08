@@ -1,18 +1,8 @@
-export interface ScorecardSubmitPayload {
-  job: string;
-  postingGroup: string;
-  data: Array<{
-    elementId: string;
-    numericValue?: number;
-    stringValue?: string;
-  }>;
-}
+import { ScorecardFormData } from ".";
 
 export function transformScorecardFormData(
   formData: Record<string, any>,
-  job: string,
-  postingGroup: string
-): ScorecardSubmitPayload {
+): ScorecardFormData {
   const data = Object.entries(formData)
     .filter(([_, value]) => value !== undefined && value !== null && value !== "")
     .map(([elementId, value]: [string, any]) => {
@@ -46,10 +36,5 @@ export function transformScorecardFormData(
       return entry;
     })
     .filter((entry) => entry.numericValue !== undefined || entry.stringValue !== undefined);
-
-  return {
-    job,
-    postingGroup,
-    data
-  };
+  return { job: formData.job, postingGroup: formData.postingGroup, data } as ScorecardFormData;
 }

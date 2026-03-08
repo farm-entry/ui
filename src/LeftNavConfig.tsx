@@ -2,10 +2,8 @@ import { Home, QrCode } from "@mui/icons-material";
 import AgricultureIcon from "@mui/icons-material/Agriculture";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import BuildIcon from "@mui/icons-material/Build";
-import ClipboardIcon from "@mui/icons-material/DynamicForm";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import LocalGasStationIcon from "@mui/icons-material/LocalGasStation";
-import PersonIcon from "@mui/icons-material/Person";
 import UpdateIcon from "@mui/icons-material/Update";
 import type { Navigation } from "@toolpad/core/AppProvider";
 
@@ -51,11 +49,6 @@ const LEFTNAV_NAVIGATION: Navigation = [
     segment: "job-header-updates"
     // description: "Update job headers and details.",
   },
-  // {
-  //   segment: "forminputs",
-  //   title: "Form Inputs",
-  //   icon: <ClipboardIcon />
-  // },
   {
     segment: "qrcode",
     title: "QR Scanner",

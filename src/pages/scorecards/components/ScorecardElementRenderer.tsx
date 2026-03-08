@@ -1,7 +1,8 @@
 import { Button, ButtonGroup, FormHelperText, FormLabel, Stack, TextField } from "@mui/material";
 import { Controller, useFormContext } from "react-hook-form";
-import { Slider, TextArea, TypeAhead } from "../../../components/inputs";
+import { Slider, TextArea } from "../../../components/inputs";
 import { ScorecardElement } from "../../../store/types/scorecards";
+import ScorecardSupervisor from "./ScorecardSupervisor";
 
 interface ScorecardElementRendererProps {
   element: ScorecardElement;
@@ -16,37 +17,21 @@ export default function ScorecardElementRenderer({ element }: ScorecardElementRe
     control,
     formState: { errors }
   } = useFormContext();
-
-  // Parse the code to determine component type and parameters
-  const parseElementCode = (code: string) => {
-    const codeArray = code.split("-");
-    return {
-      type: codeArray[0],
-      min: parseInt(codeArray[1]) || 0,
-      max: parseInt(codeArray[2]) || element.max,
-      step: parseInt(codeArray[3]) || 1
-    };
-  };
-
-  const codeConfig = parseElementCode(element.code);
-
   // Render different input types based on the element code
   const renderInputComponent = () => {
-    switch (codeConfig.type) {
+    switch (element.code) {
       case "SLIDER":
         return (
           <Stack spacing={2}>
-            MIN {codeConfig.min}
             <Slider
               {...register(`${element.id}.numericValue`, { required: "This field is required" })}
-              defaultValue={codeConfig.min}
-              min={codeConfig.min}
-              max={codeConfig.max}
-              step={codeConfig.step}
-              valueChip
+              defaultValue={element.min}
+              min={element.min}
+              max={element.max}
+              step={element.step}
               marks
             />
-            <TextField
+            <TextArea
               {...register(`${element.id}.stringValue`)}
               placeholder="Comments..."
               fullWidth
@@ -57,15 +42,9 @@ export default function ScorecardElementRenderer({ element }: ScorecardElementRe
       case "SUPERVISOR":
         return (
           <Stack spacing={2}>
-            <TypeAhead
+            <ScorecardSupervisor
               {...register(`${element.id}.stringValue`, { required: "Supervisor is required" })}
-              handleChange={(v) => setValue(`${element.id}.stringValue`, v?.value ?? null)}
-              watch={watch}
-              fieldName={`${element.id}.stringValue`}
-              valueList={[]}
-              labelKey="label"
-              valueKey="value"
-              placeholder="Select supervisor"
+              element={element}
             />
             {errors[`${element.id}.stringValue`] && (
               <FormHelperText error>
@@ -147,7 +126,7 @@ export default function ScorecardElementRenderer({ element }: ScorecardElementRe
 
       case "SCORE5":
       case "SCORE10":
-        const scoreMax = codeConfig.type === "SCORE5" ? 5 : 10;
+        const scoreMax = element.code === "SCORE5" ? 5 : 10;
         return (
           <Stack spacing={2}>
             <Slider
@@ -200,17 +179,17 @@ export default function ScorecardElementRenderer({ element }: ScorecardElementRe
               {...register(`${element.id}.numericValue`, {
                 required: "This field is required",
                 min: {
-                  value: codeConfig.min,
-                  message: `Must be at least ${codeConfig.min}.`
+                  value: element.min,
+                  message: `Must be at least ${element.min}.`
                 },
                 max: {
-                  value: codeConfig.max,
-                  message: `Must be at most ${codeConfig.max}.`
+                  value: element.max,
+                  message: `Must be at most ${element.max}.`
                 },
                 valueAsNumber: true
               })}
               type="number"
-              placeholder={`Enter value (${codeConfig.min}-${codeConfig.max})`}
+              placeholder={`Enter value (${element.min}-${element.max})`}
               error={!!errors[`${element.id}.numericValue`]}
               helperText={
                 errors[`${element.id}.numericValue`]

@@ -1,6 +1,7 @@
 import maintenanceAssetDetails from "../mock/maintenanceAsset.json";
 import maintenanceData from "../mock/maintenanceAssets.json";
 import { MaintenanceAsset, MaintenanceAssetDetails, MaintenanceFormData } from "../store/types/maintenance";
+import { apiFetch } from "./apiFetch";
 import { HandleError } from "./handleError";
 
 class MaintenanceService {
@@ -41,12 +42,8 @@ class MaintenanceService {
         try {
             console.log("Posting maintenance entry:", data);
 
-            const response = await fetch("/api/maintenance", {
+            const response = await apiFetch("/api/maintenance", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                credentials: "include",
                 body: JSON.stringify(data)
             });
 

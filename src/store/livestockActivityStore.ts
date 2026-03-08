@@ -31,7 +31,7 @@ interface LivestockActivityStore {
   setError: (error: string | null) => void;
 
   //get data
-  getEvents: (template: ActivityType, job: string) => Promise<EventsType | undefined>;
+  getEvents: (template: ActivityType, job?: string) => Promise<EventsType | undefined>;
 }
 
 export const useLivestockActivityStore = create<LivestockActivityStore>()(
@@ -44,7 +44,7 @@ export const useLivestockActivityStore = create<LivestockActivityStore>()(
       healthStatuses: [],
 
       //get data
-      getEvents: async (template: ActivityType, job: string): Promise<EventsType | undefined> => {
+      getEvents: async (template: ActivityType, job?: string): Promise<EventsType | undefined> => {
         console.log(`Fetching events for template: ${template}, job: ${job}`);
         try {
           // Set loading state

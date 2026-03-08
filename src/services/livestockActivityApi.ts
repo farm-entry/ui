@@ -1,17 +1,14 @@
 import type { ActivityType, FormData as LivestockFormData } from "../store/types/forms";
 import { EventType, HealthStatus } from "../store/types/livestockActivity";
+import { apiFetch } from "./apiFetch";
 import { HandleError } from "./handleError";
 
 class LivestockActivityApi {
   async postLivestockEvent(data: LivestockFormData): Promise<void> {
     console.log({ data });
     console.log({ data: JSON.stringify(data) });
-    const response = await fetch(`/api/livestock`, {
+    const response = await apiFetch(`/api/livestock`, {
       method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json"
-      },
       body: JSON.stringify(data)
     });
 
@@ -22,16 +19,15 @@ class LivestockActivityApi {
 
   async fetchEventTypes(
     template: ActivityType,
-    job: string
+    job?: string
   ): Promise<{ events: EventType[]; healthStatuses: HealthStatus[]; template: ActivityType }> {
     try {
       console.log(`Fetching event types from API for template: ${template}, job: ${job}`);
-      
+
       if (template === "MORTALITY" && !job) { throw new Error("Job parameter is required for MORTALITY template"); }
 
-      const response = await fetch(`/api/livestock/events?template=${template}${job ? `&job=${job}` : ""}`, {
-        method: "GET",
-        credentials: "include"
+      const response = await apiFetch(`/api/livestock/events?template=${template}${job ? `&job=${job}` : ""}`, {
+        method: "GET"
       });
 
       if (!response.ok) {
