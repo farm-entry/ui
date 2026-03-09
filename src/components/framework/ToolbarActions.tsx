@@ -1,14 +1,27 @@
-import { useColorScheme } from "@mui/material/styles";
-import IconButton from "@mui/material/IconButton";
+import { QrCode } from "@mui/icons-material";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
+import { Stack } from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import { useColorScheme } from "@mui/material/styles";
+import { useNavigate } from "react-router";
 
 function ToolbarActions() {
   const { mode, setMode } = useColorScheme();
+  const navigate = useNavigate();
+
   return (
-    <IconButton onClick={() => setMode(mode === "dark" ? "light" : "dark")}>
-      {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
-    </IconButton>
+    <Stack direction="row">
+      <IconButton
+        sx={{ color: mode === "dark" ? "default" : "black" }}
+        onClick={() => navigate("qrcode")}
+      >
+        <QrCode />
+      </IconButton>
+      <IconButton onClick={() => setMode(mode === "dark" ? "light" : "dark")}>
+        {mode === "dark" ? <LightModeIcon color="secondary" /> : <DarkModeIcon color="primary" />}
+      </IconButton>
+    </Stack>
   );
 }
 
