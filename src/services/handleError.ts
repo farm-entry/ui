@@ -27,9 +27,9 @@ export class HandleError {
 
   /* Handle API response errors */
   async handleApiError(response: Response, apiLabel: string): Promise<never> {
-    // Handle 401 unauthorized - redirect to login
+    // 401s are handled upstream by apiFetch (token refresh + retry).
+    // Reaching here with a 401 means the refresh already failed — redirect.
     if (response.status === 401) {
-      console.warn("Unauthorized access detected. Redirecting to login page.");
       redirectToLogin();
     }
 

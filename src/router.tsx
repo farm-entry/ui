@@ -23,7 +23,9 @@ import PostSuccessPage from "./pages/post-success";
 import QRScanner from "./pages/qrscanner";
 import ScorecardsPage from "./pages/scorecards";
 import SignIn from "./pages/signin";
+import Settings from "./pages/useroptions/settings";
 import { customTheme } from "./theme";
+
 const Logo = () => <img src={frontlineLogo} alt="Frontline Farms Logo" />;
 
 const BRANDING = {
@@ -138,6 +140,10 @@ export const router = createBrowserRouter([
           {
             path: "qrcode",
             Component: QRScanner
+          },
+          {
+            path: "settings",
+            Component: Settings
           },
           {
             path: "post-success",

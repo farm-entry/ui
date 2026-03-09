@@ -1,5 +1,5 @@
-import { AdminPanelSettings } from "@mui/icons-material";
-import { Stack } from "@mui/material";
+import { AdminPanelSettings, Refresh } from "@mui/icons-material";
+import { IconButton, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import CustomConfirmation from "../../components/framework/CustomConfirmation";
 import CustomHeader from "../../components/framework/CustomHeader";
@@ -63,13 +63,18 @@ export default function AdminPage() {
 
       <Stack spacing={2}>
         {domains?.length > 0 && (
-          <Select
-            onChange={(e) => setUserDomain((e.target.value as any) || "")}
-            label="Active Domain"
-            options={domains.map((d) => ({ label: d, value: d }))}
-            value={domain ?? ""}
-            onClear={() => setUserDomain("")}
-          />
+          <Stack direction="row" alignItems="center" spacing={1}>
+            <Select
+              onChange={(e) => setUserDomain((e.target.value as any) || "")}
+              label="Active Domain"
+              options={domains.map((d) => ({ label: d, value: d }))}
+              value={domain ?? ""}
+              onClear={() => setUserDomain("")}
+            />
+            <IconButton onClick={() => domain && fetchUsers(domain)}>
+              <Refresh />
+            </IconButton>
+          </Stack>
         )}
 
         <UsersTable
