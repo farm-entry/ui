@@ -1,11 +1,8 @@
-import { Dangerous } from "@mui/icons-material";
 import { Button, Divider, FormHelperText, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import CustomConfirmation from "../../../components/framework/CustomConfirmation";
-import CustomHeader from "../../../components/framework/CustomHeader";
-import CustomNotice from "../../../components/framework/CustomNotice";
 import LoadingSpinner from "../../../components/framework/LoadingSpinner";
 import { DatePicker, EventNumberInput, TextArea, TypeAhead } from "../../../components/inputs";
 import CustomFormsLayout from "../../../layouts/forms";
@@ -20,7 +17,6 @@ import type { EventType } from "../../../store/types/livestockActivity";
 import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { MORTALITY_STORAGE_KEY } from "./constants-livestock.json";
-import { PageContainer } from "@toolpad/core";
 
 const FORM_STORAGE_HOURS = 48;
 
@@ -169,20 +165,13 @@ export default function MortalityPage() {
   };
 
   return (
-    <PageContainer>
+    <CustomFormsLayout<MortalityFormData>
+      notice={{ formType: MORTALITY_STORAGE_KEY, onLoad: (data) => reset(data) }}
+      headerOptions={{ button: { label: "reset", onClick: handleReset } }}
+    >
       {initLoading && <LoadingSpinner />}
       {!initLoading && (
         <>
-          <CustomNotice<MortalityFormData>
-            formType={MORTALITY_STORAGE_KEY}
-            onLoad={(data) => reset(data)}
-          />
-          <CustomFormsLayout>
-            <CustomHeader
-              icon={Dangerous}
-              title="Mortality"
-              button={{ label: "reset", onClick: handleReset }}
-            />
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={2}>
@@ -320,9 +309,8 @@ export default function MortalityPage() {
             </form>
 
             <CustomConfirmation />
-          </CustomFormsLayout>
         </>
       )}
-    </PageContainer>
+    </CustomFormsLayout>
   );
 }

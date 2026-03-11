@@ -1,10 +1,7 @@
-import { Assignment } from "@mui/icons-material";
 import { Button, Stack, Step, StepLabel, Stepper } from "@mui/material";
-import { PageContainer } from "@toolpad/core";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import CustomHeader from "../../components/framework/CustomHeader";
 import LoadingSpinner from "../../components/framework/LoadingSpinner";
 import CustomFormsLayout from "../../layouts/forms";
 import { scorecardApi } from "../../services/scorecardApi";
@@ -150,16 +147,10 @@ export default function ScorecardsPage() {
   };
 
   return (
-    <PageContainer>
+    <CustomFormsLayout headerOptions={{ button: { label: "reset", onClick: handleReset } }}>
       {initLoading && <LoadingSpinner />}
       {!initLoading && (
-        <CustomFormsLayout>
-          <CustomHeader
-            icon={Assignment}
-            title={headerTitle()}
-            button={{ label: "reset", onClick: handleReset }}
-          />
-
+        <>
           <Stepper activeStep={activeStep} sx={{ mb: 4, justifyContent: "center" }}>
             <Step>
               <StepLabel>Setup</StepLabel>
@@ -242,8 +233,8 @@ export default function ScorecardsPage() {
               </Stack>
             </form>
           </FormProvider>
-        </CustomFormsLayout>
+        </>
       )}
-    </PageContainer>
+    </CustomFormsLayout>
   );
 }

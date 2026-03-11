@@ -1,10 +1,7 @@
-import { Celebration } from "@mui/icons-material";
 import { Button, Divider, FormHelperText, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import CustomConfirmation from "../../../components/framework/CustomConfirmation";
-import CustomHeader from "../../../components/framework/CustomHeader";
-import CustomNotice from "../../../components/framework/CustomNotice";
 import LoadingSpinner from "../../../components/framework/LoadingSpinner";
 import { DatePicker, TextArea, TextField, TypeAhead } from "../../../components/inputs";
 import DenseTable from "../../../components/table/DenseTable";
@@ -20,7 +17,6 @@ import { FormData } from "../../../store/types/forms";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { PURCHASE_STORAGE_KEY } from "./constants-livestock.json";
 import { useNavigate } from "react-router";
-import { PageContainer } from "@toolpad/core";
 
 const FORM_STORAGE_HOURS = 48;
 
@@ -165,184 +161,179 @@ export default function PurchasePage() {
   const formatLabel = (group: PostingGroup) => `${group.number} ${group.description}`;
 
   return (
-    <PageContainer>
-      <CustomNotice<PurchaseFormData>
-        formType={PURCHASE_STORAGE_KEY}
-        onLoad={(data) => reset({ ...getValues(), ...data })}
-      />
-      <CustomFormsLayout>
-        <CustomHeader
-          icon={Celebration}
-          title="Purchase"
-          button={{ label: "reset", onClick: handleReset }}
-        />
-        {initLoading && <LoadingSpinner />}
-        {!initLoading && (
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={2}>
-              <Stack>
-                <TypeAhead
-                  {...register("group", { required: "Group is required" })}
-                  handleChange={(v) => setValue("group", v?.value ? String(v.value) : null)}
-                  watch={watch}
-                  fieldName={"group"}
-                  labelKey={"description"}
-                  valueKey={"number"}
-                  labelFormatter={formatLabel}
-                  valueList={postingGroups}
-                  loading={postingGroupsLoading}
-                  placeholder="Group"
-                />
-                {errors.group && <FormHelperText error>{errors.group.message}</FormHelperText>}
-              </Stack>
-
-              {watch("group") && (
-                <DenseTable
-                  loading={postingGroupsLoading}
-                  rows={[
-                    {
-                      name: "group",
-                      postingGroup: watch("group"),
-                      inventory: inventory.group,
-                      deads: deads.group
-                    }
-                  ]}
-                  columns={columns}
-                />
-              )}
-
-              <Stack>
-                <TypeAhead
-                  {...register("healthStatus", {
-                    required: "Health Status is required"
-                  })}
-                  handleChange={(v) => setValue("healthStatus", v?.value ? String(v.value) : null)}
-                  loading={postingGroupsLoading}
-                  watch={watch}
-                  valueList={healthStatuses}
-                  fieldName={"healthStatus"}
-                  labelKey={"description"}
-                  valueKey={"code"}
-                  defaultValue={
-                    postingGroupDetails?.healthStatus?.Code
-                      ? {
-                          label: postingGroupDetails.healthStatus.Description,
-                          value: postingGroupDetails.healthStatus.Code
-                        }
-                      : null
-                  }
-                  placeholder={
-                    postingGroupDetails?.healthStatus?.Description || healthStatuses.length > 0
-                      ? "Health Status"
-                      : "Select a valid group"
-                  }
-                />
-                {errors.healthStatus && (
-                  <FormHelperText error>{errors.healthStatus.message}</FormHelperText>
-                )}
-              </Stack>
-
-              <Divider />
-              <Typography>Event Details</Typography>
-              <Stack>
-                <TypeAhead
-                  {...register("event", { required: "Event is required" })}
-                  handleChange={(v) => setValue("event", v?.value ?? null)}
-                  watch={watch}
-                  fieldName={"event"}
-                  labelKey={"description"}
-                  valueKey={"code"}
-                  valueList={eventTypes}
-                  loading={livestockActivityLoading}
-                  placeholder="Event Name"
-                />
-                {errors.event && <FormHelperText error>{errors.event.message}</FormHelperText>}
-              </Stack>
-
-              <Stack>
-                <DatePicker
-                  {...register("postingDate", {
-                    required: "Posting Date is required"
-                  })}
-                  value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
-                  onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
-                  label="Posting Date"
-                  error={!!errors.postingDate}
-                  helperText={errors.postingDate?.message}
-                />
-              </Stack>
-              <Divider />
-              <Typography>Quantity</Typography>
-              <Stack spacing={2} direction="row">
-                <Stack sx={{ width: "100%" }}>
-                  <TextField
-                    value={watch("quantity")}
-                    placeholder="Total"
-                    type="number"
-                    {...register("quantity", {
-                      required: "Total quantity is required",
-                      min: {
-                        value: 1,
-                        message: "Quantity must be greater than 0"
-                      }
-                    })}
-                    error={!!errors.quantity}
-                    helperText={errors.quantity?.message}
-                  />
-                </Stack>
-                <Stack sx={{ width: "100%" }}>
-                  <TextField
-                    value={watch("smallLivestockQuantity")}
-                    placeholder="Smalls"
-                    type="number"
-                    {...register("smallLivestockQuantity", {
-                      required: "Small livestock quantity is required",
-                      min: { value: 0, message: "Quantity cannot be negative" }
-                    })}
-                    error={!!errors.smallLivestockQuantity}
-                    helperText={errors.smallLivestockQuantity?.message}
-                  />
-                </Stack>
-              </Stack>
-
-              <Stack>
-                <TextField
-                  value={watch("totalWeight")}
-                  {...register("totalWeight", {
-                    required: "Total weight is required",
-                    min: { value: 1, message: "Weight must be greater than 0" }
-                  })}
-                  placeholder="Total Weight"
-                  type="number"
-                  error={!!errors.totalWeight}
-                  helperText={errors.totalWeight?.message}
-                />
-              </Stack>
-              <Divider />
-              <TextArea
-                value={watch("comments")}
-                {...register("comments", {
-                  maxLength: { value: 50, message: "Comments cannot exceed 50 characters" }
-                })}
-                placeholder="Comments"
-                type="text"
-                error={!!errors.comments}
-                helperText={errors.comments?.message}
+    <CustomFormsLayout<PurchaseFormData>
+      notice={{
+        formType: PURCHASE_STORAGE_KEY,
+        onLoad: (data) => reset({ ...getValues(), ...data })
+      }}
+      headerOptions={{ button: { label: "reset", onClick: handleReset } }}
+    >
+      {initLoading && <LoadingSpinner />}
+      {!initLoading && (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Stack spacing={2}>
+            <Stack>
+              <TypeAhead
+                {...register("group", { required: "Group is required" })}
+                handleChange={(v) => setValue("group", v?.value ? String(v.value) : null)}
+                watch={watch}
+                fieldName={"group"}
+                labelKey={"description"}
+                valueKey={"number"}
+                labelFormatter={formatLabel}
+                valueList={postingGroups}
+                loading={postingGroupsLoading}
+                placeholder="Group"
               />
-              <Stack direction="row" spacing={2} justifyContent="flex-end">
-                <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
-                  Save
-                </Button>
-                <Button variant="contained" color="primary" fullWidth type="submit">
-                  Submit
-                </Button>
+              {errors.group && <FormHelperText error>{errors.group.message}</FormHelperText>}
+            </Stack>
+
+            {watch("group") && (
+              <DenseTable
+                loading={postingGroupsLoading}
+                rows={[
+                  {
+                    name: "group",
+                    postingGroup: watch("group"),
+                    inventory: inventory.group,
+                    deads: deads.group
+                  }
+                ]}
+                columns={columns}
+              />
+            )}
+
+            <Stack>
+              <TypeAhead
+                {...register("healthStatus", {
+                  required: "Health Status is required"
+                })}
+                handleChange={(v) => setValue("healthStatus", v?.value ? String(v.value) : null)}
+                loading={postingGroupsLoading}
+                watch={watch}
+                valueList={healthStatuses}
+                fieldName={"healthStatus"}
+                labelKey={"description"}
+                valueKey={"code"}
+                defaultValue={
+                  postingGroupDetails?.healthStatus?.Code
+                    ? {
+                        label: postingGroupDetails.healthStatus.Description,
+                        value: postingGroupDetails.healthStatus.Code
+                      }
+                    : null
+                }
+                placeholder={
+                  postingGroupDetails?.healthStatus?.Description || healthStatuses.length > 0
+                    ? "Health Status"
+                    : "Select a valid group"
+                }
+              />
+              {errors.healthStatus && (
+                <FormHelperText error>{errors.healthStatus.message}</FormHelperText>
+              )}
+            </Stack>
+
+            <Divider />
+            <Typography>Event Details</Typography>
+            <Stack>
+              <TypeAhead
+                {...register("event", { required: "Event is required" })}
+                handleChange={(v) => setValue("event", v?.value ?? null)}
+                watch={watch}
+                fieldName={"event"}
+                labelKey={"description"}
+                valueKey={"code"}
+                valueList={eventTypes}
+                loading={livestockActivityLoading}
+                placeholder="Event Name"
+              />
+              {errors.event && <FormHelperText error>{errors.event.message}</FormHelperText>}
+            </Stack>
+
+            <Stack>
+              <DatePicker
+                {...register("postingDate", {
+                  required: "Posting Date is required"
+                })}
+                value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
+                onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
+                label="Posting Date"
+                error={!!errors.postingDate}
+                helperText={errors.postingDate?.message}
+              />
+            </Stack>
+            <Divider />
+            <Typography>Quantity</Typography>
+            <Stack spacing={2} direction="row">
+              <Stack sx={{ width: "100%" }}>
+                <TextField
+                  value={watch("quantity")}
+                  placeholder="Total"
+                  type="number"
+                  {...register("quantity", {
+                    required: "Total quantity is required",
+                    min: {
+                      value: 1,
+                      message: "Quantity must be greater than 0"
+                    }
+                  })}
+                  error={!!errors.quantity}
+                  helperText={errors.quantity?.message}
+                />
+              </Stack>
+              <Stack sx={{ width: "100%" }}>
+                <TextField
+                  value={watch("smallLivestockQuantity")}
+                  placeholder="Smalls"
+                  type="number"
+                  {...register("smallLivestockQuantity", {
+                    required: "Small livestock quantity is required",
+                    min: { value: 0, message: "Quantity cannot be negative" }
+                  })}
+                  error={!!errors.smallLivestockQuantity}
+                  helperText={errors.smallLivestockQuantity?.message}
+                />
               </Stack>
             </Stack>
-          </form>
-        )}
 
-        <CustomConfirmation />
-      </CustomFormsLayout>
-    </PageContainer>
+            <Stack>
+              <TextField
+                value={watch("totalWeight")}
+                {...register("totalWeight", {
+                  required: "Total weight is required",
+                  min: { value: 1, message: "Weight must be greater than 0" }
+                })}
+                placeholder="Total Weight"
+                type="number"
+                error={!!errors.totalWeight}
+                helperText={errors.totalWeight?.message}
+              />
+            </Stack>
+            <Divider />
+            <TextArea
+              value={watch("comments")}
+              {...register("comments", {
+                maxLength: { value: 50, message: "Comments cannot exceed 50 characters" }
+              })}
+              placeholder="Comments"
+              type="text"
+              error={!!errors.comments}
+              helperText={errors.comments?.message}
+            />
+            <Stack direction="row" spacing={2} justifyContent="flex-end">
+              <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
+                Save
+              </Button>
+              <Button variant="contained" color="primary" fullWidth type="submit">
+                Submit
+              </Button>
+            </Stack>
+          </Stack>
+        </form>
+      )}
+
+      <CustomConfirmation />
+    </CustomFormsLayout>
   );
 }

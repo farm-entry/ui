@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { userApi } from '../services/userApi';
 import type { DomainType, MenuOption, UserType } from './types/user';
 
 interface UserState extends UserType {
@@ -10,6 +11,8 @@ interface UserState extends UserType {
   resetUser: () => void;
   setUserDomain: (domain: DomainType) => void;
   setMenuOptions: (menuOptions: MenuOption[]) => void;
+  updateProfile: (payload: { firstName?: string; lastName?: string; email?: string }) => Promise<void>;
+  changePassword: (newPassword: string) => Promise<void>;
 }
 
 const EMPTY_USER: UserType = {
@@ -41,5 +44,12 @@ export const useUserStore = create<UserState>()(
     resetUser: () => set(() => ({ ...EMPTY_USER })),
     setUserDomain: (domain) => set((state) => ({ ...state, domain })),
     setMenuOptions: (menuOptions) => set((state) => ({ ...state, menuOptions })),
+    updateProfile: async (payload) => {
+      const updated = await userApi.updateMe(payload);
+      set((state) => ({ ...state, ...updated }));
+    },
+    changePassword: async (newPassword) => {
+      await userApi.resetPassword(get().username, newPassword);
+    },
   }), { name: 'UserStore' })
 );
