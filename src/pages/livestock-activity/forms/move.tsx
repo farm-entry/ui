@@ -85,11 +85,26 @@ export default function MovePage() {
     if (!(eventTypes.length > 0 && currentTemplate === "MOVE")) promises.push(getEvents("MOVE"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
 
-    Promise.all(promises).then(() => {
-      if (isMounted) {
+    Promise.all(promises)
+      .then(() => {
+        if (isMounted) {
+          setInitLoading(false);
+        }
+      })
+      .catch((error: Error) => {
+        console.error("Unable to load form data.", error);
+        const errorInfo = {
+          code: (error as any).code || "INIT_DATA_LOAD_ERROR",
+          message: error.message || "Unable to load form data. Please try again.",
+          details: (error as any).details || JSON.stringify(error, null, 2)
+        };
+        const errorMessage = errorInfo.message || "Unable to load form data. Please try again.";
+        const errorTitle = errorInfo.code + "Unable to load form data." || "INIT_DATA_LOAD_ERROR";
+        setAlert("error", errorMessage, errorTitle);
+      })
+      .finally(() => {
         setInitLoading(false);
-      }
-    });
+      });
 
     return () => {
       isMounted = false;
