@@ -51,7 +51,7 @@ export const usePingStore = create<PingDataState>()(
         ...state, 
         error: error instanceof Error ? error.message : 'An error occurred',
         isLoading: false 
-      });
+      }));
     }
   }
 }), { name: "PingStore" })
