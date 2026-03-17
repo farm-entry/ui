@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { UserType } from "../../store/types/user";
-import AddUserForm, { UserFormData } from "./UserForm";
+import UserForm, { UserFormData } from "./UserForm";
 
 export interface UserDialogSubmitData extends UserFormData {}
 
@@ -31,7 +31,7 @@ export default function UserDialog({ open, onClose, onSubmit, user }: UserDialog
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>{editMode ? `Edit — ${user!.username}` : "Add User"}</DialogTitle>
       <DialogContent sx={{ pt: 2 }}>
-        <AddUserForm
+        <UserForm
           onSubmit={async (data) => {
             await onSubmit(data);
             onClose();

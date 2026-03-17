@@ -1,5 +1,4 @@
-import { ScorecardFormData } from "../pages/scorecards";
-import { ScorecardConfig, ScorecardType } from "../store/types/scorecards";
+import { ScorecardConfig, ScorecardFormData, ScorecardResources, ScorecardType } from "../store/types/scorecards";
 import { apiFetch } from "./apiFetch";
 import { HandleError } from "./handleError";
 
@@ -75,6 +74,28 @@ class ScorecardApi {
       return result;
     } catch (error) {
       console.error("Error posting scorecard:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get scorecard resources (users, caretakers)
+   * GET /api/scorecard/resources
+   */
+  async getResources(): Promise<ScorecardResources> {
+    try {
+      const response = await apiFetch("/api/scorecard/resources", {
+        method: "GET"
+      });
+
+      if (!response.ok) {
+        await new HandleError().handleApiError(response, "ScorecardService.getResources");
+      }
+
+      const data: ScorecardResources = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching scorecard resources:", error);
       throw error;
     }
   }

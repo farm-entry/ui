@@ -21,7 +21,7 @@ export default function ScorecardScore({ element, scoreMax, marks }: ScorecardSc
         step={1}
         marks={marks}
         valueLabelDisplay="auto"
-        withInput
+        showInput
       />
       <TextArea {...register(`${element.id}.stringValue`)} rows={2} placeholder="Comments..." />
     </Stack>

@@ -1,3 +1,5 @@
+import type { FormData } from "./forms";
+
 /**
  * Represents an individual element within a scorecard page section
  */
@@ -38,4 +40,24 @@ export interface ScorecardConfig {
   jobNo: string;
   postingGroup: string;
   pages: ScorecardPage[];
+}
+
+export interface ScorecardFormData extends FormData {
+  job: string | null;
+  postingGroup: string | null;
+  data: Array<{
+    elementId: string;
+    numericValue?: number;
+    stringValue?: string;
+  }>;
+}
+
+export interface ScorecardUser extends Record<string, unknown> {
+  username: string;
+  name: string;
+}
+
+export interface ScorecardResources {
+  caretakers: ScorecardUser[];
+  users: ScorecardUser[];
 }

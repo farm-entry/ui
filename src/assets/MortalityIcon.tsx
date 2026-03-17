@@ -13,7 +13,7 @@ export default function MortalityIcon(props: SvgIconProps) {
       <ellipse cx="9.5" cy="19.5" rx="3" ry="2" />
       {/* Nostrils — evenOdd cutouts from snout */}
       <path
-        fillRule="evenOdd"
+        fillRule="evenodd"
         d="M9.5 17.5a3 2 0 0 1 3 2 3 2 0 0 1-3 2 3 2 0 0 1-3-2 3 2 0 0 1 3-2z
            M8 19.5a.8.8 0 1 0 1.6 0 .8.8 0 0 0-1.6 0z
            M10.4 19.5a.8.8 0 1 0 1.6 0 .8.8 0 0 0-1.6 0z"

@@ -1,10 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
-import {
-  scorecardApi as api,
-  ScorecardInput, ScorecardType
-} from "../services/scorecardApi";
-import { ScorecardConfig, ScorecardPage } from "./types/scorecards";
+import { scorecardApi as api } from "../services/scorecardApi";
+import { ScorecardConfig, ScorecardFormData, ScorecardPage, ScorecardType, ScorecardUser } from "./types/scorecards";
 
 interface ScorecardState {
   // Data
@@ -12,6 +9,7 @@ interface ScorecardState {
   scorecardConfig: ScorecardConfig | null;
   currentJob: string | null;
   currentPostingGroup: string | null;
+  users: ScorecardUser[];
 
   // Loading states
   isLoading: boolean;
@@ -32,8 +30,11 @@ interface ScorecardActions {
   setScorecardConfig: (config: ScorecardConfig | null) => void;
   clearScorecardConfig: () => void;
 
+  // Fetch scorecard resources
+  getResources: () => Promise<void>;
+
   // Post scorecard
-  postScorecard: (jobNo: string, input: ScorecardInput) => Promise<void>;
+  postScorecard: (jobNo: string, input: ScorecardFormData) => Promise<void>;
 
   // Auto-post scorecard journals
   autoPostScorecard: (postingGroup: string) => Promise<void>;
@@ -66,9 +67,20 @@ export const useScorecardStore = create<ScorecardStore>()(
       scorecardConfig: null,
       currentJob: null,
       currentPostingGroup: null,
+      users: [],
       isLoading: false,
       isSubmitting: false,
       error: null,
+
+      // Fetch scorecard resources
+      getResources: async () => {
+        try {
+          const resources = await api.getResources();
+          set((state) => ({ ...state, users: resources.users }));
+        } catch (error) {
+          console.error("Error fetching scorecard resources:", error);
+        }
+      },
 
       // Fetch scorecard types
       getScorecardTypes: async (job: string) => {
@@ -157,7 +169,7 @@ export const useScorecardStore = create<ScorecardStore>()(
       },
 
       // Post scorecard
-      postScorecard: async (jobNo: string, input: ScorecardInput) => {
+      postScorecard: async (jobNo: string, input: ScorecardFormData) => {
         try {
           set((state) => ({ ...state, isSubmitting: true, error: null }));
 
@@ -228,6 +240,7 @@ export const useScorecardStore = create<ScorecardStore>()(
           scorecardConfig: null,
           currentJob: null,
           currentPostingGroup: null,
+          users: [],
           isLoading: false,
           isSubmitting: false,
           error: null

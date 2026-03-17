@@ -1,4 +1,4 @@
-import { Button, Stack, Step, StepLabel, Stepper } from "@mui/material";
+import { Stack, Step, StepLabel, Stepper } from "@mui/material";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
@@ -8,22 +8,14 @@ import { scorecardApi } from "../../services/scorecardApi";
 import { useGlobalAlertStore } from "../../store/globalAlertStore";
 import { usePostingGroupsStore } from "../../store/postingGroupsStore";
 import { useScorecardStore } from "../../store/scorecardStore";
-import { FormData } from "../../store/types/forms";
-import { ScorecardPage } from "../../store/types/scorecards";
+import { ScorecardFormData, ScorecardPage } from "../../store/types/scorecards";
 import ScorecardElementRenderer from "./components/ScorecardElementRenderer";
 import ScorecardReview from "./components/ScorecardReview";
 import ScorecardSetup from "./components/ScorecardSetup";
 import { transformScorecardFormData } from "./helpers";
+import { Button } from "../../components/inputs";
 
-export interface ScorecardFormData extends FormData {
-  job: string | null;
-  postingGroup: string | null;
-  data: Array<{
-    elementId: string;
-    numericValue?: number;
-    stringValue?: string;
-  }>;
-}
+export type { ScorecardFormData };
 
 export default function ScorecardsPage() {
   const navigate = useNavigate();
@@ -133,12 +125,6 @@ export default function ScorecardsPage() {
     });
   }, []);
 
-  const headerTitle = () => {
-    if (activeStep === 0) return "Scorecard Setup";
-    if (isReviewStep) return "Review";
-    return pages[activeStep - 1]?.title ?? "";
-  };
-
   const handleReset = () => {
     setActiveStep(0);
     clearScorecardConfig();
@@ -178,7 +164,7 @@ export default function ScorecardsPage() {
           </Stepper>
 
           <FormProvider {...methods}>
-            <form onSubmit={handleSubmit(handleFormSubmit)}>
+            <form>
               <Stack>
                 {activeStep === 0 && <ScorecardSetup />}
 
@@ -197,6 +183,7 @@ export default function ScorecardsPage() {
 
               <Stack direction="row" spacing={2} justifyContent="flex-end">
                 <Button
+                  type="button"
                   onClick={handleBack}
                   disabled={activeStep === 0 || initLoading}
                   variant="text"
@@ -206,7 +193,7 @@ export default function ScorecardsPage() {
                   Back
                 </Button>
 
-                {isReviewStep ? (
+                {isReviewStep && (
                   <Button
                     type="submit"
                     variant="contained"
@@ -215,11 +202,14 @@ export default function ScorecardsPage() {
                     fullWidth
                     disabled={initLoading}
                     loading={initLoading}
+                    onClick={handleSubmit(handleFormSubmit)}
                   >
                     {initLoading ? "Submitting..." : "Submit"}
                   </Button>
-                ) : (
+                )}
+                {!isReviewStep && (
                   <Button
+                    type="button"
                     onClick={handleNext}
                     variant="outlined"
                     size="large"
