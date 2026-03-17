@@ -1,11 +1,8 @@
-import { LocalGasStation } from "@mui/icons-material";
 import { Button, Divider, FormHelperText, InputAdornment, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import CustomConfirmation from "../../components/framework/CustomConfirmation";
-import CustomHeader from "../../components/framework/CustomHeader";
-import CustomNotice from "../../components/framework/CustomNotice";
 import LoadingSpinner from "../../components/framework/LoadingSpinner";
 import Overlay from "../../components/framework/Overlay";
 import {
@@ -25,7 +22,6 @@ import { FuelFormData } from "../../store/types/fuel";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
 import { toCamelCase } from "../../utils/strings";
 import FuelHistory from "./FuelHistory";
-import { PageContainer } from "@toolpad/core";
 
 const FUEL_STORAGE_KEY = "fuel-form";
 const FORM_STORAGE_HOURS = 48;
@@ -155,148 +151,141 @@ export default function FuelPage() {
   };
 
   return (
-    <PageContainer>
-      <CustomNotice<FuelFormData>
-        formType={FUEL_STORAGE_KEY}
-        onLoad={(data) => {
-          reset(data);
-        }}
-      />
-      <CustomFormsLayout>
-        <CustomHeader
-          icon={LocalGasStation}
-          title="Fuel Activity"
-          button={{ label: "reset", onClick: handleReset }}
-        />
-        {(initLoading || isSubmitting) && <LoadingSpinner />}
-        {!initLoading && !isSubmitting && (
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={2}>
-              <Stack>
-                <TypeAhead
-                  {...register("asset", { required: "Fuel asset is required." })}
-                  handleChange={setFuelAsset}
-                  watch={watch}
-                  fieldName="asset"
-                  labelKey="description"
-                  valueKey="number"
-                  valueList={fuelAssets}
-                  placeholder="Select an Asset..."
-                />
-                {errors.asset && <FormHelperText error>{errors.asset.message}</FormHelperText>}
-              </Stack>
-              {selectedFuelAsset && (
-                <Button variant="outlined" fullWidth onClick={() => setOverlayOpen(true)}>
-                  Fuel History
-                </Button>
-              )}
-              <Divider />
-              <Typography>Activity Details</Typography>
-              <Stack>
-                <DatePicker
-                  {...register("postingDate", { required: "Posting date is required" })}
-                  value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
-                  onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
-                  label="Activity Date"
-                  error={!!errors.postingDate}
-                  helperText={errors.postingDate?.message}
-                />
-              </Stack>
-
-              {!selectedFuelAsset && !isFuelLoading && (
-                <Typography align="center" sx={{ pt: 2 }}>
-                  Select a fuel asset to enter details.
-                </Typography>
-              )}
-
-              {isFuelLoading && <LoadingSpinner />}
-
-              {selectedFuelAsset && !isFuelLoading && (
-                <>
-                  <Divider />
-                  <Typography>
-                    Fuel Type: <strong>{selectedFuelAsset.fuelType}</strong>
-                  </Typography>
-
-                  <Stack>
-                    <TextField
-                      value={watch("gallons")}
-                      {...register("gallons", {
-                        required: "Number of gallons field is required.",
-                        min: { value: 0.01, message: "Must be greater than 0" },
-                        valueAsNumber: true
-                      })}
-                      placeholder="# of Gallons"
-                      type="number"
-                      slotProps={{
-                        input: {
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              ${selectedFuelAsset.fuelCost.toFixed(2)}
-                            </InputAdornment>
-                          )
-                        }
-                      }}
-                      error={!!errors.gallons}
-                      helperText={errors.gallons?.message}
-                    />
-                  </Stack>
-
-                  <Typography variant="body2" color="text.secondary">
-                    Total Cost: ${totalCost}
-                  </Typography>
-
-                  <Stack>
-                    <TextField
-                      value={watch("mileage")}
-                      placeholder={`Current Mileage/${mileageUnitLabel()}`}
-                      {...register("mileage", {
-                        required: `Mileage/${mileageUnitLabel()} field is required.`,
-                        min: {
-                          value: 0,
-                          message: `Mileage/${mileageUnitLabel()} cannot be negative`
-                        },
-                        valueAsNumber: true
-                      })}
-                      type="number"
-                      error={!!errors.mileage}
-                      helperText={errors.mileage?.message}
-                    />
-                  </Stack>
-
-                  <Divider />
-                  <TextArea
-                    value={watch("comments")}
-                    placeholder="Comments"
-                    {...register("comments", {
-                      maxLength: { value: 100, message: "Comments cannot exceed 100 characters" }
-                    })}
-                    label="Comments"
-                    type="text"
-                    error={!!errors.comments}
-                    helperText={errors.comments?.message}
-                  />
-                </>
-              )}
-
-              <Stack direction="row" spacing={2} justifyContent="flex-end">
-                <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
-                  Save
-                </Button>
-                <Button variant="contained" color="primary" fullWidth type="submit">
-                  Submit
-                </Button>
-              </Stack>
+    <CustomFormsLayout<FuelFormData>
+      notice={{
+        formType: FUEL_STORAGE_KEY,
+        onLoad: (data) => reset(data)
+      }}
+      headerOptions={{ button: { label: "reset", onClick: handleReset } }}
+    >
+      {(initLoading || isSubmitting) && <LoadingSpinner />}
+      {!initLoading && !isSubmitting && (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Stack spacing={2}>
+            <Stack>
+              <TypeAhead
+                {...register("asset", { required: "Fuel asset is required." })}
+                handleChange={setFuelAsset}
+                watch={watch}
+                fieldName="asset"
+                labelKey="description"
+                valueKey="number"
+                valueList={fuelAssets}
+                placeholder="Select an Asset..."
+              />
+              {errors.asset && <FormHelperText error>{errors.asset.message}</FormHelperText>}
             </Stack>
-          </form>
-        )}
+            {selectedFuelAsset && (
+              <Button variant="outlined" fullWidth onClick={() => setOverlayOpen(true)}>
+                Fuel History
+              </Button>
+            )}
+            <Divider />
+            <Typography>Activity Details</Typography>
+            <Stack>
+              <DatePicker
+                {...register("postingDate", { required: "Posting date is required" })}
+                value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
+                onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
+                label="Activity Date"
+                error={!!errors.postingDate}
+                helperText={errors.postingDate?.message}
+              />
+            </Stack>
 
-        <Overlay open={overlayOpen} onClose={() => setOverlayOpen(false)} title="Fuel History">
-          <FuelHistory />
-        </Overlay>
+            {!selectedFuelAsset && !isFuelLoading && (
+              <Typography align="center" sx={{ pt: 2 }}>
+                Select a fuel asset to enter details.
+              </Typography>
+            )}
 
-        <CustomConfirmation />
-      </CustomFormsLayout>
-    </PageContainer>
+            {isFuelLoading && <LoadingSpinner />}
+
+            {selectedFuelAsset && !isFuelLoading && (
+              <>
+                <Divider />
+                <Typography>
+                  Fuel Type: <strong>{selectedFuelAsset.fuelType}</strong>
+                </Typography>
+
+                <Stack>
+                  <TextField
+                    value={watch("gallons")}
+                    {...register("gallons", {
+                      required: "Number of gallons field is required.",
+                      min: { value: 0.01, message: "Must be greater than 0" },
+                      valueAsNumber: true
+                    })}
+                    placeholder="# of Gallons"
+                    type="number"
+                    slotProps={{
+                      input: {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            ${selectedFuelAsset.fuelCost.toFixed(2)}
+                          </InputAdornment>
+                        )
+                      }
+                    }}
+                    error={!!errors.gallons}
+                    helperText={errors.gallons?.message}
+                  />
+                </Stack>
+
+                <Typography variant="body2" color="text.secondary">
+                  Total Cost: ${totalCost}
+                </Typography>
+
+                <Stack>
+                  <TextField
+                    value={watch("mileage")}
+                    placeholder={`Current Mileage/${mileageUnitLabel()}`}
+                    {...register("mileage", {
+                      required: `Mileage/${mileageUnitLabel()} field is required.`,
+                      min: {
+                        value: 0,
+                        message: `Mileage/${mileageUnitLabel()} cannot be negative`
+                      },
+                      valueAsNumber: true
+                    })}
+                    type="number"
+                    error={!!errors.mileage}
+                    helperText={errors.mileage?.message}
+                  />
+                </Stack>
+
+                <Divider />
+                <TextArea
+                  value={watch("comments")}
+                  placeholder="Comments"
+                  {...register("comments", {
+                    maxLength: { value: 100, message: "Comments cannot exceed 100 characters" }
+                  })}
+                  label="Comments"
+                  type="text"
+                  error={!!errors.comments}
+                  helperText={errors.comments?.message}
+                />
+              </>
+            )}
+
+            <Stack direction="row" spacing={2} justifyContent="flex-end">
+              <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
+                Save
+              </Button>
+              <Button variant="contained" color="primary" fullWidth type="submit">
+                Submit
+              </Button>
+            </Stack>
+          </Stack>
+        </form>
+      )}
+
+      <Overlay open={overlayOpen} onClose={() => setOverlayOpen(false)} title="Fuel History">
+        <FuelHistory />
+      </Overlay>
+
+      <CustomConfirmation />
+    </CustomFormsLayout>
   );
 }

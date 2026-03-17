@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import CustomConfirmation from "../../components/framework/CustomConfirmation";
 import CustomHeader from "../../components/framework/CustomHeader";
-import CustomNotice from "../../components/framework/CustomNotice";
 import LoadingSpinner from "../../components/framework/LoadingSpinner";
 import Overlay from "../../components/framework/Overlay";
 import {
@@ -144,151 +143,148 @@ export default function MaintenancePage() {
 
   const gallons = watch("gallons");
   const totalCost =
-    gallons && selectedMaintenanceAsset ? (gallons * selectedMaintenanceAsset.item.cost).toFixed(2) : "0.00";
+    gallons && selectedMaintenanceAsset
+      ? (gallons * selectedMaintenanceAsset.item.cost).toFixed(2)
+      : "0.00";
 
   return (
-    <PageContainer>
-      <CustomNotice<MaintenanceFormData>
-        formType={MAINTENANCE_STORAGE_KEY}
-        onLoad={(data) => {
-          reset(data);
-        }}
-      />
-      <CustomFormsLayout>
-        <CustomHeader
-          icon={LocalGasStation}
-          title="Maintenance Activity"
-          button={{ label: "reset", onClick: handleReset }}
-        />
-        {(initLoading || isSubmitting) && <LoadingSpinner />}
-        {!initLoading && !isSubmitting && (
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={2}>
-              <Stack>
-                <TypeAhead
-                  {...register("maintenanceAsset", { required: "Maintenance asset is required." })}
-                  handleChange={setMaintenanceAsset}
-                  watch={watch}
-                  fieldName="maintenanceAsset"
-                  labelKey="description"
-                  valueKey="number"
-                  valueList={maintenanceAssets}
-                  placeholder="Select an Asset..."
-                />
-                {errors.maintenanceAsset && <FormHelperText error>{errors.maintenanceAsset.message}</FormHelperText>}
-              </Stack>
-              {selectedMaintenanceAsset && (
-                <Button variant="outlined" fullWidth onClick={() => setOverlayOpen(true)}>
-                  Maintenance History
-                </Button>
+    <CustomFormsLayout<MaintenanceFormData>
+      notice={{
+        formType: MAINTENANCE_STORAGE_KEY,
+        onLoad: (data) => reset(data)
+      }}
+      headerOptions={{ button: { label: "reset", onClick: handleReset } }}
+    >
+      {(initLoading || isSubmitting) && <LoadingSpinner />}
+      {!initLoading && !isSubmitting && (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Stack spacing={2}>
+            <Stack>
+              <TypeAhead
+                {...register("maintenanceAsset", { required: "Maintenance asset is required." })}
+                handleChange={setMaintenanceAsset}
+                watch={watch}
+                fieldName="maintenanceAsset"
+                labelKey="description"
+                valueKey="number"
+                valueList={maintenanceAssets}
+                placeholder="Select an Asset..."
+              />
+              {errors.maintenanceAsset && (
+                <FormHelperText error>{errors.maintenanceAsset.message}</FormHelperText>
               )}
-              <Divider />
-              <Typography>Activity Details</Typography>
-              <Stack>
-                <DatePicker
-                  {...register("activityDate", { required: "Activity date is required" })}
-                  value={parseYYYYMMDDToLocalDate(watch("activityDate") || "")}
-                  onChange={(v) => setValue("activityDate", formatDateToYYYYMMDDNoTimestamp(v))}
-                  label="Activity Date"
-                  error={!!errors.activityDate}
-                  helperText={errors.activityDate?.message}
-                />
-              </Stack>
-
-              {!selectedMaintenanceAsset && !isMaintenanceLoading && (
-                <Typography align="center" sx={{ pt: 2 }}>
-                  Select a maintenance asset to enter details.
-                </Typography>
-              )}
-
-              {isMaintenanceLoading && <LoadingSpinner />}
-
-              {selectedMaintenanceAsset && !isMaintenanceLoading && (
-                <>
-                  <Divider />
-                  <Typography>
-                    Asset: <strong>{selectedMaintenanceAsset.description}</strong>
-                  </Typography>
-
-                  <Stack>
-                    <TextField
-                      value={watch("gallons")}
-                      {...register("gallons", {
-                        required: "Number of gallons field is required.",
-                        min: { value: 0.01, message: "Must be greater than 0" },
-                        valueAsNumber: true
-                      })}
-                      placeholder="# of Gallons"
-                      type="number"
-                      slotProps={{
-                        input: {
-                          endAdornment: (
-                            <InputAdornment position="end">
-                              ${selectedMaintenanceAsset.item.cost.toFixed(2)}
-                            </InputAdornment>
-                          )
-                        }
-                      }}
-                      error={!!errors.gallons}
-                      helperText={errors.gallons?.message}
-                    />
-                  </Stack>
-
-                  <Typography variant="body2" color="text.secondary">
-                    Total Cost: ${totalCost}
-                  </Typography>
-
-                  <Stack>
-                    <TextField
-                      value={watch("currentMiles")}
-                      placeholder="Current Mileage"
-                      {...register("currentMiles", {
-                        required: "Mileage field is required.",
-                        min: {
-                          value: 0,
-                          message: "Mileage cannot be negative"
-                        },
-                        valueAsNumber: true
-                      })}
-                      type="number"
-                      error={!!errors.currentMiles}
-                      helperText={errors.currentMiles?.message}
-                    />
-                  </Stack>
-
-                  <Divider />
-                  <TextArea
-                    value={watch("comments")}
-                    placeholder="Comments"
-                    {...register("comments", {
-                      maxLength: { value: 100, message: "Comments cannot exceed 100 characters" }
-                    })}
-                    label="Comments"
-                    type="text"
-                    error={!!errors.comments}
-                    helperText={errors.comments?.message}
-                  />
-                </>
-              )}
-
-              <Stack direction="row" spacing={2} justifyContent="flex-end">
-                <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
-                  Save
-                </Button>
-                <Button variant="contained" color="primary" fullWidth type="submit">
-                  Submit
-                </Button>
-              </Stack>
             </Stack>
-          </form>
-        )}
+            {selectedMaintenanceAsset && (
+              <Button variant="outlined" fullWidth onClick={() => setOverlayOpen(true)}>
+                Maintenance History
+              </Button>
+            )}
+            <Divider />
+            <Typography>Activity Details</Typography>
+            <Stack>
+              <DatePicker
+                {...register("activityDate", { required: "Activity date is required" })}
+                value={parseYYYYMMDDToLocalDate(watch("activityDate") || "")}
+                onChange={(v) => setValue("activityDate", formatDateToYYYYMMDDNoTimestamp(v))}
+                label="Activity Date"
+                error={!!errors.activityDate}
+                helperText={errors.activityDate?.message}
+              />
+            </Stack>
 
-        <Overlay open={overlayOpen} onClose={() => setOverlayOpen(false)} title="Maintenance History">
-          <MaintenanceHistory />
-        </Overlay>
+            {!selectedMaintenanceAsset && !isMaintenanceLoading && (
+              <Typography align="center" sx={{ pt: 2 }}>
+                Select a maintenance asset to enter details.
+              </Typography>
+            )}
 
-        <CustomConfirmation />
-      </CustomFormsLayout>
-    </PageContainer>
+            {isMaintenanceLoading && <LoadingSpinner />}
+
+            {selectedMaintenanceAsset && !isMaintenanceLoading && (
+              <>
+                <Divider />
+                <Typography>
+                  Asset: <strong>{selectedMaintenanceAsset.description}</strong>
+                </Typography>
+
+                <Stack>
+                  <TextField
+                    value={watch("gallons")}
+                    {...register("gallons", {
+                      required: "Number of gallons field is required.",
+                      min: { value: 0.01, message: "Must be greater than 0" },
+                      valueAsNumber: true
+                    })}
+                    placeholder="# of Gallons"
+                    type="number"
+                    slotProps={{
+                      input: {
+                        endAdornment: (
+                          <InputAdornment position="end">
+                            ${selectedMaintenanceAsset.item.cost.toFixed(2)}
+                          </InputAdornment>
+                        )
+                      }
+                    }}
+                    error={!!errors.gallons}
+                    helperText={errors.gallons?.message}
+                  />
+                </Stack>
+
+                <Typography variant="body2" color="text.secondary">
+                  Total Cost: ${totalCost}
+                </Typography>
+
+                <Stack>
+                  <TextField
+                    value={watch("currentMiles")}
+                    placeholder="Current Mileage"
+                    {...register("currentMiles", {
+                      required: "Mileage field is required.",
+                      min: {
+                        value: 0,
+                        message: "Mileage cannot be negative"
+                      },
+                      valueAsNumber: true
+                    })}
+                    type="number"
+                    error={!!errors.currentMiles}
+                    helperText={errors.currentMiles?.message}
+                  />
+                </Stack>
+
+                <Divider />
+                <TextArea
+                  value={watch("comments")}
+                  placeholder="Comments"
+                  {...register("comments", {
+                    maxLength: { value: 100, message: "Comments cannot exceed 100 characters" }
+                  })}
+                  label="Comments"
+                  type="text"
+                  error={!!errors.comments}
+                  helperText={errors.comments?.message}
+                />
+              </>
+            )}
+
+            <Stack direction="row" spacing={2} justifyContent="flex-end">
+              <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
+                Save
+              </Button>
+              <Button variant="contained" color="primary" fullWidth type="submit">
+                Submit
+              </Button>
+            </Stack>
+          </Stack>
+        </form>
+      )}
+
+      <Overlay open={overlayOpen} onClose={() => setOverlayOpen(false)} title="Maintenance History">
+        <MaintenanceHistory />
+      </Overlay>
+
+      <CustomConfirmation />
+    </CustomFormsLayout>
   );
 }

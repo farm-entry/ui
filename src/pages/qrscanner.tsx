@@ -1,6 +1,6 @@
 import { Box, Button, Stack, Typography } from "@mui/material";
-import { PageContainer } from "@toolpad/core";
 import QrScanner from "qr-scanner";
+import CustomPageContainer from "../components/framework/CustomPageContainer";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { UrlParseFromQR } from "../utils/qrcode";
@@ -61,7 +61,7 @@ export default function QRScanner() {
   };
 
   return (
-    <PageContainer>
+    <CustomPageContainer>
       <Box display="flex" justifyContent="center" alignItems="center">
         <Stack spacing={3} alignItems="center">
           <Box
@@ -124,6 +124,6 @@ export default function QRScanner() {
           )}
         </Stack>
       </Box>
-    </PageContainer>
+    </CustomPageContainer>
   );
 }

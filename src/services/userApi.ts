@@ -45,6 +45,15 @@ class UserApi {
     return res.json();
   }
 
+  async updateMe(payload: { firstName?: string; lastName?: string; email?: string }): Promise<UserType> {
+    const res = await apiFetch('/api/auth/me', {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('Failed to update profile');
+    return res.json();
+  }
+
   async switchDomain(targetDomain: string): Promise<{ accessToken: string }> {
     const res = await apiFetch('/api/auth/switch-domain', {
       method: 'POST',

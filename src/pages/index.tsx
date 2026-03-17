@@ -1,60 +1,23 @@
-import AgricultureIcon from "@mui/icons-material/Agriculture";
-import AssessmentIcon from "@mui/icons-material/Assessment";
-import BuildIcon from "@mui/icons-material/Build";
-import InventoryIcon from "@mui/icons-material/Inventory";
-import LocalGasStationIcon from "@mui/icons-material/LocalGasStation";
-import UpdateIcon from "@mui/icons-material/Update";
-import { Box, CardActionArea, Fab, Stack, Typography } from "@mui/material";
+import { CardActionArea, Stack, Typography } from "@mui/material";
 import { PageContainer } from "@toolpad/core/PageContainer";
 import { useNavigate } from "react-router";
 import { CustomCard } from "../components/framework";
-import { FavoriteBorder } from "@mui/icons-material";
+import { MAIN_ROUTES } from "../routes";
+
+const dashboardCards = MAIN_ROUTES.filter((r) => r.description).map(({ segment, title, description, Icon }) => ({
+  label: title,
+  href: segment,
+  description: description!,
+  icon: Icon ? <Icon color="primary" sx={{ fontSize: 21 }} /> : undefined
+}));
 
 export default function DashboardPage() {
-  const dashboardOptions = [
-    {
-      label: "Livestock Activity",
-      icon: <AgricultureIcon color="primary" sx={{ fontSize: 21 }} />,
-      href: "livestock-activity",
-      description: "Track and manage livestock activities."
-    },
-    {
-      label: "Scorecards",
-      icon: <AssessmentIcon color="primary" sx={{ fontSize: 21 }} />,
-      href: "scorecards",
-      description: "View and manage scorecards."
-    },
-    {
-      label: "Fuel",
-      icon: <LocalGasStationIcon color="primary" sx={{ fontSize: 21 }} />,
-      href: "fuel",
-      description: "Monitor fuel usage and logs."
-    },
-    {
-      label: "Maintenance",
-      icon: <BuildIcon color="primary" sx={{ fontSize: 21 }} />,
-      href: "maintenance",
-      description: "Schedule and review maintenance tasks."
-    },
-    {
-      label: "Inventory Consumption",
-      icon: <InventoryIcon color="primary" sx={{ fontSize: 21 }} />,
-      href: "inventory-consumption",
-      description: "Track inventory consumption and usage."
-    },
-    {
-      label: "Job Header Updates",
-      icon: <UpdateIcon color="primary" sx={{ fontSize: 21 }} />,
-      href: "job-header-updates",
-      description: "Update job headers and details."
-    }
-  ];
-
   const navigate = useNavigate();
+
   return (
     <PageContainer>
       <Stack spacing={2}>
-        {dashboardOptions.map((option) => (
+        {dashboardCards.map((option) => (
           <CustomCard key={option.label} variant="outlined" full>
             <CardActionArea onClick={() => navigate(option.href)} sx={{ p: 2 }}>
               <Stack direction="row" spacing={2}>

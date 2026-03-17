@@ -1,12 +1,10 @@
-import { AccountCircle, Logout } from "@mui/icons-material";
-import { IconButton, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
+import { AccountCircle, Settings } from "@mui/icons-material";
+import { Divider, IconButton, ListItemIcon, ListItemText, Menu, MenuItem } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { useAuth } from "../../hooks/useAuth";
 import { useUserStore } from "../../store/userStore";
 
 export default function AccountMenu() {
-  const { logout } = useAuth();
   const { firstName, username, role } = useUserStore();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -17,12 +15,6 @@ export default function AccountMenu() {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-  };
-
-  const handleLogout = async () => {
-    handleMenuClose();
-    await logout();
-    navigate("/login");
   };
 
   return (
@@ -54,11 +46,17 @@ export default function AccountMenu() {
         <MenuItem disabled>
           <ListItemText primary={firstName || username} secondary={role} />
         </MenuItem>
-        <MenuItem onClick={handleLogout}>
+        <Divider />
+        <MenuItem
+          onClick={() => {
+            handleMenuClose();
+            navigate("/settings");
+          }}
+        >
           <ListItemIcon>
-            <Logout fontSize="small" />
+            <Settings fontSize="small" />
           </ListItemIcon>
-          <ListItemText>Logout</ListItemText>
+          <ListItemText>Settings</ListItemText>
         </MenuItem>
       </Menu>
     </>

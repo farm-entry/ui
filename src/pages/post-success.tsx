@@ -73,7 +73,7 @@ export default function PostSuccessPage() {
 
   return (
     <CustomFormsLayout>
-      <CustomHeader icon={CheckCircle} title="Form Posted Successfully" iconSx={{ color: "success.main" }} />
+      <CustomHeader icon={CheckCircle} title="Form Posted Successfully" />
 
       <Stack spacing={3}>
         <Typography variant="h6" color="success.main" textAlign="center">
