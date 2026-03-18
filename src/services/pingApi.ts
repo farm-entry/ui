@@ -1,6 +1,8 @@
+import { apiFetch } from "./apiFetch";
+
 class PingApi {
   async fetchPing(): Promise<string> {
-    return await fetch(process.env.API_URL + "/ping")
+    return await apiFetch("/api/health")
       .then((r) => r.json())
       .catch(() => {
         throw new Error("Failed to fetch ping data");
