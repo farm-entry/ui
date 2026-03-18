@@ -44,6 +44,38 @@ export default defineConfig(({ mode }) => {
             });
           },
         },
+        "/api/health": {
+          target: env.FRONTLINE_API_URL,
+          rewrite: (path) => path.replace(/^\/api/, ""),
+          changeOrigin: true,
+          cookieDomainRewrite: "localhost", // Rewrite cookie domain for localhost
+          configure: (proxy, _options) => {
+            proxy.on("error", (err, _req, _res) => {
+              console.log("proxy error", err);
+            });
+            proxy.on("proxyReq", (proxyReq, req, _res) => {
+              console.log(
+                "Sending Request to the Target:",
+                req.method,
+                req.url
+              );
+            });
+            proxy.on("proxyRes", (proxyRes, req, _res) => {
+              console.log(
+                "Received Response from the Target:",
+                proxyRes.statusCode,
+                req.url
+              );
+              // Log cookies being set
+              if (proxyRes.headers["set-cookie"]) {
+                console.log(
+                  "Cookies being set:",
+                  proxyRes.headers["set-cookie"]
+                );
+              }
+            });
+          },
+        },
         "/api": {
           target: env.FRONTLINE_API_URL,
           changeOrigin: true,

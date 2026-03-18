@@ -1,5 +1,7 @@
 import { tokenStorage } from './tokenStorage';
 
+const skipTokenEndpoints = ['/api/auth/login', '/api/health'];
+
 interface TokenPair {
   accessToken: string;
   refreshToken: string;
@@ -39,7 +41,8 @@ export async function apiFetch(url: string, options: RequestInit = {}): Promise<
   const fetchUrl = url.startsWith('http') ? url : `${baseUrl}${url}`;
 
   // Bypass token logic for login endpoint
-  if (url === '/api/auth/login') {
+  if (skipTokenEndpoints.includes(url)) {
+    console.log(`Skipping token for ${url}`);
     return await fetch(url, options);
   } else {
     const token = tokenStorage.getAccess();
