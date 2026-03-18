@@ -18,6 +18,7 @@ import PurchasePage from "./pages/livestock-activity/forms/purchase";
 import QuantityAdjustmentPage from "./pages/livestock-activity/forms/quantityadj";
 import WeanPage from "./pages/livestock-activity/forms/wean";
 import MaintenancePage from "./pages/maintenance";
+import HealthPage from "./pages/health";
 import NotFoundPage from "./pages/not-found";
 import PostSuccessPage from "./pages/post-success";
 import QRScanner from "./pages/qrscanner";
@@ -103,6 +104,7 @@ export const router = createBrowserRouter([
         ]
       },
       { path: "login", Component: SignIn },
+      { path: "health", Component: HealthPage },
       { path: "*", Component: NotFoundPage }
     ]
   }

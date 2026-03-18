@@ -1,12 +1,21 @@
 import { apiFetch } from "./apiFetch";
 
+export interface HealthData {
+  status: string;
+  timestamp: string;
+  uptime: number;
+  memory: {
+    rss: number;
+    heapTotal: number;
+    heapUsed: number;
+  };
+}
+
 class PingApi {
-  async fetchPing(): Promise<string> {
-    return await apiFetch("/api/health")
-      .then((r) => r.json())
-      .catch(() => {
-        throw new Error("Failed to fetch ping data");
-      });
+  async fetchHealth(): Promise<HealthData> {
+    const res = await apiFetch("/api/health");
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
   }
 }
 
