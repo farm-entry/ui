@@ -5,6 +5,7 @@ A modern React-based user interface for comprehensive farm operations management
 ## Features
 
 ### Livestock Activity Management
+
 - **Purchase** - Record livestock acquisitions with pricing and vendor details
 - **Mortality** - Track livestock deaths with reason codes and detailed reporting
 - **Grade Off** - Dynamic form generation based on event-specific reason codes
@@ -13,6 +14,7 @@ A modern React-based user interface for comprehensive farm operations management
 - **Wean** - Record weaning events with automatic calculations
 
 ### Operations Management
+
 - **Fuel Tracking** - Monitor fuel consumption and costs for farm equipment
 - **Maintenance** - Schedule and track equipment maintenance activities
 - **Inventory Consumption** - Manage feed, supplies, and material usage
@@ -20,6 +22,7 @@ A modern React-based user interface for comprehensive farm operations management
 - **Scorecards** - View and manage livestock performance metrics
 
 ### Technical Features
+
 - Form state persistence with localStorage (48-hour expiry)
 - Type-safe forms with React Hook Form 7.62
 - Global state management with Zustand 5.0.8
@@ -38,6 +41,7 @@ A modern React-based user interface for comprehensive farm operations management
 ### Installation
 
 Install dependencies:
+
 ```bash
 npm install
 ```
@@ -45,6 +49,7 @@ npm install
 ### Development
 
 Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -58,7 +63,6 @@ Create a `.env` file in the root directory with the following required variables
 ```bash
 # Required API endpoints
 FRONTLINE_API_URL=https://frontline-farms-api-dev-118acd7155d2.herokuapp.com
-FRONTLINE_NAV_API_URL=https://nav.moglerfarms.com:7148/AppTest/ODataV4/
 
 # Optional: Skip authentication for development
 FRONTLINE_SKIP_AUTH=true
@@ -103,34 +107,50 @@ src/
 
 Create a production build:
 
+#### Required Environment Variables
+
+Required variable includes the `VITE_` prefix. Include this in deployment config.
+
+```bash
+VITE_FRONTLINE_API_URL=https://frontline-farms-api-dev-118acd7155d2.herokuapp.com
+```
+
 ```bash
 npm run build
 ```
 
 Preview the production build locally:
+
 ```bash
 npm run preview
 ```
 
 The build output will be in the `dist` directory. To deploy, use:
+
 ```bash
 npm start
 ```
+
 This serves the production build using `serve` on the PORT environment variable.
 
 ## Key Features Implementation
 
 ### Form Storage
+
 Forms automatically save to localStorage with a 48-hour expiry. Users receive notifications to restore previous sessions when available.
 
 ### Dynamic Form Generation
+
 The Grade Off form dynamically generates input fields based on event-specific reason codes from the GraphQL API, ensuring data consistency with the backend schema.
 
 ### TypeAhead Components
+
 Custom TypeAhead components provide searchable dropdowns for jobs, events, and other complex data structures with proper null handling.
 
 ### State Management
+
 Zustand stores manage:
+
 - Livestock activity data and event types
 - Posting groups and job information
 - Form storage and restoration
@@ -139,4 +159,3 @@ Zustand stores manage:
 ## Development Notes
 
 - Use `formatDateToYYYYMMDDNoTimestamp` and `parseYYYYMMDDToLocalDate` for consistent date handling
-

@@ -35,25 +35,34 @@ async function tryRefresh(): Promise<boolean> {
 }
 
 export async function apiFetch(url: string, options: RequestInit = {}): Promise<Response> {
-  const token = tokenStorage.getAccess();
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...(options.headers as Record<string, string> ?? {}),
-  };
+  const baseUrl = import.meta.env.VITE_FRONTLINE_API_URL || '';
+  const fetchUrl = url.startsWith('http') ? url : `${baseUrl}${url}`;
 
-  let response = await fetch(url, { ...options, headers });
+  // Bypass token logic for login endpoint
+  if (url === '/api/auth/login') {
+    return await fetch(url, options);
+  } else {
+    const token = tokenStorage.getAccess();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(options.headers as Record<string, string> ?? {}),
+    };
 
-  if (response.status === 401) {
-    const refreshed = await tryRefresh();
-    if (!refreshed) {
-      tokenStorage.clear();
-      window.location.assign('/login');
-      throw new Error('Session expired');
+    let response = await fetch(fetchUrl, { ...options, headers });
+
+    if (response.status === 401) {
+      const refreshed = await tryRefresh();
+      if (!refreshed) {
+        tokenStorage.clear();
+        window.location.assign('/login');
+        throw new Error('Session expired');
+      }
+      headers.Authorization = `Bearer ${tokenStorage.getAccess()}`;
+      response = await fetch(fetchUrl, { ...options, headers });
     }
-    headers.Authorization = `Bearer ${tokenStorage.getAccess()}`;
-    response = await fetch(url, { ...options, headers });
+
+    return response;
   }
 
-  return response;
 }
