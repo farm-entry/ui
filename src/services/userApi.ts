@@ -15,7 +15,7 @@ export interface TokenPair {
 
 class UserApi {
   async login(credentials: LoginCredentials): Promise<TokenPair & UserType> {
-    const res = await fetch('/api/auth/login', {
+    const res = await apiFetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(credentials),
