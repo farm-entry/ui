@@ -1,0 +1,10 @@
+[
+  { "number": "114", "location": "28", "balance": 0, "description": "Enter lleitis 250 ds", "type": "VACCINE", "cost": 247.5, "unit": "BTL" },
+  { "number": "115", "location": "28", "balance": 0, "description": "Enter lleitis 500 ds", "type": "VACCINE", "cost": 495, "unit": "BTL" },
+  { "number": "116", "location": "28", "balance": 0, "description": "EnteriSALM 100 ml", "type": "VACCINE", "cost": 47, "unit": "BTL" },
+  { "number": "117", "location": "28", "balance": 0, "description": "EnteriSALM 250 ml", "type": "VACCINE", "cost": 117.5, "unit": "BTL" },
+  { "number": "118", "location": "28", "balance": 0, "description": "EnteriSALM 500 ml", "type": "VACCINE", "cost": 235, "unit": "BTL" },
+  { "number": "156", "location": "28", "balance": 0, "description": "PRRS-MLV 250 ds", "type": "VACCINE", "cost": 222.5, "unit": "BTL" },
+  { "number": "157", "location": "28", "balance": 0, "description": "Reload Pak", "type": "HEALTH", "cost": 4.94, "unit": "BTL" },
+  { "number": "162", "location": "28", "balance": 0, "description": "SuvaxEOral 500 ds", "type": "VACCINE", "cost": 66.7, "unit": "BTL" }
+]
