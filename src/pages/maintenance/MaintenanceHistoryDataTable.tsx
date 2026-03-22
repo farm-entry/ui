@@ -17,8 +17,8 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import * as React from "react";
 import LoadingSpinner from "../../components/framework/LoadingSpinner";
-import { useFuelStore } from "../../store/fuelStore";
-import { FuelHistory } from "../../store/types/fuel";
+import { useMaintenanceStore } from "../../store/maintenanceStore";
+import { MaintenanceHistoryAsset } from "../../store/types/maintenance";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -78,33 +78,24 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 }
 
 const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD"
-  }).format(amount);
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
 };
 
-const calculateEfficiency = (amount: number, quantity: number): string => {
-  if (quantity === 0) return "N/A";
-  return `$${(amount / quantity).toFixed(2)}/gal`;
-};
-
-export default function FuelHistoryDataTable() {
+export default function MaintenanceHistoryDataTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const { selectedFuelAsset, isLoading } = useFuelStore();
+  const { selectedMaintenanceAsset, isLoading } = useMaintenanceStore();
 
-  const historyData = selectedFuelAsset?.history || [];
+  const historyData = selectedMaintenanceAsset?.history || [];
 
-  // Sort history by date (most recent first)
   const sortedHistory = [...historyData].sort(
     (a, b) => new Date(b.postingDate).getTime() - new Date(a.postingDate).getTime()
   );
 
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - sortedHistory.length) : 0;
 
-  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+  const handleChangePage = (_: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
   };
 
@@ -115,15 +106,13 @@ export default function FuelHistoryDataTable() {
     setPage(0);
   };
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
+  if (isLoading) return <LoadingSpinner />;
 
-  if (!selectedFuelAsset) {
+  if (!selectedMaintenanceAsset) {
     return (
       <Paper sx={{ p: 3, textAlign: "center" }}>
         <Typography variant="h6" color="text.secondary">
-          Select a fuel asset to view history
+          Select a maintenance asset to view history
         </Typography>
       </Paper>
     );
@@ -133,7 +122,7 @@ export default function FuelHistoryDataTable() {
     return (
       <Paper sx={{ p: 3, textAlign: "center" }}>
         <Typography variant="h6" color="text.secondary">
-          No fuel history available for this asset
+          No maintenance history available for this asset
         </Typography>
       </Paper>
     );
@@ -141,40 +130,33 @@ export default function FuelHistoryDataTable() {
 
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="fuel history table">
+      <Table sx={{ minWidth: 650 }} aria-label="maintenance history table">
         <TableHead>
           <TableRow>
-            <TableCell colSpan={2}>Date</TableCell>
+            <TableCell>Date</TableCell>
+            <TableCell>Type</TableCell>
             <TableCell>Amount</TableCell>
-            <TableCell>Quantity</TableCell>
-            <TableCell>Efficiency</TableCell>
+            <TableCell>Work Hours</TableCell>
             <TableCell>Odometer</TableCell>
-            <TableCell>Delta</TableCell>
-            <TableCell>Comments</TableCell>
+            <TableCell>Description</TableCell>
+            <TableCell>Document No</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {(rowsPerPage > 0
             ? sortedHistory.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : sortedHistory
-          ).map((record: FuelHistory, index: number) => {
-            const previousRecord = sortedHistory[index + 1];
-            const delta = previousRecord ? record.meta - previousRecord.meta : 0;
-
-            return (
-              <TableRow key={record.entry}>
-                <TableCell colSpan={2}>{record.postingDate}</TableCell>
-                <TableCell>{formatCurrency(record.amount)}</TableCell>
-                <TableCell>{record.quantity} gal</TableCell>
-                <TableCell>{calculateEfficiency(record.amount, record.quantity)}</TableCell>
-                <TableCell align="right">{record.meta.toLocaleString()}</TableCell>
-                <TableCell align="right">
-                  {index === sortedHistory.length - 1 ? "N/A" : delta.toLocaleString()}
-                </TableCell>
-                <TableCell>{record.description}</TableCell>
-              </TableRow>
-            );
-          })}
+          ).map((record: MaintenanceHistoryAsset) => (
+            <TableRow key={record.entry}>
+              <TableCell>{record.postingDate}</TableCell>
+              <TableCell>{record.codeDescription || record.maintenanceCode}</TableCell>
+              <TableCell>{formatCurrency(record.amount)}</TableCell>
+              <TableCell>{record.quantity}</TableCell>
+              <TableCell align="right">{record.meta.toLocaleString()}</TableCell>
+              <TableCell>{record.description}</TableCell>
+              <TableCell>{record.documentNo}</TableCell>
+            </TableRow>
+          ))}
           {emptyRows > 0 && (
             <TableRow style={{ height: 53 * emptyRows }}>
               <TableCell colSpan={7} />
@@ -191,9 +173,7 @@ export default function FuelHistoryDataTable() {
               page={page}
               slotProps={{
                 select: {
-                  inputProps: {
-                    "aria-label": "rows per page"
-                  },
+                  inputProps: { "aria-label": "rows per page" },
                   native: true
                 }
               }}

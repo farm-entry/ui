@@ -1,63 +1,66 @@
-import maintenanceAssetDetails from "../mock/maintenanceAsset.json";
-import maintenanceData from "../mock/maintenanceAssets.json";
 import { MaintenanceAsset, MaintenanceAssetDetails, MaintenanceFormData } from "../store/types/maintenance";
 import { apiFetch } from "./apiFetch";
 import { HandleError } from "./handleError";
 
 class MaintenanceService {
-    /* Fetch all maintenance assets * Currently returns static mock data */
-    async getMaintenanceAssets(): Promise<MaintenanceAsset[]> {
-        try {
-            console.log("Fetching maintenance assets from mock data...");
+  async getMaintenanceAssets(): Promise<MaintenanceAsset[]> {
+    try {
+      const response = await apiFetch("/api/maintenance/assets", { method: "GET" });
 
-            // Simulating API delay
-            await new Promise(resolve => setTimeout(resolve, 300));
+      if (!response.ok) {
+        await new HandleError().handleApiError(response, "MaintenanceService.getMaintenanceAssets");
+      }
 
-            return maintenanceData as MaintenanceAsset[];
-        } catch (error) {
-            console.log("Caught error while fetching maintenance assets:", error);
-            throw new HandleError().handleApiError(error as any, "MaintenanceService.getMaintenanceAssets");
-        }
+      return response.json();
+    } catch (error) {
+      if (error && typeof error === "object" && "code" in error) throw error;
+      throw new HandleError().createError(
+        "FETCH_ERROR",
+        "Failed to fetch maintenance assets",
+        error instanceof Error ? error.message : "Unknown error occurred"
+      );
     }
+  }
 
-    /* Fetch a single maintenance asset by number */
-    async getMaintenanceAssetDetails(number: string): Promise<MaintenanceAssetDetails | null> {
-        try {
-            console.log(`Fetching maintenance asset ${number} from mock data...`);
+  async getMaintenanceAssetDetails(number: string): Promise<MaintenanceAssetDetails | null> {
+    try {
+      const response = await apiFetch(`/api/maintenance/${number}`, { method: "GET" });
 
-            // Simulating API delay
-            await new Promise(resolve => setTimeout(resolve, 3000));
+      if (!response.ok) {
+        if (response.status === 404) return null;
+        await new HandleError().handleApiError(response, "MaintenanceService.getMaintenanceAssetDetails");
+      }
 
-            const foundAsset = maintenanceAssetDetails as MaintenanceAssetDetails;
-
-            return foundAsset || null;
-        } catch (error) {
-            console.log("Caught error while fetching maintenance asset:", error);
-            throw new HandleError().handleApiError(error as any, "MaintenanceService.getMaintenanceAsset");
-        }
+      return response.json();
+    } catch (error) {
+      if (error && typeof error === "object" && "code" in error) throw error;
+      throw new HandleError().createError(
+        "FETCH_ERROR",
+        "Failed to fetch maintenance asset details",
+        error instanceof Error ? error.message : "Unknown error occurred"
+      );
     }
+  }
 
-    /* Post maintenance entry */
-    async postMaintenance(data: MaintenanceFormData): Promise<void> {
-        try {
-            console.log("Posting maintenance entry:", data);
+  async postMaintenance(data: MaintenanceFormData): Promise<void> {
+    try {
+      const response = await apiFetch("/api/maintenance", {
+        method: "POST",
+        body: JSON.stringify(data)
+      });
 
-            const response = await apiFetch("/api/maintenance", {
-                method: "POST",
-                body: JSON.stringify(data)
-            });
-
-            if (!response.ok) {
-                await new HandleError().handleApiError(response, "MaintenanceService.postMaintenance");
-            }
-
-            console.log("Maintenance entry posted successfully");
-        } catch (error) {
-            console.error("Error posting maintenance entry:", error);
-            throw error;
-        }
+      if (!response.ok) {
+        await new HandleError().handleApiError(response, "MaintenanceService.postMaintenance");
+      }
+    } catch (error) {
+      if (error && typeof error === "object" && "code" in error) throw error;
+      throw new HandleError().createError(
+        "POST_ERROR",
+        "Failed to post maintenance entry",
+        error instanceof Error ? error.message : "Unknown error occurred"
+      );
     }
+  }
 }
 
-// Export a singleton instance
 export const maintenanceService = new MaintenanceService();
