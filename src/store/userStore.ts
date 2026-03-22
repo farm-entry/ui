@@ -1,42 +1,55 @@
-import { create } from "zustand";
-import { devtools } from "zustand/middleware";
-import DEFAULT_USER from "../mock/userOptions.json";
-import type { DomainType, MenuOption, UserType } from "./types/user";
+import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
+import { userApi } from '../services/userApi';
+import type { DomainType, MenuOption, UserType } from './types/user';
 
 interface UserState extends UserType {
+  isLoading: boolean;
+  error: string | null;
   getUser: () => UserType;
-  setUser: (user: UserType) => void;
+  setUser: (user: Partial<UserType>) => void;
   resetUser: () => void;
-  setUsername: (username: string) => void;
   setUserDomain: (domain: DomainType) => void;
   setMenuOptions: (menuOptions: MenuOption[]) => void;
+  updateProfile: (payload: { firstName?: string; lastName?: string; email?: string }) => Promise<void>;
+  changePassword: (newPassword: string) => Promise<void>;
 }
+
+const EMPTY_USER: UserType = {
+  email: '',
+  firstName: '',
+  lastName: '',
+  username: '',
+  role: 'user',
+  domain: null,
+  loginTime: '',
+  menuOptions: [],
+};
 
 export const useUserStore = create<UserState>()(
   devtools((set, get) => ({
-  username: DEFAULT_USER.userData.username,
-  domain: DEFAULT_USER.userData.domain as DomainType,
-  menuOptions: DEFAULT_USER.menuOptions,
-  name: DEFAULT_USER.userData.username,
-  loginTime: "now",
-  getUser: () => ({
-    username: get().username,
-    domain: get().domain,
-    menuOptions: get().menuOptions,
-    name: get().name,
-    loginTime: get().loginTime,
-  }),
-  resetUser: () => ({
-    username: "",
-    domain: "",
-    menuOptions: "",
-    name: "",
-    loginTime: "",
-  }),
-  setUser: (user: UserType) => set((state) => ({ ...state, ...user })),
-  setUsername: (username: string) => set((state) => ({ ...state, username })),
-  setUserDomain: (domain: DomainType) => set((state) => ({ ...state, domain })),
-  setMenuOptions: (menuOptions: MenuOption[]) =>
-    set((state) => ({ ...state, menuOptions })),
-}), { name: "UserStore" })
+    isLoading: false,
+    error: null,
+    getUser: () => ({
+      email: get().email,
+      username: get().username,
+      firstName: get().firstName,
+      lastName: get().lastName,
+      role: get().role,
+      domain: get().domain,
+      loginTime: get().loginTime,
+      menuOptions: get().menuOptions,
+    }),
+    setUser: (user) => set((state) => ({ ...state, ...user })),
+    resetUser: () => set(() => ({ ...EMPTY_USER })),
+    setUserDomain: (domain) => set((state) => ({ ...state, domain })),
+    setMenuOptions: (menuOptions) => set((state) => ({ ...state, menuOptions })),
+    updateProfile: async (payload) => {
+      const updated = await userApi.updateMe(payload);
+      set((state) => ({ ...state, ...updated }));
+    },
+    changePassword: async (newPassword) => {
+      await userApi.resetPassword(get().username, newPassword);
+    },
+  }), { name: 'UserStore' })
 );

@@ -1,163 +1,110 @@
-// Types for authentication
+import { UserType } from '../store/types/user';
+import { apiFetch } from './apiFetch';
+import { tokenStorage } from './tokenStorage';
+
 export interface LoginCredentials {
   username: string;
   password: string;
+  domain: string | null;
 }
 
-export interface LoginResponse {
-  message: string;
-  user: {
-    id: string;
-    username: string;
-    name: string;
-    loginTime: string;
-  };
+export interface TokenPair {
+  accessToken: string;
+  refreshToken: string;
 }
 
-export interface SessionResponse {
-  authenticated: boolean;
-  user?: {
-    id: string;
-    username: string;
-    name: string;
-    loginTime: string;
-  };
-  sessionID?: string;
-  message?: string;
-}
-
-export interface ApiErrorResponse {
-  error: string;
-  message: string;
-}
-
-class AuthApi {
-  /**
-   * Login user with username and password
-   * The API should set a httpOnly session cookie named 'sessionId' in the response
-   */
-  async login(credentials: LoginCredentials): Promise<LoginResponse> {
-    try {
-      const response = await fetch(`/api/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // This ensures cookies are sent and received
-        body: JSON.stringify(credentials),
-      });
-
-      if (!response.ok) {
-        const errorData: ApiErrorResponse = await response.json();
-        throw new Error(
-          errorData.message || `Login failed: ${response.status}`
-        );
-      }
-
-      const data: LoginResponse = await response.json();
-      return data;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Login failed: ${error.message}`);
-      }
-      throw new Error("Login failed: Unknown error occurred");
+class UserApi {
+  async login(credentials: LoginCredentials): Promise<TokenPair & UserType> {
+    const res = await apiFetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(credentials),
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Login failed');
     }
+    return res.json();
   }
 
-  /**
-   * Logout current user
-   */
-  async logout(): Promise<{ message: string }> {
-    try {
-      const response = await fetch(`/api/auth/logout`, {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        const errorData: ApiErrorResponse = await response.json();
-        throw new Error(errorData.error || `Logout failed: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Logout failed: ${error.message}`);
-      }
-      throw new Error("Logout failed: Unknown error occurred");
-    } finally {
-      window.location.assign("/login");
+  async logout(): Promise<void> {
+    const raw = tokenStorage.getRefresh();
+    if (raw) {
+      await apiFetch('/api/auth/logout', {
+        method: 'POST',
+        body: JSON.stringify({ refreshToken: raw }),
+      }).catch(() => { });
     }
+    tokenStorage.clear();
+    window.location.assign('/login');
   }
 
-  /**
-   * Check current session status
-   */
-  async checkSession(): Promise<SessionResponse> {
-    try {
-      const response = await fetch(`/api/auth/session`, {
-        method: "GET",
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error(`Session check failed: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error(`Session check failed: ${error.message}`);
-      }
-      throw new Error("Session check failed: Unknown error occurred");
-    }
+  async getMe(): Promise<any> {
+    const res = await apiFetch('/api/auth/me');
+    if (!res.ok) throw new Error('Failed to fetch user');
+    return res.json();
   }
 
-  /**
-   * Check if user is currently authenticated
-   */
-  async isAuthenticated(): Promise<boolean> {
-    if (process.env.FRONTLINE_SKIP_AUTH === "true") {
-      return true;
-    }
-    try {
-      const session = await this.checkSession();
-      return session.authenticated;
-    } catch (error) {
-      console.warn("Authentication check failed:", error);
-      return false;
-    }
+  async updateMe(payload: { firstName?: string; lastName?: string; email?: string }): Promise<UserType> {
+    const res = await apiFetch('/api/auth/me', {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('Failed to update profile');
+    return res.json();
   }
 
-  /**
-   * Get current user information from session
-   */
-  async getCurrentUser(): Promise<SessionResponse["user"] | null> {
-    if (process.env.FRONTLINE_SKIP_AUTH === "true") {
-      return {
-        id: "dev-user",
-        username: "developer",
-        name: "Dev User",
-        loginTime: new Date().toISOString(),
-      };
-    }
-    try {
-      const session = await this.checkSession();
-      return session.authenticated ? session.user || null : null;
-    } catch (error) {
-      console.warn("Failed to get current user:", error);
-      return null;
-    }
+  async switchDomain(targetDomain: string): Promise<{ accessToken: string }> {
+    const res = await apiFetch('/api/auth/switch-domain', {
+      method: 'POST',
+      body: JSON.stringify({ domain: targetDomain }),
+    });
+    if (!res.ok) throw new Error('Domain switch failed');
+    return res.json();
+  }
+
+  async fetchDomains(): Promise<string[]> {
+    const res = await apiFetch('/api/admin/domains');
+    if (!res.ok) throw new Error('Failed to fetch domains');
+    return res.json();
+  }
+
+  async fetchUsers(domain?: string): Promise<UserType[]> {
+    const res = await apiFetch(`/api/admin/users?domain=${domain}`);
+    if (!res.ok) throw new Error('Failed to fetch users');
+    return res.json();
+  }
+
+  async createUser(payload: { email: string; password: string; role: string; domain: string }): Promise<UserType> {
+    const res = await apiFetch('/api/admin/users', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('Failed to create user');
+    return res.json();
+  }
+
+  async updateUser(userId: string, payload: Partial<Pick<UserType, 'email' | 'firstName' | 'lastName' | 'domain' | 'role'>>): Promise<UserType> {
+    const res = await apiFetch(`/api/admin/users/${userId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('Failed to update user');
+    return res.json();
+  }
+
+  async deleteUser(userId: string): Promise<void> {
+    const res = await apiFetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Failed to delete user');
+  }
+
+  async resetPassword(userId: string, newPassword: string): Promise<void> {
+    const res = await apiFetch(`/api/admin/users/${userId}/reset-password`, {
+      method: 'POST',
+      body: JSON.stringify({ newPassword }),
+    });
+    if (!res.ok) throw new Error('Failed to reset password');
   }
 }
 
-// class UserInfoApi {
-//     async fetchUserInfo(): Promise<UserInfo> {
-//         await delay(200); // Simulate API delay
-//         return DEFAULT_USER as UserInfo;
-//     }
-// }
-
-// Export instances
-export const authApi = new AuthApi();
-// export const userOptionsApi = new UserInfoApi();
+export const userApi = new UserApi();

@@ -1,80 +1,141 @@
-import { useCallback, useEffect, useState } from 'react';
-import { authApi, LoginCredentials, LoginResponse } from '../services/userApi';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { tokenStorage } from '../services/tokenStorage';
+import { userApi, LoginCredentials } from '../services/userApi';
+import { useUserStore } from '../store/userStore';
 
-export interface UseLoginResult {
-    login: (credentials: LoginCredentials) => Promise<LoginResponse>;
-    logout: () => Promise<void>;
-    isLoading: boolean;
-    error: string | null;
-    isAuthenticated: boolean | null;
-    clearError: () => void;
+// Parse JWT expiry — returns ms until expiry, or null
+function msUntilExpiry(token: string): number | null {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (!payload.exp) return null;
+    return payload.exp * 1000 - Date.now();
+  } catch {
+    return null;
+  }
 }
 
-export function useAuth(): UseLoginResult {
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+const REFRESH_BUFFER_MS = 2 * 60 * 1000;  // refresh 2 min before expiry
+const IDLE_TIMEOUT_MS   = 15 * 60 * 1000; // match access token lifetime
 
-    const clearError = useCallback(() => {
-        setError(null);
-    }, []);
+export function useAuth() {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const { setUser, resetUser } = useUserStore();
+  const refreshTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastActivityRef  = useRef<number>(Date.now());
 
-    const login = useCallback(async (credentials: LoginCredentials): Promise<LoginResponse> => {
-        setIsLoading(true);
-        setError(null);
-        console.log('Attempting login with credentials:', credentials);
-        try {
-            const response = await authApi.login(credentials);
-            setIsAuthenticated(true);
-            return response;
-        } catch (err) {
-            setIsAuthenticated(false);
-            const errorMessage = err instanceof Error ? err.message : 'Login failed';
-            setError(errorMessage);
-            throw err;
-        } finally {
-            setIsLoading(false);
+  // Update last-activity timestamp on user interaction
+  useEffect(() => {
+    const onActivity = () => { lastActivityRef.current = Date.now(); };
+    const events = ['mousemove', 'keydown', 'pointerdown', 'scroll'];
+    events.forEach(e => window.addEventListener(e, onActivity, { passive: true }));
+    return () => events.forEach(e => window.removeEventListener(e, onActivity));
+  }, []);
+
+  const scheduleProactiveRefresh = useCallback(() => {
+    if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
+
+    const token = tokenStorage.getAccess();
+    if (!token) return;
+
+    const ms = msUntilExpiry(token);
+    if (ms === null) return;
+
+    const delay = Math.max(ms - REFRESH_BUFFER_MS, 0);
+
+    refreshTimerRef.current = setTimeout(async () => {
+      // Skip refresh if the user has been idle for the full token window
+      if (Date.now() - lastActivityRef.current >= IDLE_TIMEOUT_MS) return;
+
+      const refreshToken = tokenStorage.getRefresh();
+      if (!refreshToken) {
+        tokenStorage.clear();
+        setIsAuthenticated(false);
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/auth/refresh', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken }),
+        });
+        if (!res.ok) {
+          tokenStorage.clear();
+          setIsAuthenticated(false);
+          window.location.assign('/login');
+          return;
         }
-    }, []);
+        const { accessToken, refreshToken: newRefresh } = await res.json();
+        tokenStorage.set(accessToken, newRefresh);
+        scheduleProactiveRefresh();
+      } catch {
+        // Network error — don't force logout; reactive 401 handling covers it
+      }
+    }, delay);
+  }, []);
 
-    const logout = useCallback(async (): Promise<void> => {
-        setIsLoading(true);
-        setError(null);
+  useEffect(() => {
+    const token = tokenStorage.getAccess();
+    if (!token) {
+      setIsAuthenticated(false);
+      return;
+    }
+    userApi.getMe()
+      .then((user) => {
+        setUser({
+          ...user,
+          name: user.email,
+          loginTime: new Date().toISOString()
+        });
+        setIsAuthenticated(true);
+        scheduleProactiveRefresh();
+      })
+      .catch(() => {
+        tokenStorage.clear();
+        setIsAuthenticated(false);
+      });
 
-        try {
-            await authApi.logout();
-            setIsAuthenticated(false);
-        } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Logout failed';
-            setError(errorMessage);
-            throw err;
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
-    // Check authentication status on hook initialization
-    useEffect(() => {
-        const checkAuthStatus = async () => {
-            try {
-                // This will check if the sessionId cookie exists and is valid
-                const authenticated = await authApi.isAuthenticated();
-                setIsAuthenticated(authenticated);
-            } catch (err) {
-                console.error('Auth check failed:', err);
-                setIsAuthenticated(false);
-            }
-        };
-
-        checkAuthStatus();
-    }, []);
-
-    return {
-        login,
-        logout,
-        isLoading,
-        error,
-        isAuthenticated,
-        clearError,
+    return () => {
+      if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
     };
+  }, [scheduleProactiveRefresh]);
+
+  const login = useCallback(async (credentials: LoginCredentials) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await userApi.login(credentials);
+      tokenStorage.set(response.accessToken, response.refreshToken);
+      setUser({
+        ...response,
+        loginTime: new Date().toISOString(),
+        menuOptions: [],
+      });
+      setIsAuthenticated(true);
+      scheduleProactiveRefresh();
+      return response;
+    } catch (err) {
+      setIsAuthenticated(false);
+      const msg = err instanceof Error ? err.message : 'Login failed';
+      setError(msg);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const logout = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      await userApi.logout();
+      resetUser();
+      setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  return { login, logout, isLoading, error, isAuthenticated, clearError: () => setError(null) };
 }

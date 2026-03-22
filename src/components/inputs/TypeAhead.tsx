@@ -9,51 +9,72 @@ export interface TypeAheadOption {
   disabled?: boolean;
 }
 
-export interface TypeAheadProps<T = any> extends Omit<AutocompleteProps<TypeAheadOption, false, false, false>, "onChange" | "renderInput" | "options"> {
+export interface TypeAheadProps<T extends Record<string, unknown> = Record<string, unknown>>
+  extends Omit<
+    AutocompleteProps<TypeAheadOption, false, false, false>,
+    "onChange" | "renderInput" | "options"
+  > {
   label?: string;
   handleChange: (value: TypeAheadOption | null) => void;
   placeholder?: string;
   watch: UseFormWatch<any>;
-  fieldName: any;
-  options?: T extends { [key: string]: any } ? T[] : any[];
-  valueList: T extends { [key: string]: any } ? T[] : any[];
+  fieldName: string;
+  options?: T[];
+  valueList: T[];
   labelKey: keyof T;
   valueKey: keyof T;
   defaultValue?: TypeAheadOption | null;
-  labelFormatter?: (item: T) => string;
+  labelFormatter?: (item: any) => string;
 }
 
 // Memoize the selected group value
 const useTypeAheadValue = (props: TypeAheadProps): TypeAheadOption | null => {
   const { watch, fieldName, valueList, labelKey, valueKey, defaultValue, labelFormatter } = props;
-  return useMemo(() => {
-    const fieldValue = watch(fieldName);
+  const fieldValue = watch(fieldName);
 
+  return useMemo(() => {
     if (!fieldValue) {
       return defaultValue || null;
     }
 
-    const option = valueList.find((item) => item[valueKey] === fieldValue);
+    const option = valueList && valueList.find((item) => item[valueKey] === fieldValue);
     return option
       ? ({
           label: labelFormatter ? labelFormatter(option) : String(option[labelKey]),
-          value: option[valueKey],
+          value: option[valueKey]
         } as TypeAheadOption)
       : null;
-  }, [watch(fieldName), valueList, defaultValue]);
+  }, [fieldValue, valueList, defaultValue, labelKey, valueKey, labelFormatter]);
 };
 
 export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props, ref) => {
-  const { watch, fieldName, valueList, options, labelKey, valueKey, defaultValue, handleChange, placeholder, labelFormatter, ...other } = props;
+  const {
+    watch,
+    fieldName,
+    valueList,
+    options,
+    labelKey,
+    valueKey,
+    defaultValue,
+    handleChange,
+    placeholder,
+    labelFormatter,
+    ...other
+  } = props;
 
-  const customChange = (_: any, newValue: TypeAheadOption | string | null) => {
+  const customChange = (
+    _event: React.SyntheticEvent,
+    newValue: TypeAheadOption | string | null
+  ) => {
     if (typeof newValue === "string") {
       // Handle free solo text input
-      console.log("Free solo input:", newValue);
+      if (process.env.NODE_ENV === "development") {
+        console.log("Free solo input:", newValue);
+      }
       handleChange({ label: newValue, value: newValue });
     } else {
       // Handle option selection
-      handleChange(newValue);
+      handleChange(newValue || null);
     }
   };
 
@@ -66,11 +87,16 @@ export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props
         ref={ref}
         value={useValue}
         onChange={customChange}
-        options={valueList.map((event) => ({
+        options={(valueList || []).map((event, index) => ({
           label: labelFormatter ? labelFormatter(event) : String(event[labelKey]),
-          value: event[valueKey],
+          value: event[valueKey] as string | number
         }))}
-        renderInput={(params) => <TextField placeholder={placeholder} {...params} variant="outlined" label={props.label} />}
+        getOptionKey={(option) =>
+          `${option.value}-${(valueList || []).findIndex((item) => item[valueKey] === option.value)}`
+        }
+        renderInput={(params) => (
+          <TextField placeholder={placeholder} {...params} variant="outlined" label={props.label} />
+        )}
       />
     </FormControl>
   );

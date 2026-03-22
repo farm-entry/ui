@@ -1,6 +1,9 @@
-import React, { useRef, useEffect, useState } from "react";
+import { Box, Button, Stack, Typography } from "@mui/material";
 import QrScanner from "qr-scanner";
-import { Box, Paper, Typography, Button, Stack } from "@mui/material";
+import CustomPageContainer from "../components/framework/CustomPageContainer";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router";
+import { UrlParseFromQR } from "../utils/qrcode";
 
 export default function QRScanner() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -8,6 +11,7 @@ export default function QRScanner() {
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const qrScannerRef = useRef<QrScanner | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!videoRef.current) return;
@@ -15,11 +19,13 @@ export default function QRScanner() {
       videoRef.current,
       (scanResult) => {
         if (typeof scanResult === "string") {
-          setResult(scanResult);
+          const url = UrlParseFromQR(scanResult);
+          url ? navigate(url) : setError("QR Code read. No valid route found.");
         } else if (scanResult && typeof scanResult.data === "string") {
-          setResult(scanResult.data);
+          const url = UrlParseFromQR(scanResult.data);
+          url ? navigate(url) : setError("QR Code read. No valid route found.");
         } else {
-          setResult(null);
+          setError("QR Code read. Unable to parse QR Code.");
         }
         setScanning(false);
         qrScanner.stop();
@@ -55,11 +61,44 @@ export default function QRScanner() {
   };
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-      <Paper sx={{ p: 4, maxWidth: 400, width: "100%" }} elevation={3}>
+    <CustomPageContainer>
+      <Box display="flex" justifyContent="center" alignItems="center">
         <Stack spacing={3} alignItems="center">
-          <Typography variant="h5">QR Scanner</Typography>
-          <video ref={videoRef} style={{ width: "100%", borderRadius: 8 }} muted playsInline />
+          <Box
+            sx={{
+              maxWidth: 400,
+              width: "100%",
+              aspectRatio: "1 / 1",
+              overflow: "hidden",
+              borderRadius: 1,
+              border: "2px solid",
+              borderColor: "divider",
+              position: "relative"
+            }}
+          >
+            <video
+              ref={videoRef}
+              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              muted
+              playsInline
+            />
+            {!scanning && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  bgcolor: "rgba(0,0,0,0.5)"
+                }}
+              >
+                <Typography color="white" variant="subtitle1">
+                  Not scanning
+                </Typography>
+              </Box>
+            )}
+          </Box>
           <Stack direction="row" spacing={2}>
             <Button variant="contained" onClick={handleStart} disabled={scanning} color="primary">
               Start Scanning
@@ -84,7 +123,7 @@ export default function QRScanner() {
             </Typography>
           )}
         </Stack>
-      </Paper>
-    </Box>
+      </Box>
+    </CustomPageContainer>
   );
 }

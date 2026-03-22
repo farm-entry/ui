@@ -1,4 +1,3 @@
-import { Celebration } from "@mui/icons-material";
 import {
   Button,
   Divider,
@@ -10,9 +9,8 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import CustomConfirmation from "../../../components/framework/CustomConfirmation";
-import CustomHeader from "../../../components/framework/CustomHeader";
-import CustomNotice from "../../../components/framework/CustomNotice";
 import LoadingSpinner from "../../../components/framework/LoadingSpinner";
 import { DatePicker, TextArea, TextField, TypeAhead } from "../../../components/inputs";
 import DenseTable from "../../../components/table/DenseTable";
@@ -21,11 +19,14 @@ import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { PostingGroup } from "../../../services/postingGroupsApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
-import { FormData, useLivestockActivityStore } from "../../../store/livestockActivityStore";
+import { useGlobalAlertStore } from "../../../store/globalAlertStore";
+import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { FormData } from "../../../store/types/forms";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { QTYADJ_STORAGE_KEY } from "./constants-livestock.json";
-import { useNavigate } from "react-router";
+
+const FORM_STORAGE_HOURS = 48;
 
 interface QuantityAdjFormData extends FormData {
   group: string | number | null;
@@ -64,13 +65,14 @@ export default function QuantityAdjPage() {
     postingGroupDetails
   } = usePostingGroupsStore();
   const {
-    getEventTypes,
+    getEvents,
     eventTypes,
     healthStatuses,
-    getHealthStatuses,
-    isLoading: livestockActivityLoading
+    isLoading: livestockActivityLoading,
+    currentTemplate
   } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
+  const { setAlert } = useGlobalAlertStore();
   const [deads, setDeads] = useState<{ group: number }>({ group: 0 });
   const [inventory, setInventory] = useState<{ group: number }>({ group: 0 });
   const [initLoading, setInitLoading] = useState(false);
@@ -91,33 +93,47 @@ export default function QuantityAdjPage() {
   });
 
   useEffect(() => {
+    let isMounted = true;
     setInitLoading(true);
     const promises = [];
-    if (!(eventTypes.length > 0 && eventTypes[0].journal_template_name === "QTYADJ"))
-      promises.push(getEventTypes("QTYADJ"));
+    if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "QTYADJ"))
+      promises.push(getEvents("QTYADJ", postingGroupDetails.number));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
-    if (!(healthStatuses.length > 0)) promises.push(getHealthStatuses());
 
-    Promise.all(promises).then(() => setInitLoading(false));
+    Promise.all(promises).then(() => {
+      if (isMounted) {
+        setInitLoading(false);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
+  const groupValue = watch("group");
   useEffect(() => {
-    const group = watch("group");
-    group &&
-      getPostingGroupDetails(group).then((details) => {
-        console.log({ details });
+    if (groupValue) {
+      getPostingGroupDetails(groupValue).then((details) => {
+        if (process.env.NODE_ENV === "development") {
+          console.log({ details });
+        }
         setInventory({ group: details?.inventory ?? 0 });
         setDeads({ group: details?.deadQuantity ?? 0 });
       });
-  }, [watch("group")]);
+    }
+  }, [groupValue, getPostingGroupDetails]);
 
+  const quantityValue = watch("quantity");
   useEffect(() => {
-    if ((watch("quantity") ?? 0) < 0) setMultiplier(-1); //defaults to positive, so only set negative
+    if ((quantityValue ?? 0) < 0) setMultiplier(-1); //defaults to positive, so only set negative
     setValue("quantity", Math.abs(getValues("quantity") ?? 0) || null);
-  }, [watch("quantity")]);
+  }, [quantityValue, setValue, getValues]);
 
   const onSubmit = async (data: QuantityAdjFormData) => {
-    console.log("All required fields validated successfully!");
+    if (process.env.NODE_ENV === "development") {
+      console.log("All required fields validated successfully!");
+    }
     setInitLoading(true);
     const formData = { ...getValues(), quantity: multiplier * (getValues("quantity") ?? 0) };
     const state = {
@@ -127,17 +143,16 @@ export default function QuantityAdjPage() {
     livestockActivityApi
       .postLivestockEvent(data)
       .then(() => {
-        console.log("Form submitted:", data);
+        if (process.env.NODE_ENV === "development") {
+          console.log("Form submitted:", data);
+        }
         navigate("/post-success", { state });
       })
-      .catch((e: any) => {
+      .catch((error: Error) => {
         console.error("Unable to post form.");
-        const error = {
-          code: e.code || data.form + "_SUBMISSION_ERROR",
-          message: e.message || "Unable to submit form. Please try again.",
-          details: e.details || JSON.stringify(e, null, 2)
-        };
-        navigate("/post-error", { state: { ...state, error } });
+        const errorMessage = error.message || "Unable to submit form. Please try again.";
+        const errorTitle = (error as any).code || data.form + "_SUBMISSION_ERROR";
+        setAlert("error", errorMessage, errorTitle);
       })
       .finally(() => {
         setInitLoading(false);
@@ -146,7 +161,7 @@ export default function QuantityAdjPage() {
 
   const onSave = () => {
     const formData = { ...getValues(), quantity: multiplier * (getValues("quantity") ?? 0) };
-    saveForm(QTYADJ_STORAGE_KEY, formData, 48);
+    saveForm(QTYADJ_STORAGE_KEY, formData, FORM_STORAGE_HOURS);
   };
 
   const handleReset = () => {
@@ -163,181 +178,175 @@ export default function QuantityAdjPage() {
   const formatLabel = (group: PostingGroup) => `${group.number} ${group.description}`;
 
   return (
-    <>
-      <CustomNotice<QuantityAdjFormData>
-        formType={QTYADJ_STORAGE_KEY}
-        onLoad={(data) => reset({ ...getValues(), ...data })}
-      />
-      <CustomFormsLayout>
-        <CustomHeader
-          icon={Celebration}
-          title="Quantity Adjustment"
-          button={{ label: "reset", onClick: handleReset }}
-        />
-        {initLoading && <LoadingSpinner />}
-        {!initLoading && (
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={2}>
-              <Stack>
-                <TypeAhead
-                  {...register("group", { required: "Group is required" })}
-                  handleChange={(v) => setValue("group", v?.value ? String(v.value) : null)}
-                  watch={watch}
-                  fieldName={"group"}
-                  labelKey={"description"}
-                  valueKey={"number"}
-                  labelFormatter={formatLabel}
-                  valueList={postingGroups}
-                  loading={postingGroupsLoading}
-                  placeholder="Group"
-                />
-                {errors.group && <FormHelperText error>{errors.group.message}</FormHelperText>}
-              </Stack>
-
-              {watch("group") && (
-                <DenseTable
-                  loading={postingGroupsLoading}
-                  rows={[
-                    {
-                      name: "group",
-                      postingGroup: watch("group"),
-                      inventory: inventory.group,
-                      deads: deads.group
-                    }
-                  ]}
-                  columns={columns}
-                />
-              )}
-
-              <Stack>
-                <TypeAhead
-                  {...register("healthStatus", {
-                    required: "Health Status is required"
-                  })}
-                  handleChange={(v) => setValue("healthStatus", v?.value ? String(v.value) : null)}
-                  loading={postingGroupsLoading}
-                  watch={watch}
-                  valueList={healthStatuses}
-                  fieldName={"healthStatus"}
-                  labelKey={"description"}
-                  valueKey={"code"}
-                  defaultValue={
-                    postingGroupDetails?.healthStatus?.Code
-                      ? {
-                          label: postingGroupDetails.healthStatus.Description,
-                          value: postingGroupDetails.healthStatus.Code
-                        }
-                      : null
-                  }
-                  placeholder={
-                    (postingGroupDetails && postingGroupDetails.healthStatus?.Description) ||
-                    healthStatuses.length
-                      ? "Health Status"
-                      : "Select a valid group"
-                  }
-                />
-                {errors.healthStatus && (
-                  <FormHelperText error>{errors.healthStatus.message}</FormHelperText>
-                )}
-              </Stack>
-
-              <Divider />
-              <Typography>Event Details</Typography>
-              <Stack>
-                <TypeAhead
-                  {...register("event", { required: "Event is required" })}
-                  handleChange={(v) => setValue("event", v?.value ?? null)}
-                  watch={watch}
-                  fieldName={"event"}
-                  labelKey={"Description"}
-                  valueKey={"Code"}
-                  valueList={eventTypes}
-                  loading={livestockActivityLoading}
-                  placeholder="Event Name"
-                />
-                {errors.event && <FormHelperText error>{errors.event.message}</FormHelperText>}
-              </Stack>
-
-              <Stack>
-                <DatePicker
-                  {...register("postingDate", {
-                    required: "Posting Date is required"
-                  })}
-                  value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
-                  onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
-                  label="Posting Date"
-                  error={!!errors.postingDate}
-                  helperText={errors.postingDate?.message}
-                />
-              </Stack>
-              <Stack>
-                <ToggleButtonGroup
-                  fullWidth
-                  value={multiplier}
-                  exclusive
-                  onChange={(_, newValue) => setMultiplier(newValue)}
-                  aria-label="quantity addition or removal"
-                >
-                  <ToggleButton value={1} aria-label="positive">
-                    + Add
-                  </ToggleButton>
-                  <ToggleButton value={-1} aria-label="negative">
-                    - Remove
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </Stack>
-              <Stack>
-                <TextField
-                  placeholder="Total Quantity"
-                  type="number"
-                  {...register("quantity", {
-                    required: "Total quantity is required",
-                    min: {
-                      value: 1,
-                      message: "Quantity must be greater than 0"
-                    }
-                  })}
-                  onChange={(v) => setValue("quantity", Math.abs(Number(v.target.value)))}
-                  error={!!errors.quantity}
-                  helperText={errors.quantity?.message}
-                />
-              </Stack>
-
-              <Stack>
-                <TextField
-                  {...register("totalWeight", {
-                    required: "Total weight is required"
-                  })}
-                  placeholder="Total Weight"
-                  type="number"
-                  error={!!errors.totalWeight}
-                  helperText={errors.totalWeight?.message}
-                />
-              </Stack>
-              <Divider />
-              <TextArea
-                {...register("comments", {
-                  maxLength: { value: 50, message: "Comments cannot exceed 50 characters" }
-                })}
-                placeholder="Comments"
-                type="text"
-                error={!!errors.comments}
-                helperText={errors.comments?.message}
+    <CustomFormsLayout<QuantityAdjFormData>
+      notice={{
+        formType: QTYADJ_STORAGE_KEY,
+        onLoad: (data) => reset({ ...getValues(), ...data })
+      }}
+      headerOptions={{ button: { label: "reset", onClick: handleReset } }}
+    >
+      {initLoading && <LoadingSpinner />}
+      {!initLoading && (
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Stack spacing={2}>
+            <Stack>
+              <TypeAhead
+                {...register("group", { required: "Group is required" })}
+                handleChange={(v) => setValue("group", v?.value ? String(v.value) : null)}
+                watch={watch}
+                fieldName={"group"}
+                labelKey={"description"}
+                valueKey={"number"}
+                labelFormatter={formatLabel}
+                valueList={postingGroups}
+                loading={postingGroupsLoading}
+                placeholder="Group"
               />
-              <Stack direction="row" spacing={2} justifyContent="flex-end">
-                <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
-                  Save
-                </Button>
-                <Button variant="contained" color="primary" fullWidth type="submit">
-                  Submit
-                </Button>
-              </Stack>
+              {errors.group && <FormHelperText error>{errors.group.message}</FormHelperText>}
             </Stack>
-          </form>
-        )}
 
-        <CustomConfirmation />
-      </CustomFormsLayout>
-    </>
+            {watch("group") && (
+              <DenseTable
+                loading={postingGroupsLoading}
+                rows={[
+                  {
+                    name: "group",
+                    postingGroup: watch("group"),
+                    inventory: inventory.group,
+                    deads: deads.group
+                  }
+                ]}
+                columns={columns}
+              />
+            )}
+
+            <Stack>
+              <TypeAhead
+                {...register("healthStatus", {
+                  required: "Health Status is required"
+                })}
+                handleChange={(v) => setValue("healthStatus", v?.value ? String(v.value) : null)}
+                loading={postingGroupsLoading}
+                watch={watch}
+                valueList={healthStatuses}
+                fieldName={"healthStatus"}
+                labelKey={"description"}
+                valueKey={"code"}
+                defaultValue={
+                  postingGroupDetails?.healthStatus?.Code
+                    ? {
+                        label: postingGroupDetails.healthStatus.Description,
+                        value: postingGroupDetails.healthStatus.Code
+                      }
+                    : null
+                }
+                placeholder={
+                  postingGroupDetails?.healthStatus?.Description || healthStatuses.length > 0
+                    ? "Health Status"
+                    : "Select a valid group"
+                }
+              />
+              {errors.healthStatus && (
+                <FormHelperText error>{errors.healthStatus.message}</FormHelperText>
+              )}
+            </Stack>
+
+            <Divider />
+            <Typography>Event Details</Typography>
+            <Stack>
+              <TypeAhead
+                {...register("event", { required: "Event is required" })}
+                handleChange={(v) => setValue("event", v?.value ?? null)}
+                watch={watch}
+                fieldName={"event"}
+                labelKey={"description"}
+                valueKey={"code"}
+                valueList={eventTypes}
+                loading={livestockActivityLoading}
+                placeholder="Event Name"
+              />
+              {errors.event && <FormHelperText error>{errors.event.message}</FormHelperText>}
+            </Stack>
+
+            <Stack>
+              <DatePicker
+                {...register("postingDate", {
+                  required: "Posting Date is required"
+                })}
+                value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
+                onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
+                label="Posting Date"
+                error={!!errors.postingDate}
+                helperText={errors.postingDate?.message}
+              />
+            </Stack>
+            <Stack>
+              <ToggleButtonGroup
+                fullWidth
+                value={multiplier}
+                exclusive
+                onChange={(_, newValue) => setMultiplier(newValue)}
+                aria-label="quantity addition or removal"
+              >
+                <ToggleButton value={1} aria-label="positive" color="primary">
+                  + Add
+                </ToggleButton>
+                <ToggleButton value={-1} aria-label="negative" color="error">
+                  - Remove
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Stack>
+            <Stack>
+              <TextField
+                placeholder="Total Quantity"
+                type="number"
+                {...register("quantity", {
+                  required: "Total quantity is required",
+                  min: {
+                    value: 1,
+                    message: "Quantity must be greater than 0"
+                  }
+                })}
+                onChange={(v) => setValue("quantity", Math.abs(Number(v.target.value)))}
+                error={!!errors.quantity}
+                helperText={errors.quantity?.message}
+              />
+            </Stack>
+
+            <Stack>
+              <TextField
+                {...register("totalWeight", {
+                  required: "Total weight is required"
+                })}
+                placeholder="Total Weight"
+                type="number"
+                error={!!errors.totalWeight}
+                helperText={errors.totalWeight?.message}
+              />
+            </Stack>
+            <Divider />
+            <TextArea
+              {...register("comments", {
+                maxLength: { value: 50, message: "Comments cannot exceed 50 characters" }
+              })}
+              placeholder="Comments"
+              type="text"
+              error={!!errors.comments}
+              helperText={errors.comments?.message}
+            />
+            <Stack direction="row" spacing={2} justifyContent="flex-end">
+              <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
+                Save
+              </Button>
+              <Button variant="contained" color="primary" fullWidth type="submit">
+                Submit
+              </Button>
+            </Stack>
+          </Stack>
+        </form>
+      )}
+
+      <CustomConfirmation />
+    </CustomFormsLayout>
   );
 }

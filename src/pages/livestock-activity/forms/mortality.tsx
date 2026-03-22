@@ -1,23 +1,24 @@
-import { Dangerous } from "@mui/icons-material";
 import { Button, Divider, FormHelperText, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import CustomConfirmation from "../../../components/framework/CustomConfirmation";
-import CustomHeader from "../../../components/framework/CustomHeader";
-import CustomNotice from "../../../components/framework/CustomNotice";
 import LoadingSpinner from "../../../components/framework/LoadingSpinner";
 import { DatePicker, EventNumberInput, TextArea, TypeAhead } from "../../../components/inputs";
 import CustomFormsLayout from "../../../layouts/forms";
 import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
-import { FormData, useLivestockActivityStore } from "../../../store/livestockActivityStore";
+import { useGlobalAlertStore } from "../../../store/globalAlertStore";
+import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { FormData } from "../../../store/types/forms";
 import type { EventType } from "../../../store/types/livestockActivity";
 import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { MORTALITY_STORAGE_KEY } from "./constants-livestock.json";
+
+const FORM_STORAGE_HOURS = 48;
 
 interface MortalityFormData extends FormData {
   job: string | number | null;
@@ -42,19 +43,21 @@ export default function MortalityPage() {
     getPostingGroups,
     postingGroups,
     getPostingGroupDetails,
+    clearPostingGroupDetails,
     postingGroupDetails,
     isLoading: postingGroupsLoading
   } = usePostingGroupsStore();
   const {
-    getEventTypes,
-    eventTypes,
+    getEvents,
     healthStatuses,
-    getHealthStatuses,
+    setHealthStatuses,
     isLoading: livestockActivityLoading
   } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
+  const { setAlert, clearAlert } = useGlobalAlertStore();
   const { saveForm } = useFormStorageStore();
   const [initLoading, setInitLoading] = useState(true);
+  const [eventsLoading, setEventsLoading] = useState(false);
   const [eventReasons, setEventReasons] = useState<Reason[]>([]);
 
   const {
@@ -70,45 +73,70 @@ export default function MortalityPage() {
     mode: "onSubmit"
   });
 
-  useEffect(() => {
-    const job = watch("job");
-    job && getPostingGroupDetails(job);
-  }, [watch("job")]);
+  const jobValue = watch("job");
 
+  // Fetch posting groups on mount
   useEffect(() => {
+    let isMounted = true;
     setInitLoading(true);
-    const promises = [];
-    if (!(eventTypes.length > 0 && eventTypes[0].journal_template_name == "MORTALITY"))
-      promises.push(getEventTypes("MORTALITY").then((x) => setEventReasons(filterEventReasons(x))));
-    else {
-      setEventReasons(filterEventReasons(eventTypes));
-    }
-    if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
-    if (!(healthStatuses.length > 0)) promises.push(getHealthStatuses());
 
-    Promise.all(promises).then(() => {
+    if (!(postingGroups.length > 0)) {
+      getPostingGroups().then(() => {
+        if (isMounted) {
+          setInitLoading(false);
+        }
+      });
+    } else {
       setInitLoading(false);
-    });
+    }
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
+  // Fetch events when job is selected
+  useEffect(() => {
+    if (!jobValue) {
+      setEventReasons([]);
+      return;
+    }
+
+    // Fetch posting group details
+    getPostingGroupDetails(jobValue);
+
+    // Fetch events for the selected job
+    setEventsLoading(true);
+    getEvents("MORTALITY", `${jobValue}`)
+      .then((x) => {
+        setEventReasons(filterEventReasons(x?.events));
+        setEventsLoading(false);
+      })
+      .catch(() => {
+        setAlert("error", "Unable to get events for this job");
+        setEventsLoading(false);
+      });
+  }, [jobValue]);
+
   const filterEventReasons = (ev: EventType[] = []) =>
-    ev?.find((et) => et.code === "MORTALITY")?.reasons || [];
+    ev?.find((et) => et.code === "MORTALITY")?.reasons || ev[0]?.reasons || [];
 
   const onSubmit = async (data: MortalityFormData) => {
-    console.log("All required fields validated successfully!");
+    if (process.env.NODE_ENV === "development") {
+      console.log("All required fields validated successfully!");
+    }
     setInitLoading(true);
     const state = { formData: data, section: "livestock-activity" };
     livestockActivityApi
       .postLivestockEvent(data)
-      .then(() => { navigate("/post-success", { state }) })
-      .catch((e: any) => {
+      .then(() => {
+        navigate("/post-success", { state });
+      })
+      .catch((error: Error) => {
         console.error("Unable to post form.");
-        const error = {
-          code: e.code || data.form + "_SUBMISSION_ERROR",
-          message: e.message || "Unable to submit form. Please try again.",
-          details: e.details || JSON.stringify(e, null, 2)
-        };
-        navigate("/post-error", { state: { ...state, error } });
+        const errorMessage = error.message || "Unable to submit form. Please try again.";
+        const errorTitle = (error as any).code || data.form + "_SUBMISSION_ERROR";
+        setAlert("error", errorMessage, errorTitle);
       })
       .finally(() => {
         setInitLoading(false);
@@ -117,32 +145,33 @@ export default function MortalityPage() {
 
   const onSave = () => {
     const formData = getValues();
-    saveForm(MORTALITY_STORAGE_KEY, formData, 48);
+    saveForm(MORTALITY_STORAGE_KEY, formData, FORM_STORAGE_HOURS);
   };
+
+  useEffect(() => {
+    clearAlert();
+  }, [jobValue]);
 
   const handleReset = () => {
     showConfirmation(
       "Are you sure?",
       "This will reset all form fields to their default values.",
-      () => reset(defaultValues)
+      () => {
+        setHealthStatuses([]);
+        clearPostingGroupDetails();
+        reset(defaultValues);
+      }
     );
   };
 
   return (
-    <>
+    <CustomFormsLayout<MortalityFormData>
+      notice={{ formType: MORTALITY_STORAGE_KEY, onLoad: (data) => reset(data) }}
+      headerOptions={{ button: { label: "reset", onClick: handleReset } }}
+    >
       {initLoading && <LoadingSpinner />}
       {!initLoading && (
         <>
-          <CustomNotice<MortalityFormData>
-            formType={MORTALITY_STORAGE_KEY}
-            onLoad={(data) => reset(data)}
-          />
-          <CustomFormsLayout>
-            <CustomHeader
-              icon={Dangerous}
-              title="Mortality"
-              button={{ label: "reset", onClick: handleReset }}
-            />
 
             <form onSubmit={handleSubmit(onSubmit)}>
               <Stack spacing={2}>
@@ -161,98 +190,113 @@ export default function MortalityPage() {
                   {errors.job && <FormHelperText error>{errors.job.message}</FormHelperText>}
                 </Stack>
 
-                <Stack>
-                  <TypeAhead
-                    {...register("healthStatus", {
-                      required: "Health Status is required"
-                    })}
-                    handleChange={(v) =>
-                      setValue("healthStatus", v?.value ? String(v.value) : null)
-                    }
-                    loading={postingGroupsLoading}
-                    watch={watch}
-                    valueList={healthStatuses}
-                    fieldName={"healthStatus"}
-                    labelKey={"description"}
-                    valueKey={"code"}
-                    defaultValue={
-                      postingGroupDetails?.healthStatus?.Code
-                        ? {
-                            label: postingGroupDetails.healthStatus.Description,
-                            value: postingGroupDetails.healthStatus.Code
-                          }
-                        : null
-                    }
-                    placeholder={
-                      (postingGroupDetails && postingGroupDetails.healthStatus?.Description) ||
-                      healthStatuses.length
-                        ? "Health Status"
-                        : "Select a valid job"
-                    }
-                  />
-                  {errors.healthStatus && (
-                    <FormHelperText error>{errors.healthStatus.message}</FormHelperText>
-                  )}
-                </Stack>
+                {eventsLoading && (
+                  <Stack alignItems="center" py={2}>
+                    <LoadingSpinner />
+                  </Stack>
+                )}
 
-                <Divider />
-                <Typography>Event Details</Typography>
-                <Stack>
-                  <DatePicker
-                    {...register("postingDate", {
-                      required: "Activity Date is required"
-                    })}
-                    value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
-                    onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
-                    label="Activity Date"
-                    error={!!errors.postingDate}
-                    helperText={errors.postingDate?.message}
-                  />
-                </Stack>
+                {!eventsLoading && (
+                  <>
+                    <Stack>
+                      <TypeAhead
+                        {...register("healthStatus", {
+                          required: "Health Status is required"
+                        })}
+                        handleChange={(v) =>
+                          setValue("healthStatus", v?.value ? String(v.value) : null)
+                        }
+                        disabled={!jobValue || eventsLoading}
+                        loading={eventsLoading}
+                        watch={watch}
+                        valueList={healthStatuses}
+                        fieldName={"healthStatus"}
+                        labelKey={"description"}
+                        valueKey={"code"}
+                        defaultValue={
+                          postingGroupDetails?.healthStatus?.Code
+                            ? {
+                                label: postingGroupDetails.healthStatus.Description,
+                                value: postingGroupDetails.healthStatus.Code
+                              }
+                            : null
+                        }
+                        placeholder={
+                          postingGroupDetails?.healthStatus?.Description ||
+                          healthStatuses.length > 0
+                            ? "Health Status"
+                            : "Select a valid job"
+                        }
+                      />
+                      {errors.healthStatus && (
+                        <FormHelperText error>{errors.healthStatus.message}</FormHelperText>
+                      )}
+                    </Stack>
 
-                <Stack spacing={2}>
-                  {eventReasons.map((reason, index) => (
-                    <EventNumberInput
-                      key={reason.code}
-                      codeRegistration={{
-                        ...register(`quantities.${index}.code`),
-                        value: reason.code
-                      }}
-                      quantityRegistration={register(`quantities.${index}.quantity`, {
-                        valueAsNumber: true
+                    <Divider />
+                    <Typography>Event Details</Typography>
+
+                    <Stack>
+                      <DatePicker
+                        {...register("postingDate", {
+                          required: "Activity Date is required"
+                        })}
+                        value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
+                        onChange={(v) =>
+                          setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))
+                        }
+                        label="Activity Date"
+                        error={!!errors.postingDate}
+                        helperText={errors.postingDate?.message}
+                      />
+                    </Stack>
+
+                    <Stack spacing={2}>
+                      {eventReasons.map((reason, index) => (
+                        <EventNumberInput
+                          key={reason.code}
+                          codeRegistration={{
+                            ...register(`quantities.${index}.code`),
+                            value: reason.code
+                          }}
+                          quantityRegistration={register(`quantities.${index}.quantity`, {
+                            valueAsNumber: true
+                          })}
+                          value={watch("quantities")?.[index]?.quantity || ""}
+                          label={reason?.description}
+                          placeholder="Quantity"
+                          type="number"
+                        />
+                      ))}
+                    </Stack>
+                    <Divider />
+
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <Typography variant="subtitle2" sx={{ fontWeight: 300 }}>
+                        Total Quantity
+                      </Typography>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                        {watch("quantities")?.reduce((sum, q) => sum + (q?.quantity || 0), 0) ?? 0}
+                      </Typography>
+                    </Stack>
+
+                    <Divider />
+
+                    <TextArea
+                      value={watch("comments")}
+                      {...register("comments", {
+                        maxLength: {
+                          value: 50,
+                          message: "Comments cannot exceed 50 characters"
+                        }
                       })}
-                      value={watch("quantities")?.[index]?.quantity || ""}
-                      label={reason?.description}
-                      placeholder="Quantity"
-                      type="number"
+                      placeholder="Comments"
+                      type="text"
+                      error={!!errors.comments}
+                      helperText={errors.comments?.message}
                     />
-                  ))}
-                </Stack>
-                <Divider />
-
-                <Stack direction="row" spacing={2} alignItems="center">
-                  <Typography variant="subtitle2" sx={{ fontWeight: 300 }}>
-                    Total Quantity
-                  </Typography>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                    {watch("quantities")?.reduce((sum, q) => sum + (q?.quantity || 0), 0) ?? 0}
-                  </Typography>
-                </Stack>
-
-                <Divider />
-
-                <TextArea
-                  {...register("comments", {
-                    maxLength: {
-                      value: 50,
-                      message: "Comments cannot exceed 50 characters"
-                    }
-                  })}
-                  placeholder="Comments"
-                  type="text"
-                  error={!!errors.comments}
-                  helperText={errors.comments?.message}
-                />
+                  </>
+                )}
                 <Stack direction="row" spacing={2} justifyContent="flex-end">
                   <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
                     Save
@@ -265,9 +309,8 @@ export default function MortalityPage() {
             </form>
 
             <CustomConfirmation />
-          </CustomFormsLayout>
         </>
       )}
-    </>
+    </CustomFormsLayout>
   );
 }

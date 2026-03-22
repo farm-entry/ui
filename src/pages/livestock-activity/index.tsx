@@ -1,69 +1,64 @@
-import { Grade, ReportProblem, ShoppingCart, SouthEast, SwapVert, Tune } from "@mui/icons-material";
+import { PercentOutlined, ShoppingBasket, SwapVert } from "@mui/icons-material";
+import HealthAndSafetyOutlinedIcon from "@mui/icons-material/HealthAndSafetyOutlined";
+import LibraryAddOutlinedIcon from "@mui/icons-material/LibraryAddOutlined";
 import { Stack } from "@mui/material";
-import { PageContainer } from "@toolpad/core";
-import { useNavigate } from "react-router";
+import BabyBottleIcon from "../../assets/BabyBottleIcon";
+import CustomPageContainer from "../../components/framework/CustomPageContainer";
 import PageNavigationButton from "../../components/inputs/PageNavigationButton";
 
 export default function LivestockActivityPage() {
-  const navigate = useNavigate();
   return (
-    <PageContainer>
+    <CustomPageContainer>
       <Stack spacing={2}>
         <PageNavigationButton
           option={{
             label: "Move",
             href: "move",
             icon: <SwapVert color="primary" />,
-            description: "Transfer livestock between locations or pens",
+            description: "Transfer livestock between locations or pens"
           }}
-          navigate={navigate}
         />
         <PageNavigationButton
           option={{
             label: "Wean Pigs",
             href: "wean",
-            icon: <SouthEast color="primary" />,
-            description: "Process weaning of piglets from sows",
+            icon: <BabyBottleIcon color="primary" />,
+            description: "Process weaning of piglets from sows"
           }}
-          navigate={navigate}
         />
         <PageNavigationButton
           option={{
             label: "Grade Off",
             href: "gradeoff",
-            icon: <Grade color="primary" />,
-            description: "Note livestock by qualities",
+            icon: <PercentOutlined color="primary" />,
+            description: "Note livestock by qualities"
           }}
-          navigate={navigate}
         />
         <PageNavigationButton
           option={{
             label: "Mortality",
             href: "mortality",
-            icon: <ReportProblem color="primary" />,
-            description: "Record livestock mortality and health issues",
+            icon: <HealthAndSafetyOutlinedIcon color="primary" />,
+            description: "Record livestock mortality and health issues"
           }}
-          navigate={navigate}
         />
         <PageNavigationButton
           option={{
             label: "Purchase Livestock",
             href: "purchase",
-            icon: <ShoppingCart color="primary" />,
-            description: "Add new livestock purchases to inventory",
+            icon: <ShoppingBasket color="primary" />,
+            description: "Add new livestock purchases to inventory"
           }}
-          navigate={navigate}
         />
         <PageNavigationButton
           option={{
             label: "Quantity Adjustment",
             href: "quantityadj",
-            icon: <Tune color="primary" />,
-            description: "Adjust livestock counts and inventory numbers",
+            icon: <LibraryAddOutlinedIcon color="primary" />,
+            description: "Adjust livestock counts and inventory numbers"
           }}
-          navigate={navigate}
         />
       </Stack>
-    </PageContainer>
+    </CustomPageContainer>
   );
 }

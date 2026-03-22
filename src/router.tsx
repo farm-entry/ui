@@ -1,14 +1,12 @@
 import { ReactRouterAppProvider } from "@toolpad/core/react-router";
 import { createBrowserRouter, Outlet } from "react-router";
+import type { RouteObject } from "react-router";
 import frontlineLogo from "./assets/frontlinesprout.svg";
 import RouteGuard from "./components/RouteGuard";
 import useDynamicNavigation from "./hooks/useDynamicNavigation";
-import { AuthProvider } from "./layouts/authContext";
 import CustomDashboardLayout from "./layouts/dashboard";
-import LEFTNAV_NAVIGATION from "./LeftNavConfig";
 import DashboardPage from "./pages";
-import EmployeesCrudPage from "./pages/employees";
-import FormsInput from "./pages/formsinput";
+import AdminPage from "./pages/admin";
 import FuelPage from "./pages/fuel";
 import InventoryConsumptionPage from "./pages/inventory-consumption";
 import JobHeaderUpdatesPage from "./pages/job-header-updates";
@@ -19,15 +17,16 @@ import MovePage from "./pages/livestock-activity/forms/move";
 import PurchasePage from "./pages/livestock-activity/forms/purchase";
 import QuantityAdjustmentPage from "./pages/livestock-activity/forms/quantityadj";
 import WeanPage from "./pages/livestock-activity/forms/wean";
-import LivestockActivityLayout from "./pages/livestock-activity/layout";
 import MaintenancePage from "./pages/maintenance";
+import HealthPage from "./pages/health";
 import NotFoundPage from "./pages/not-found";
-import PostErrorPage from "./pages/post-error";
 import PostSuccessPage from "./pages/post-success";
 import QRScanner from "./pages/qrscanner";
 import ScorecardsPage from "./pages/scorecards";
 import SignIn from "./pages/signin";
+import Settings from "./pages/useroptions/settings";
 import { customTheme } from "./theme";
+import { MAIN_ROUTES, RouteConfig } from "./routes";
 
 const Logo = () => <img src={frontlineLogo} alt="Frontline Farms Logo" />;
 
@@ -36,14 +35,43 @@ const BRANDING = {
   title: "Frontline Farms"
 };
 
+// Map segment → page component. Add an entry here when adding a new route to MAIN_ROUTES.
+const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
+  "livestock-activity": LivestockActivityPage,
+  "move": MovePage,
+  "wean": WeanPage,
+  "gradeoff": GradeOffPage,
+  "mortality": MortalityPage,
+  "purchase": PurchasePage,
+  "quantityadj": QuantityAdjustmentPage,
+  "scorecards": ScorecardsPage,
+  "fuel": FuelPage,
+  "maintenance": MaintenancePage,
+  "inventory-consumption": InventoryConsumptionPage,
+  "job-header-updates": JobHeaderUpdatesPage,
+  "qrcode": QRScanner
+};
+
+function buildRouteObjects(routes: RouteConfig[]): RouteObject[] {
+  return routes.map(({ segment, children }) => {
+    const Component = PAGE_COMPONENTS[segment];
+    if (children?.length) {
+      return {
+        path: segment,
+        Component: () => <Outlet />,
+        children: [{ path: "", Component }, ...buildRouteObjects(children)]
+      };
+    }
+    return { path: segment, Component };
+  });
+}
+
 export default function App() {
-  const navigation = useDynamicNavigation(LEFTNAV_NAVIGATION);
+  const navigation = useDynamicNavigation();
 
   return (
     <ReactRouterAppProvider navigation={navigation} branding={BRANDING} theme={customTheme}>
-      <AuthProvider>
-        <Outlet />
-      </AuthProvider>
+      <Outlet />
     </ReactRouterAppProvider>
   );
 }
@@ -60,118 +88,24 @@ export const router = createBrowserRouter([
           </RouteGuard>
         ),
         children: [
+          { path: "/", Component: DashboardPage },
+          ...buildRouteObjects(MAIN_ROUTES),
+          // Routes not in MAIN_ROUTES (no nav entry, no dashboard card)
+          { path: "settings", Component: Settings },
+          { path: "post-success", Component: PostSuccessPage },
           {
-            path: "/",
-            Component: DashboardPage
-          },
-          {
-            path: "livestock-activity",
-            Component: LivestockActivityLayout,
-            handle: {
-              title: "Livestock Activity"
-            },
-            children: [
-              {
-                path: "",
-                Component: LivestockActivityPage,
-                handle: {
-                  title: "Overview"
-                }
-              },
-              {
-                path: "move",
-                Component: MovePage,
-                handle: {
-                  title: "Move Livestock"
-                }
-              },
-              {
-                path: "wean",
-                Component: WeanPage,
-                handle: {
-                  title: "Wean Pigs"
-                }
-              },
-              {
-                path: "gradeoff",
-                Component: GradeOffPage,
-                handle: {
-                  title: "Grade Off"
-                }
-              },
-              {
-                path: "mortality",
-                Component: MortalityPage,
-                handle: {
-                  title: "Mortality"
-                }
-              },
-              {
-                path: "purchase",
-                Component: PurchasePage,
-                handle: {
-                  title: "Purchase Livestock"
-                }
-              },
-              {
-                path: "quantityadj",
-                Component: QuantityAdjustmentPage,
-                handle: {
-                  title: "Quantity Adjustment"
-                }
-              }
-            ]
-          },
-          {
-            path: "scorecards",
-            Component: ScorecardsPage
-          },
-          {
-            path: "fuel",
-            Component: FuelPage
-          },
-          {
-            path: "maintenance",
-            Component: MaintenancePage
-          },
-          {
-            path: "inventory-consumption",
-            Component: InventoryConsumptionPage
-          },
-          {
-            path: "job-header-updates",
-            Component: JobHeaderUpdatesPage
-          },
-          // {
-          //   path: "forminputs",
-          //   Component: FormsInput
-          // },
-          // {
-          //   path: "employees/:employeeId?/*",
-          //   Component: EmployeesCrudPage
-          // },
-          {
-            path: "qrcode",
-            Component: QRScanner
-          },
-          {
-            path: "post-success",
-            Component: PostSuccessPage
-          },
-          {
-            path: "post-error",
-            Component: PostErrorPage
+            path: "admin",
+            Component: () => (
+              <RouteGuard requiredRole="admin">
+                <AdminPage />
+              </RouteGuard>
+            )
           }
         ]
       },
-      {
-        path: "login",
-        Component: SignIn
-      },
-      {
-        path: "*",
-        Component: NotFoundPage
-      }
+      { path: "login", Component: SignIn },
+      { path: "health", Component: HealthPage },
+      { path: "*", Component: NotFoundPage }
     ]
   }
 ]);

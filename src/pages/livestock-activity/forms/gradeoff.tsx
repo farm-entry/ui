@@ -1,10 +1,8 @@
-import { Grade } from "@mui/icons-material";
-import { Button, Divider, FormHelperText, ListSubheader, Stack, Typography } from "@mui/material";
+import { Button, Divider, FormHelperText, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import CustomConfirmation from "../../../components/framework/CustomConfirmation";
-import CustomHeader from "../../../components/framework/CustomHeader";
-import CustomNotice from "../../../components/framework/CustomNotice";
 import LoadingSpinner from "../../../components/framework/LoadingSpinner";
 import {
   DatePicker,
@@ -14,15 +12,18 @@ import {
   TypeAhead
 } from "../../../components/inputs";
 import CustomFormsLayout from "../../../layouts/forms";
+import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
-import { FormData, useLivestockActivityStore } from "../../../store/livestockActivityStore";
+import { useGlobalAlertStore } from "../../../store/globalAlertStore";
+import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { FormData } from "../../../store/types/forms";
+import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { GRADEOFF_STORAGE_KEY } from "./constants-livestock.json";
-import { livestockActivityApi } from "../../../services/livestockActivityApi";
-import { useNavigate } from "react-router";
-import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
+
+const FORM_STORAGE_HOURS = 48;
 
 interface GradeOffFormData extends FormData {
   job: string | number | null;
@@ -55,13 +56,14 @@ export default function GradeOffPage() {
     isLoading: postingGroupsLoading
   } = usePostingGroupsStore();
   const {
-    getEventTypes,
+    getEvents,
     eventTypes,
     healthStatuses,
-    getHealthStatuses,
-    isLoading: livestockActivityLoading
+    isLoading: livestockActivityLoading,
+    currentTemplate
   } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
+  const { setAlert } = useGlobalAlertStore();
   const { saveForm } = useFormStorageStore();
   const [initLoading, setInitLoading] = useState(true);
   const [eventReasons, setEventReasons] = useState<Reason[]>([]);
@@ -79,47 +81,57 @@ export default function GradeOffPage() {
     mode: "onSubmit"
   });
 
+  const eventValue = watch("event");
   useEffect(() => {
-    setEventReasons(eventTypes.find((et) => et.code === watch("event"))?.reasons || []);
+    setEventReasons(eventTypes.find((et) => et.code === eventValue)?.reasons || []);
     setValue("quantities", []);
-  }, [watch("event")]);
+  }, [eventValue, eventTypes, setValue]);
+
+  const jobValue = watch("job");
+  useEffect(() => {
+    if (jobValue) {
+      getPostingGroupDetails(jobValue);
+    }
+  }, [jobValue, getPostingGroupDetails]);
 
   useEffect(() => {
-    const job = watch("job");
-    job && getPostingGroupDetails(job);
-  }, [watch("job")]);
-
-  useEffect(() => {
+    let isMounted = true;
     setInitLoading(true);
     const promises = [];
-    if (!(eventTypes.length > 0 && eventTypes[0].journal_template_name == "GRADEOFF"))
-      promises.push(getEventTypes("GRADEOFF"));
+    if (!(healthStatuses.length > 0 && eventTypes.length > 0 && currentTemplate === "GRADEOFF"))
+      promises.push(getEvents("GRADEOFF"));
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
-    if (!(healthStatuses.length > 0)) promises.push(getHealthStatuses());
 
     Promise.all(promises).finally(() => {
-      setInitLoading(false);
+      if (isMounted) {
+        setInitLoading(false);
+      }
     });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const onSubmit = async (data: GradeOffFormData) => {
-    console.log("All required fields validated successfully!");
+    if (process.env.NODE_ENV === "development") {
+      console.log("All required fields validated successfully!");
+    }
     setInitLoading(true);
     const state = { formData: data, section: "livestock-activity" };
     livestockActivityApi
       .postLivestockEvent(data)
       .then(() => {
-        console.log("Form submitted:", data);
+        if (process.env.NODE_ENV === "development") {
+          console.log("Form submitted:", data);
+        }
         navigate("/post-success", { state });
       })
-      .catch((e: any) => {
+      .catch((error: Error) => {
         console.error("Unable to post form.");
-        const error = {
-          code: e.code || data.form + "_SUBMISSION_ERROR",
-          message: e.message || "Unable to submit form. Please try again.",
-          details: e.details || JSON.stringify(e, null, 2)
-        };
-        navigate("/post-error", { state: { ...state, error } });
+        const errorMessage = error.message || "Unable to submit form. Please try again.";
+        const errorTitle = (error as any).code || data.form + "_SUBMISSION_ERROR";
+        setAlert("error", errorMessage, errorTitle);
       })
       .finally(() => {
         setInitLoading(false);
@@ -128,7 +140,7 @@ export default function GradeOffPage() {
 
   const onSave = () => {
     const formData = getValues();
-    saveForm(GRADEOFF_STORAGE_KEY, formData, 48);
+    saveForm(GRADEOFF_STORAGE_KEY, formData, FORM_STORAGE_HOURS);
   };
 
   const handleReset = () => {
@@ -140,178 +152,168 @@ export default function GradeOffPage() {
   };
 
   return (
-    <>
+    <CustomFormsLayout<GradeOffFormData>
+      notice={{ formType: GRADEOFF_STORAGE_KEY, onLoad: (data) => reset(data) }}
+      headerOptions={{ button: { label: "reset", onClick: handleReset } }}
+    >
       {initLoading && <LoadingSpinner />}
       {!initLoading && (
         <>
-          <CustomNotice<GradeOffFormData>
-            formType={GRADEOFF_STORAGE_KEY}
-            onLoad={(data) => reset(data)}
-          />
-          <CustomFormsLayout>
-            <CustomHeader
-              icon={Grade}
-              title="Grade Off"
-              button={{ label: "reset", onClick: handleReset }}
-            />
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Stack spacing={2}>
+              <Stack>
+                <TypeAhead
+                  {...register("job", { required: "Job is required" })}
+                  handleChange={(v) => setValue("job", v?.value ?? null)}
+                  watch={watch}
+                  fieldName={"job"}
+                  labelKey={"description"}
+                  valueKey={"number"}
+                  valueList={postingGroups}
+                  loading={postingGroupsLoading}
+                  placeholder="Job"
+                />
+                {errors.job && <FormHelperText error>{errors.job.message}</FormHelperText>}
+              </Stack>
 
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <Stack spacing={2}>
-                <Stack>
-                  <TypeAhead
-                    {...register("job", { required: "Job is required" })}
-                    handleChange={(v) => setValue("job", v?.value ?? null)}
-                    watch={watch}
-                    fieldName={"job"}
-                    labelKey={"description"}
-                    valueKey={"number"}
-                    valueList={postingGroups}
-                    loading={postingGroupsLoading}
-                    placeholder="Job"
-                  />
-                  {errors.job && <FormHelperText error>{errors.job.message}</FormHelperText>}
-                </Stack>
-
-                <Stack>
-                  <TypeAhead
-                    {...register("healthStatus", {
-                      required: "Health Status is required"
-                    })}
-                    handleChange={(v) =>
-                      setValue("healthStatus", v?.value ? String(v.value) : null)
-                    }
-                    loading={postingGroupsLoading}
-                    watch={watch}
-                    valueList={healthStatuses}
-                    fieldName={"healthStatus"}
-                    labelKey={"description"}
-                    valueKey={"code"}
-                    defaultValue={
-                      postingGroupDetails?.healthStatus?.Code
-                        ? {
-                            label: postingGroupDetails.healthStatus.Description,
-                            value: postingGroupDetails.healthStatus.Code
-                          }
-                        : null
-                    }
-                    placeholder={
-                      (postingGroupDetails && postingGroupDetails.healthStatus?.Description) ||
-                      healthStatuses.length
-                        ? "Health Status"
-                        : "Select a valid job"
-                    }
-                  />
-                  {errors.healthStatus && (
-                    <FormHelperText error>{errors.healthStatus.message}</FormHelperText>
-                  )}
-                </Stack>
-
-                <Divider />
-                <Typography>Event Details</Typography>
-                <Stack>
-                  <TypeAhead
-                    {...register("event", { required: "Event is required" })}
-                    handleChange={(v) => setValue("event", v?.value ?? null)}
-                    watch={watch}
-                    fieldName={"event"}
-                    labelKey={"description"}
-                    valueKey={"code"}
-                    valueList={eventTypes}
-                    placeholder="Event Name"
-                  />
-                  {errors.event && <FormHelperText error>{errors.event.message}</FormHelperText>}
-                </Stack>
-
-                <Stack>
-                  <DatePicker
-                    {...register("postingDate", {
-                      required: "Activity Date is required"
-                    })}
-                    value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
-                    onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
-                    label="Activity Date"
-                    error={!!errors.postingDate}
-                    helperText={errors.postingDate?.message}
-                  />
-                </Stack>
-                {watch("event") && (
-                  <>
-                    <Stack spacing={2}>
-                      {eventReasons.map((reason, index) => (
-                        <EventNumberInput
-                          key={reason.code}
-                          codeRegistration={{
-                            ...register(`quantities.${index}.code`),
-                            value: reason.code
-                          }}
-                          quantityRegistration={register(`quantities.${index}.quantity`, {
-                            valueAsNumber: true
-                          })}
-                          value={watch("quantities")?.[index]?.quantity || ""}
-                          label={reason?.description}
-                          placeholder="Quantity"
-                          type="number"
-                        />
-                      ))}
-                    </Stack>
-                    <Divider />
-
-                    <Stack direction="row" spacing={2} alignItems="center">
-                      <Typography variant="subtitle2" sx={{ fontWeight: 300 }}>
-                        Total Quantity
-                      </Typography>
-                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                        {watch("quantities")?.reduce((sum, q) => sum + (q?.quantity || 0), 0) ?? 0}
-                      </Typography>
-                    </Stack>
-
-                    <Divider />
-                  </>
+              <Stack>
+                <TypeAhead
+                  {...register("healthStatus", {
+                    required: "Health Status is required"
+                  })}
+                  handleChange={(v) => setValue("healthStatus", v?.value ? String(v.value) : null)}
+                  loading={postingGroupsLoading}
+                  watch={watch}
+                  valueList={healthStatuses}
+                  fieldName={"healthStatus"}
+                  labelKey={"description"}
+                  valueKey={"code"}
+                  defaultValue={
+                    postingGroupDetails?.healthStatus?.Code
+                      ? {
+                          label: postingGroupDetails.healthStatus.Description,
+                          value: postingGroupDetails.healthStatus.Code
+                        }
+                      : null
+                  }
+                  placeholder={
+                    postingGroupDetails?.healthStatus?.Description || healthStatuses.length > 0
+                      ? "Health Status"
+                      : "Select a valid job"
+                  }
+                />
+                {errors.healthStatus && (
+                  <FormHelperText error>{errors.healthStatus.message}</FormHelperText>
                 )}
+              </Stack>
 
-                <Stack>
-                  <TextField
-                    {...register("livestockWeight", {
-                      required: "Average weight per head is required",
-                      min: {
-                        value: 1,
-                        message: "Weight must be greater than 0"
-                      }
-                    })}
-                    placeholder="Ave Weight / Head"
-                    type="number"
-                    error={!!errors.livestockWeight}
-                    helperText={errors.livestockWeight?.message}
-                  />
-                </Stack>
-                <Divider />
-                <TextArea
-                  {...register("comments", {
-                    maxLength: {
-                      value: 50,
-                      message: "Comments cannot exceed 50 characters"
+              <Divider />
+              <Typography>Event Details</Typography>
+              <Stack>
+                <TypeAhead
+                  {...register("event", { required: "Event is required" })}
+                  handleChange={(v) => setValue("event", v?.value ?? null)}
+                  watch={watch}
+                  fieldName={"event"}
+                  labelKey={"description"}
+                  valueKey={"code"}
+                  valueList={eventTypes}
+                  placeholder="Event Name"
+                />
+                {errors.event && <FormHelperText error>{errors.event.message}</FormHelperText>}
+              </Stack>
+
+              <Stack>
+                <DatePicker
+                  {...register("postingDate", {
+                    required: "Activity Date is required"
+                  })}
+                  value={parseYYYYMMDDToLocalDate(watch("postingDate") || "")}
+                  onChange={(v) => setValue("postingDate", formatDateToYYYYMMDDNoTimestamp(v))}
+                  label="Activity Date"
+                  error={!!errors.postingDate}
+                  helperText={errors.postingDate?.message}
+                />
+              </Stack>
+              {watch("event") && (
+                <>
+                  <Stack spacing={2}>
+                    {eventReasons.map((reason, index) => (
+                      <EventNumberInput
+                        key={reason.code}
+                        codeRegistration={{
+                          ...register(`quantities.${index}.code`),
+                          value: reason.code
+                        }}
+                        quantityRegistration={register(`quantities.${index}.quantity`, {
+                          valueAsNumber: true
+                        })}
+                        value={watch("quantities")?.[index]?.quantity || ""}
+                        label={reason?.description}
+                        placeholder="Quantity"
+                        type="number"
+                      />
+                    ))}
+                  </Stack>
+                  <Divider />
+
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Typography variant="subtitle2" sx={{ fontWeight: 300 }}>
+                      Total Quantity
+                    </Typography>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                      {watch("quantities")?.reduce((sum, q) => sum + (q?.quantity || 0), 0) ?? 0}
+                    </Typography>
+                  </Stack>
+
+                  <Divider />
+                </>
+              )}
+
+              <Stack>
+                <TextField
+                  value={watch("livestockWeight")}
+                  {...register("livestockWeight", {
+                    required: "Average weight per head is required",
+                    min: {
+                      value: 1,
+                      message: "Weight must be greater than 0"
                     }
                   })}
-                  placeholder="Comments"
-                  type="text"
-                  error={!!errors.comments}
-                  helperText={errors.comments?.message}
+                  placeholder="Ave Weight / Head"
+                  type="number"
+                  error={!!errors.livestockWeight}
+                  helperText={errors.livestockWeight?.message}
                 />
-                <Stack direction="row" spacing={2} justifyContent="flex-end">
-                  <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
-                    Save
-                  </Button>
-                  <Button variant="contained" color="primary" fullWidth type="submit">
-                    Submit
-                  </Button>
-                </Stack>
               </Stack>
-            </form>
+              <Divider />
+              <TextArea
+                value={watch("comments")}
+                {...register("comments", {
+                  maxLength: {
+                    value: 50,
+                    message: "Comments cannot exceed 50 characters"
+                  }
+                })}
+                placeholder="Comments"
+                type="text"
+                error={!!errors.comments}
+                helperText={errors.comments?.message}
+              />
+              <Stack direction="row" spacing={2} justifyContent="flex-end">
+                <Button variant="outlined" color="primary" fullWidth onClick={onSave}>
+                  Save
+                </Button>
+                <Button variant="contained" color="primary" fullWidth type="submit">
+                  Submit
+                </Button>
+              </Stack>
+            </Stack>
+          </form>
 
-            <CustomConfirmation />
-          </CustomFormsLayout>
+          <CustomConfirmation />
         </>
       )}
-    </>
+    </CustomFormsLayout>
   );
 }

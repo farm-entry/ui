@@ -1,6 +1,7 @@
+import { apiFetch } from "./apiFetch";
 import { HandleError } from "./handleError";
 
-export interface PostingGroup {
+export interface PostingGroup extends Record<string, unknown> {
   number: string;
   description: string;
   inventory: number;
@@ -12,7 +13,7 @@ export interface PostingGroup {
 }
 
 // Detailed Posting Group with nested objects
-export interface PostingGroupDetails {
+export interface PostingGroupDetails extends Record<string, unknown> {
   number: string;
   description: string;
   personResponsible: {
@@ -50,9 +51,8 @@ class PostingGroupsApi {
     try {
       console.log("Fetching all posting groups from API...");
 
-      const response = await fetch(`/api/livestock/jobs`, {
+      const response = await apiFetch(`/api/livestock/jobs`, {
         method: "GET",
-        credentials: "include",
       });
 
       if (!response.ok) {
@@ -88,9 +88,8 @@ class PostingGroupsApi {
     try {
       console.log("Fetching posting group from API:", group);
 
-      const response = await fetch(`/api/livestock/jobs/${group}`, {
+      const response = await apiFetch(`/api/livestock/jobs/${group}`, {
         method: "GET",
-        credentials: "include",
       });
 
       if (!response.ok) {

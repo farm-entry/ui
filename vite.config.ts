@@ -1,5 +1,6 @@
 import react from "@vitejs/plugin-react";
 import { defineConfig, loadEnv } from "vite";
+import { qrcode } from 'vite-plugin-qrcode';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -8,29 +9,19 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "FRONTLINE_");
 
   return {
-    plugins: [react()],
+    plugins: [react(), qrcode()],
     server: {
       proxy: {
-        "/api/nav": {
-          target: env.FRONTLINE_NAV_API_URL,
-          rewrite: (path) => {
-            const newPath = path.replace(/^\/api\/nav/, "");
-            // Append $format=json if not already present
-            const separator = newPath.includes("?") ? "&" : "?";
-            return newPath.includes("$format=json")
-              ? newPath
-              : `${newPath}${separator}$format=json`;
-          },
+        "/api/auth": {
+          target: env.FRONTLINE_API_URL,
+          rewrite: (path) => path.replace(/^\/api/, ""),
           changeOrigin: true,
-          secure: true,
+          cookieDomainRewrite: "localhost", // Rewrite cookie domain for localhost
           configure: (proxy, _options) => {
             proxy.on("error", (err, _req, _res) => {
               console.log("proxy error", err);
             });
             proxy.on("proxyReq", (proxyReq, req, _res) => {
-              req.headers["Authorization"] =
-                "Basic YXBwOnBmVDkxczlKdkFDU3JqellsK1ZqL2M2aWtjdGNmbTNpZEJuSlFVVS9zSTg9";
-              console.log("headers:", req);
               console.log(
                 "Sending Request to the Target:",
                 req.method,
@@ -43,12 +34,19 @@ export default defineConfig(({ mode }) => {
                 proxyRes.statusCode,
                 req.url
               );
+              // Log cookies being set
+              if (proxyRes.headers["set-cookie"]) {
+                console.log(
+                  "Cookies being set:",
+                  proxyRes.headers["set-cookie"]
+                );
+              }
             });
           },
         },
-        "/api/auth": {
+        "/api/health": {
           target: env.FRONTLINE_API_URL,
-          rewrite: (path) => path.replace(/^\/api\/auth/, ""),
+          rewrite: (path) => path.replace(/^\/api/, ""),
           changeOrigin: true,
           cookieDomainRewrite: "localhost", // Rewrite cookie domain for localhost
           configure: (proxy, _options) => {

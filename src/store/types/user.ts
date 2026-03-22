@@ -1,4 +1,5 @@
-export type DomainType = "moglerfarms" | "sondfarms";
+export type DomainType = string | null;
+export type RolesType = 'user' | 'admin' | 'app_admin' | null;
 
 export interface MenuOption {
   title: string;
@@ -8,9 +9,12 @@ export interface MenuOption {
 }
 
 export interface UserType {
-  name: string;
   loginTime: string;
+  firstName?: string;
+  lastName?: string;
   username: string;
+  email: string;
   domain: DomainType;
+  role: RolesType;
   menuOptions: MenuOption[];
 }
