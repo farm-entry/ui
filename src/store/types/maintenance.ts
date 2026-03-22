@@ -1,63 +1,37 @@
 export interface MaintenanceAsset extends Record<string, unknown> {
-    number: string;
-    description: string;
-    __typename: string;
+  number: string;
+  description: string;
+  classCode: string;
+  code: string;
+  interval: number;
+  unitType: string;
+  maintenanceDesc: string;
 }
 
-export interface MaintenanceHistory {
-    entry: number;
-    number: string;
-    amount: number;
-    maintenanceCode: string;
-    reasonCode: string;
-    postingDate: string;
-    quantity: number;
-    meta: number;
-    description: string;
-    codeDescription: string;
-    payToName: string;
-    documentNo: string;
-    __typename: string;
+export interface MaintenanceHistoryAsset {
+  entry: number;
+  number: string;
+  amount: number;
+  maintenanceCode: string;
+  reasonCode: string;
+  postingDate: string;
+  quantity: number;
+  description: string;
+  meta: number;
+  codeDescription: string;
+  payToName: string;
+  documentNo: string;
 }
 
-export interface MaintenanceAssetsByNo {
-    code: string;
-    interval: number;
-    unitType: string;
-    maintenanceDesc: string;
-    __typename: string;
-}
-
-export interface MaintenanceItem {
-    number: string;
-    cost: number;
-}
-
-export interface MaintenanceAssetDetails {
-    number: string;
-    description: string;
-    maintenanceAssetsByNo: MaintenanceAssetsByNo[];
-    item: MaintenanceItem;
-    history: MaintenanceHistory[];
-}
-
-export interface MaintenanceEntry {
-    id: string;
-    activityDate: string;
-    gallons: number;
-    pricePerGallon: number;
-    totalCost: number;
-    currentMiles: number;
-    comments: string;
-    maintenanceAsset: string;
-    createdAt: string;
+export interface MaintenanceAssetDetails extends MaintenanceAsset {
+  history: MaintenanceHistoryAsset[];
 }
 
 export interface MaintenanceFormData {
-    maintenanceAsset: string;
-    activityDate: string;
-    gallons: number;
-    currentMiles: number;
-    comments?: string;
+  asset: string;
+  postingDate: string;
+  type: string;
+  workHours: number | null;
+  mileage: number | null;
+  comments?: string;
 }
-

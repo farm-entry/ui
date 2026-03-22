@@ -1,19 +1,18 @@
-import { Card, CardContent, Stack, Typography } from "@mui/material";
-import { useFuelStore } from "../../store/fuelStore";
-import FuelHistoryDataTable from "./MaintenanceHistoryDataTable";
-import FuelHistorySummary from "./MaintenanceHistorySummary";
+import { Stack, Typography } from "@mui/material";
+import MaintenanceHistoryDataTable from "./MaintenanceHistoryDataTable";
+import MaintenanceHistorySummary from "./MaintenanceHistorySummary";
 
-export default function FuelHistory() {
+export default function MaintenanceHistory() {
   return (
     <Stack spacing={2}>
       <Typography variant="h6" gutterBottom>
-        Fuel Summary (Last 3 Years)
+        Maintenance Summary (Last 3 Years)
       </Typography>
-      <FuelHistorySummary />
+      <MaintenanceHistorySummary />
       <Typography variant="h6" gutterBottom>
         Recent Entries
       </Typography>
-      <FuelHistoryDataTable />
+      <MaintenanceHistoryDataTable />
     </Stack>
   );
 }
