@@ -21,8 +21,9 @@ class UserApi {
       body: JSON.stringify(credentials),
     });
     if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error || 'Login failed');
+      const isJson = res.headers.get('content-type')?.includes('application/json');
+      const err = isJson ? await res.json() : null;
+      throw new Error(err?.error || `Login failed (${res.status})`);
     }
     return res.json();
   }
