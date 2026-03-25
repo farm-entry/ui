@@ -1,0 +1,43 @@
+daemon off;
+worker_processes <%= ENV["NGINX_WORKERS"] || 4 %>;
+
+events {
+  use epoll;
+  accept_mutex on;
+  worker_connections 1024;
+}
+
+http {
+  gzip on;
+  server_tokens off;
+  access_log logs/nginx/access.log;
+  error_log logs/nginx/error.log;
+  include mime.types;
+  default_type application/octet-stream;
+  sendfile on;
+
+  server {
+    listen <%= ENV["PORT"] %>;
+    server_name _;
+    root /app/dist;
+
+    resolver 8.8.8.8 valid=30s ipv6=off;
+    set $api_url "<%= ENV["FRONTLINE_API_URL"] %>";
+
+    # Auth + health — strip /api prefix before forwarding
+    location ~ ^/api/(auth|health) {
+      rewrite ^/api(.*)$ $1 break;
+      proxy_pass $api_url;
+      proxy_set_header Host $proxy_host;
+    }
+
+    # All other API routes — forward as-is
+    location /api/ {
+      proxy_pass $api_url;
+      proxy_set_header Host $proxy_host;
+    }
+
+    # SPA fallback
+    error_page 404 = /index.html;
+  }
+}
