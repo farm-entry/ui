@@ -1,6 +1,7 @@
 daemon off;
 worker_processes <%= ENV["NGINX_WORKERS"] || 4 %>;
 error_log /dev/stderr;
+pid /tmp/nginx.pid;
 
 events {
   use epoll;
