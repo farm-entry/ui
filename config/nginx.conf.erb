@@ -10,8 +10,8 @@ events {
 http {
   gzip on;
   server_tokens off;
-  access_log logs/nginx/access.log;
-  error_log logs/nginx/error.log;
+  access_log /dev/stdout;
+  error_log /dev/stderr;
   include mime.types;
   default_type application/octet-stream;
   sendfile on;
