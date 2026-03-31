@@ -10,14 +10,14 @@ interface AdminState {
   error: string | null;
   fetchUsers: (domain: string) => Promise<void>;
   fetchDomains: () => Promise<void>;
-  createUser: (payload: { email: string; password: string; role: string; domain: string }) => Promise<void>;
-  updateUser: (userId: string, payload: Partial<Pick<UserType, 'email' | 'firstName' | 'lastName' | 'domain' | 'role'>>) => Promise<void>;
+  createUser: (payload: { email: string; password: string; role: string; domains: string[] }) => Promise<void>;
+  updateUser: (userId: string, payload: Partial<Pick<UserType, 'email' | 'firstName' | 'lastName' | 'domains' | 'role'>>) => Promise<void>;
   deleteUser: (userId: string) => Promise<void>;
   resetPassword: (userId: string, newPassword: string) => Promise<void>;
 }
 
 export const useAdminStore = create<AdminState>()(
-  devtools((set, get) => ({
+  devtools((set) => ({
     users: [],
     domains: [],
     isLoading: false,

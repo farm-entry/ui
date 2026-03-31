@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
+import { tokenStorage } from '../services/tokenStorage';
 import { userApi } from '../services/userApi';
 import type { DomainType, MenuOption, UserType } from './types/user';
 
@@ -13,6 +14,7 @@ interface UserState extends UserType {
   setMenuOptions: (menuOptions: MenuOption[]) => void;
   updateProfile: (payload: { firstName?: string; lastName?: string; email?: string }) => Promise<void>;
   changePassword: (newPassword: string) => Promise<void>;
+  switchDomain: (targetDomain: string) => Promise<void>;
 }
 
 const EMPTY_USER: UserType = {
@@ -22,6 +24,7 @@ const EMPTY_USER: UserType = {
   username: '',
   role: 'user',
   domain: null,
+  domains: [],
   loginTime: '',
   menuOptions: [],
 };
@@ -37,6 +40,7 @@ export const useUserStore = create<UserState>()(
       lastName: get().lastName,
       role: get().role,
       domain: get().domain,
+      domains: get().domains,
       loginTime: get().loginTime,
       menuOptions: get().menuOptions,
     }),
@@ -50,6 +54,12 @@ export const useUserStore = create<UserState>()(
     },
     changePassword: async (newPassword) => {
       await userApi.resetPassword(get().username, newPassword);
+    },
+    switchDomain: async (targetDomain) => {
+      const { accessToken } = await userApi.switchDomain(targetDomain);
+      const refresh = tokenStorage.getRefresh();
+      tokenStorage.set(accessToken, refresh ?? '');
+      set((state) => ({ ...state, domain: targetDomain }));
     },
   }), { name: 'UserStore' })
 );

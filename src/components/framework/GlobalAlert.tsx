@@ -19,7 +19,7 @@ export default function GlobalAlert() {
             <CloseIcon fontSize="inherit" />
           </IconButton>
         }
-        sx={{ mb: 2 }}
+        sx={{ mb: 0.5 }}
       >
         {title && <AlertTitle>{title}</AlertTitle>}
         {message}

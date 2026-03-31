@@ -55,12 +55,16 @@ class UserApi {
     return res.json();
   }
 
+  // Available to all authenticated users (not just app_admin)
   async switchDomain(targetDomain: string): Promise<{ accessToken: string }> {
     const res = await apiFetch('/api/auth/switch-domain', {
       method: 'POST',
       body: JSON.stringify({ domain: targetDomain }),
     });
-    if (!res.ok) throw new Error('Domain switch failed');
+    if (!res.ok) {
+      const err = await res.json().catch(() => null);
+      throw new Error(err?.error || 'Domain switch failed');
+    }
     return res.json();
   }
 
@@ -76,7 +80,7 @@ class UserApi {
     return res.json();
   }
 
-  async createUser(payload: { email: string; password: string; role: string; domain: string }): Promise<UserType> {
+  async createUser(payload: { email: string; password: string; role: string; domains: string[] }): Promise<UserType> {
     const res = await apiFetch('/api/admin/users', {
       method: 'POST',
       body: JSON.stringify(payload),
@@ -85,7 +89,7 @@ class UserApi {
     return res.json();
   }
 
-  async updateUser(userId: string, payload: Partial<Pick<UserType, 'email' | 'firstName' | 'lastName' | 'domain' | 'role'>>): Promise<UserType> {
+  async updateUser(userId: string, payload: Partial<Pick<UserType, 'email' | 'firstName' | 'lastName' | 'domains' | 'role'>>): Promise<UserType> {
     const res = await apiFetch(`/api/admin/users/${userId}`, {
       method: 'PATCH',
       body: JSON.stringify(payload),

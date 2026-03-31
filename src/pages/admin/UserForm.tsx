@@ -1,8 +1,23 @@
-import { Box, Button, FormControlLabel, Stack, Switch, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Checkbox,
+  Chip,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  InputLabel,
+  ListItemText,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  Stack,
+  Switch,
+  Typography,
+} from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
-import { Select, TextField } from "../../components/inputs";
+import { TextField } from "../../components/inputs";
 import { useAdminStore } from "../../store/adminStore";
-import { useUserStore } from "../../store/userStore";
 import { RolesType } from "../../store/types/user";
 
 export interface UserFormData {
@@ -11,7 +26,7 @@ export interface UserFormData {
   password: string;
   firstName: string;
   lastName: string;
-  domain: string;
+  domains: string[];
   role: RolesType;
   isActive: boolean;
   isEmailVerified: boolean;
@@ -36,8 +51,7 @@ export default function UserForm({
   initialValues,
   editMode = false
 }: UserFormProps) {
-  const { domains } = useAdminStore();
-  const { domain: currentDomain } = useUserStore();
+  const { domains: availableDomains } = useAdminStore();
 
   const {
     register,
@@ -53,7 +67,7 @@ export default function UserForm({
       password: "",
       firstName: "",
       lastName: "",
-      domain: currentDomain ?? "",
+      domains: [],
       role: "user",
       isActive: true,
       isEmailVerified: false,
@@ -119,19 +133,39 @@ export default function UserForm({
           Permissions
         </Typography>
 
+        {/* Multi-select: Companies / Domains */}
         <Controller
-          name="domain"
+          name="domains"
           control={control}
-          rules={{ required: "Domain is required" }}
+          rules={{ validate: (v) => v.length > 0 || "At least one company is required" }}
           render={({ field }) => (
-            <Select
-              {...field}
-              label="Domain"
-              options={domains.map((d) => ({ value: d, label: d }))}
-              onClear={() => setValue("domain", "")}
-              error={!!errors.domain}
-              helperText={errors.domain?.message}
-            />
+            <FormControl fullWidth error={!!errors.domains}>
+              <InputLabel id="domains-label">Companies</InputLabel>
+              <Select
+                labelId="domains-label"
+                multiple
+                value={field.value}
+                onChange={(e) => field.onChange(e.target.value as string[])}
+                input={<OutlinedInput label="Companies" />}
+                renderValue={(selected) => (
+                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                    {(selected as string[]).map((val) => (
+                      <Chip key={val} label={val} size="small" />
+                    ))}
+                  </Box>
+                )}
+              >
+                {availableDomains.map((d) => (
+                  <MenuItem key={d} value={d}>
+                    <Checkbox checked={field.value.includes(d)} />
+                    <ListItemText primary={d} />
+                  </MenuItem>
+                ))}
+              </Select>
+              {errors.domains && (
+                <FormHelperText>{(errors.domains as any)?.message}</FormHelperText>
+              )}
+            </FormControl>
           )}
         />
 
@@ -140,14 +174,22 @@ export default function UserForm({
           control={control}
           rules={{ required: "Role is required" }}
           render={({ field }) => (
-            <Select
-              {...field}
-              label="Role"
-              options={ROLE_OPTIONS}
-              onClear={() => setValue("role", null)}
-              error={!!errors.role}
-              helperText={errors.role?.message}
-            />
+            <FormControl fullWidth error={!!errors.role}>
+              <InputLabel id="role-label">Role</InputLabel>
+              <Select
+                labelId="role-label"
+                value={field.value ?? ""}
+                onChange={(e) => field.onChange(e.target.value)}
+                input={<OutlinedInput label="Role" />}
+              >
+                {ROLE_OPTIONS.map((opt) => (
+                  <MenuItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </MenuItem>
+                ))}
+              </Select>
+              {errors.role && <FormHelperText>{errors.role.message}</FormHelperText>}
+            </FormControl>
           )}
         />
 
