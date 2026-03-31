@@ -88,7 +88,7 @@ export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props
         value={useValue}
         onChange={customChange}
         options={(valueList || []).map((event, index) => ({
-          label: labelFormatter ? labelFormatter(event) : String(event[labelKey]),
+          label: labelFormatter ? labelFormatter(event) : (String(event[labelKey]) ||  String(event[valueKey])),
           value: event[valueKey] as string | number
         }))}
         getOptionKey={(option) =>
