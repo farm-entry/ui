@@ -2,7 +2,6 @@ import { CardActionArea, Stack, Typography } from "@mui/material";
 import { PageContainer } from "@toolpad/core/PageContainer";
 import { useNavigate } from "react-router";
 import { CustomCard } from "../components/framework";
-import DomainNotice from "../components/framework/DomainNotice";
 import { MAIN_ROUTES } from "../routes";
 
 const dashboardCards = MAIN_ROUTES.filter((r) => r.description).map(
@@ -19,7 +18,6 @@ export default function DashboardPage() {
 
   return (
     <>
-      <DomainNotice />
       <PageContainer>
         <Stack spacing={2}>
           {dashboardCards.map((option) => (

@@ -1,13 +1,10 @@
-import { Card, CardHeader } from "@mui/material";
+import { Card } from "@mui/material";
 import * as React from "react";
 import { useNavigate } from "react-router";
 import CustomConfirmation from "../components/framework/CustomConfirmation";
+import CustomNotice from "../components/framework/CustomNotice";
 import CustomPageContainer, { HeaderOptions } from "../components/framework/CustomPageContainer";
 import { useConfirmationStore } from "../store/confirmationStore";
-import CustomNotice from "../components/framework/CustomNotice";
-import { useUserStore } from "../store/userStore";
-import { Domain } from "@mui/icons-material";
-import DomainNotice from "../components/framework/DomainNotice";
 
 // This is meant to be used as a subset of the dashboard layout
 // It wraps all forms and standardizes screen size, putting each form component into a card.
@@ -38,7 +35,6 @@ export default function CustomFormsLayout<T>({
 
   return (
     <>
-      <DomainNotice />
       <CustomPageContainer headerOptions={headerOptions}>
         {notice && <CustomNotice<T> formType={notice.formType} onLoad={notice.onLoad} />}
 

@@ -4,13 +4,11 @@ import LibraryAddOutlinedIcon from "@mui/icons-material/LibraryAddOutlined";
 import { Stack } from "@mui/material";
 import BabyBottleIcon from "../../assets/BabyBottleIcon";
 import CustomPageContainer from "../../components/framework/CustomPageContainer";
-import DomainNotice from "../../components/framework/DomainNotice";
 import PageNavigationButton from "../../components/inputs/PageNavigationButton";
 
 export default function LivestockActivityPage() {
   return (
     <>
-      <DomainNotice />
       <CustomPageContainer>
         <Stack spacing={2}>
           <PageNavigationButton
