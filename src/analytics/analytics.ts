@@ -1,5 +1,9 @@
 declare global {
   function gtag(...args: any[]): void;
+  interface Window {
+    dataLayer: any[];
+    gtag(...args: any[]): void;
+  }
 }
 
 // Module-level form timing state — safe because only one form is open at a time in this SPA
