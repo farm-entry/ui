@@ -205,9 +205,7 @@ export default function PurchasePage() {
 
             <Stack>
               <TypeAhead
-                {...register("healthStatus", {
-                  required: "Health Status is required"
-                })}
+                {...register("healthStatus")}
                 handleChange={(v) => setValue("healthStatus", v?.value ? String(v.value) : null)}
                 loading={postingGroupsLoading}
                 watch={watch}
@@ -235,7 +233,7 @@ export default function PurchasePage() {
             </Stack>
 
             <Divider />
-            <Typography>Event Details</Typography>
+            <Typography>Event</Typography>
             <Stack>
               <TypeAhead
                 {...register("event", { required: "Event is required" })}

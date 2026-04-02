@@ -233,7 +233,7 @@ export default function MovePage() {
                 />
               )}
               <Divider />
-              <Typography>Event Details</Typography>
+              <Typography>Event</Typography>
               <Stack>
                 <TypeAhead
                   {...register("event", { required: "Event is required" })}
