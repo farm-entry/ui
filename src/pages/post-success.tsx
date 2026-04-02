@@ -1,6 +1,8 @@
 import { ArrowBack, CheckCircle, Home } from "@mui/icons-material";
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";
+import * as React from "react";
 import { useLocation, useNavigate } from "react-router";
+import { reportLastFormSubmit } from "../analytics";
 import CustomHeader from "../components/framework/CustomHeader";
 import CustomFormsLayout from "../layouts/forms";
 import LEFTNAV_NAVIGATION from "../LeftNavConfig";
@@ -32,6 +34,10 @@ const getSectionRoutes = () => {
 export default function PostSuccessPage() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  React.useEffect(() => {
+    reportLastFormSubmit("success");
+  }, []);
   const state = location.state as PostSuccessState;
   const sectionRoutes = getSectionRoutes();
 

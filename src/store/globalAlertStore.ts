@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
+import { reportLastFormSubmit } from "../analytics";
 
 type AlertSeverity = "success" | "info" | "warning" | "error";
 
@@ -22,6 +23,7 @@ export const useGlobalAlertStore = create<GlobalAlertState>()(
       title: undefined,
 
       setAlert: (severity: AlertSeverity, message: string, title?: string) => {
+        if (severity === "error") reportLastFormSubmit("failure", message);
         set({ open: true, severity, message, title });
       },
 

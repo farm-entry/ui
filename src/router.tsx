@@ -3,6 +3,7 @@ import { createBrowserRouter, Outlet } from "react-router";
 import type { RouteObject } from "react-router";
 import frontlineLogo from "./assets/frontlinesprout.svg";
 import RouteGuard from "./components/RouteGuard";
+import { useAnalyticsPageView } from "./analytics";
 import useDynamicNavigation from "./hooks/useDynamicNavigation";
 import CustomDashboardLayout from "./layouts/dashboard";
 import DashboardPage from "./pages";
@@ -68,6 +69,7 @@ function buildRouteObjects(routes: RouteConfig[]): RouteObject[] {
 
 export default function App() {
   const navigation = useDynamicNavigation();
+  useAnalyticsPageView();
 
   return (
     <ReactRouterAppProvider navigation={navigation} branding={BRANDING} theme={customTheme}>
