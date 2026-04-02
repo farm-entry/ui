@@ -3,6 +3,7 @@ import { Breadcrumbs, Link, Typography } from "@mui/material";
 import { Link as RouterLink, useLocation } from "react-router";
 import { findRouteByPath } from "../../routes";
 import CustomHeader, { HeaderButton } from "./CustomHeader";
+import GlobalAlert from "./GlobalAlert";
 
 export interface HeaderOptions {
   button?: HeaderButton;
@@ -12,7 +13,7 @@ interface CustomPageContainerProps extends PageContainerProps {
   headerOptions?: HeaderOptions;
 }
 
-const CustomPageContainer = ({ headerOptions, ...props }: CustomPageContainerProps) => {
+const CustomPageContainer = ({ headerOptions, children, ...props }: CustomPageContainerProps) => {
   const { pathname } = useLocation();
   const activePage = useActivePage();
   const route = findRouteByPath(pathname);
@@ -53,7 +54,10 @@ const CustomPageContainer = ({ headerOptions, ...props }: CustomPageContainerPro
           </>
         )
       }}
-    />
+    >
+      <GlobalAlert />
+      {children}
+    </PageContainer>
   );
 };
 

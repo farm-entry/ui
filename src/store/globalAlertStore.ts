@@ -26,8 +26,8 @@ export const useGlobalAlertStore = create<GlobalAlertState>()(
       },
 
       clearAlert: () => {
-        set({ open: false, severity: "info", message: "", title: undefined });
-      },
+        set({ open: false, message: "", title: undefined });
+      }
     }),
     { name: "GlobalAlertStore" }
   )
