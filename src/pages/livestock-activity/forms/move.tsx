@@ -91,16 +91,8 @@ export default function MovePage() {
           setInitLoading(false);
         }
       })
-      .catch((error: Error) => {
-        console.error("Unable to load form data.", error);
-        const errorInfo = {
-          code: (error as any).code || "INIT_DATA_LOAD_ERROR",
-          message: error.message || "Unable to load form data. Please try again.",
-          details: (error as any).details || JSON.stringify(error, null, 2)
-        };
-        const errorMessage = errorInfo.message || "Unable to load form data. Please try again.";
-        const errorTitle = errorInfo.code + "Unable to load form data." || "INIT_DATA_LOAD_ERROR";
-        setAlert("error", errorMessage, errorTitle);
+      .catch((error: unknown) => {
+        setAlert("error", error as Error);
       })
       .finally(() => {
         setInitLoading(false);
@@ -125,17 +117,8 @@ export default function MovePage() {
         }
         navigate("/post-success", { state });
       })
-      .catch((error: Error) => {
-        console.error("Unable to post form.");
-        const errorInfo = {
-          code: (error as any).code || data.form + "_SUBMISSION_ERROR",
-          message: error.message || "Unable to submit form. Please try again.",
-          details: (error as any).details || JSON.stringify(error, null, 2)
-        };
-        const errorMessage = errorInfo.message || "Unable to submit form. Please try again.";
-        const errorTitle =
-          errorInfo.code + "Unable to submit your form." || data.form + "_SUBMISSION_ERROR";
-        setAlert("error", errorMessage, errorTitle);
+      .catch((error: unknown) => {
+        setAlert("error", error as Error);
       })
       .finally(() => {
         setInitLoading(false);

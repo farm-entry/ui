@@ -117,12 +117,8 @@ export default function MaintenancePage() {
       .then(() => {
         navigate("/post-success", { state });
       })
-      .catch((error: Error) => {
-        const errorInfo = {
-          code: (error as any).code || "MAINTENANCE_SUBMISSION_ERROR",
-          message: error.message || "Unable to submit form. Please try again."
-        };
-        setAlert("error", errorInfo.message, errorInfo.code);
+      .catch((error: unknown) => {
+        setAlert("error", error as Error);
       })
       .finally(() => {
         setIsSubmitting(false);

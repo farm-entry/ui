@@ -16,6 +16,40 @@ const redirectToLogin = () => {
   window.location.href = "/login";
 };
 
+type ErrorParser = {
+  name: string;
+  matches: (input: string) => boolean;
+  parse: (input: string) => string | null;
+};
+
+const stringParsers: ErrorParser[] = [
+  {
+    name: "navOData",
+    // Matches strings like: "Nav OData error! status: 400, message: {"error":{"code":"...","message":"..."}}"
+    matches: (input) => input.startsWith("Nav OData error!"),
+    parse: (input) => {
+      const jsonMatch = input.match(/message:\s*(\{.*\})$/s);
+      if (!jsonMatch) return null;
+      try {
+        const parsed = JSON.parse(jsonMatch[1]);
+        return parsed?.error?.message ?? null;
+      } catch {
+        return null;
+      }
+    }
+  }
+];
+
+export function parseStringError(input: string): string {
+  for (const parser of stringParsers) {
+    if (parser.matches(input)) {
+      const result = parser.parse(input);
+      if (result != null) return result;
+    }
+  }
+  return input;
+}
+
 export class HandleError {
   createError(code: string, message: string, details?: string): ApiError {
     return {
@@ -37,25 +71,26 @@ export class HandleError {
     let errorCode = `HTTP_${response.status}`;
     let errorMessage = defaultMessage;
 
+    // Read body once as text, then attempt JSON parse — avoids double-read of the stream
     try {
-      const errorData = await response.json();
-      
-      // Handle consistent API error format: { code, message, timestamp }
-      if (errorData.code && errorData.message) {
-        errorCode = errorData.code;
-        errorMessage = errorData.message;
-      } else if (errorData.message) {
-        // Fallback if only message is provided
-        errorMessage = errorData.message;
+      const text = await response.text();
+      try {
+        const errorData = JSON.parse(text);
+        if (errorData.code && errorData.message) {
+          errorCode = errorData.code;
+          errorMessage = errorData.message;
+        } else if (errorData.message) {
+          errorMessage = errorData.message;
+        }
+      } catch {
+        // Not JSON — run through string parsers (e.g. Nav OData error format)
+        errorMessage = parseStringError(text) || response.statusText || defaultMessage;
       }
     } catch {
-      // If JSON parsing fails, use HTTP status as fallback
-      errorMessage = `${response.statusText || defaultMessage}`;
+      errorMessage = response.statusText || defaultMessage;
     }
 
-    const error = this.createError(errorCode, errorMessage);
-
-    console.error(`${apiLabel} API Error:`, error);
-    throw error;
+    console.error(`${apiLabel} API Error:`, { code: errorCode, message: errorMessage });
+    throw new Error(errorMessage);
   }
 }

@@ -99,11 +99,8 @@ export default function ScorecardsPage() {
         handleReset();
         navigate("/post-success", { state });
       })
-      .catch((error: Error) => {
-        console.error("Unable to post form.");
-        const errorMessage = error.message || "Unable to submit form. Please try again.";
-        const errorTitle = (error as any).code || formData.form + "_SUBMISSION_ERROR";
-        setAlert("error", errorMessage, errorTitle);
+      .catch((error: unknown) => {
+        setAlert("error", error as Error);
       })
       .finally(() => {
         setInitLoading(false);
