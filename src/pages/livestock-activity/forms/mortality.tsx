@@ -112,8 +112,8 @@ export default function MortalityPage() {
         setEventReasons(filterEventReasons(x?.events));
         setEventsLoading(false);
       })
-      .catch(() => {
-        setAlert("error", "Unable to get events for this job");
+      .catch((error: unknown) => {
+        setAlert("error", error as Error);
         setEventsLoading(false);
       });
   }, [jobValue]);
@@ -132,11 +132,8 @@ export default function MortalityPage() {
       .then(() => {
         navigate("/post-success", { state });
       })
-      .catch((error: Error) => {
-        console.error("Unable to post form.");
-        const errorMessage = error.message || "Unable to submit form. Please try again.";
-        const errorTitle = (error as any).code || data.form + "_SUBMISSION_ERROR";
-        setAlert("error", errorMessage, errorTitle);
+      .catch((error: unknown) => {
+        setAlert("error", error as Error);
       })
       .finally(() => {
         setInitLoading(false);

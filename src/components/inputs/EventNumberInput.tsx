@@ -1,5 +1,7 @@
 import * as React from "react";
+import { useContext } from "react";
 import { TextField as MuiTextField, TextFieldProps as MuiTextFieldProps } from "@mui/material";
+import { FormAnalyticsContext, trackInputFocus } from "../../analytics";
 
 export interface EventNumberInputProps extends Omit<MuiTextFieldProps, "variant"> {
   placeholder: string;
@@ -11,6 +13,7 @@ export interface EventNumberInputProps extends Omit<MuiTextFieldProps, "variant"
 export const EventNumberInput = React.forwardRef<HTMLInputElement, EventNumberInputProps>(
   (props, ref) => {
     const { placeholder, helperText, codeRegistration, quantityRegistration, ...rest } = props;
+    const { formName } = useContext(FormAnalyticsContext);
 
     return (
       <>
@@ -22,6 +25,7 @@ export const EventNumberInput = React.forwardRef<HTMLInputElement, EventNumberIn
           placeholder={placeholder}
           helperText={helperText}
           fullWidth
+          onFocus={() => trackInputFocus(quantityRegistration.name ?? "unknown", formName, "event-number")}
           {...rest}
         />
       </>

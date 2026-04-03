@@ -1,6 +1,7 @@
 import * as React from "react";
+import { useContext } from "react";
 import { TextField as MuiTextField, TextFieldProps as MuiTextFieldProps } from "@mui/material";
-import { watch } from "fs";
+import { FormAnalyticsContext, trackInputFocus } from "../../analytics";
 
 export interface TextFieldProps extends Omit<MuiTextFieldProps, "variant"> {
   placeholder: string;
@@ -8,10 +9,16 @@ export interface TextFieldProps extends Omit<MuiTextFieldProps, "variant"> {
 }
 
 export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>((props, ref) => {
-  const { placeholder, helperText, value, slotProps, ...rest } = props;
+  const { placeholder, helperText, value, slotProps, onFocus, ...rest } = props;
+  const { formName } = useContext(FormAnalyticsContext);
 
   // Auto-detect if label should shrink based on value presence
   const shouldShrink = value !== undefined && value !== null && value !== "";
+
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    trackInputFocus(rest.name ?? "unknown", formName, "text");
+    onFocus?.(e);
+  };
 
   return (
     <>
@@ -22,8 +29,9 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>((pro
         placeholder={placeholder}
         helperText={helperText}
         fullWidth
-        value={value} // CRITICAL: Must pass value explicitly after extracting it
+        value={value}
         slotProps={slotProps}
+        onFocus={handleFocus}
         {...rest}
       />
     </>

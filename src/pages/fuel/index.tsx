@@ -124,16 +124,8 @@ export default function FuelPage() {
         }
         navigate("/post-success", { state });
       })
-      .catch((error: Error) => {
-        console.error("Unable to post form.");
-        const errorInfo = {
-          code: (error as any).code || "FUEL_SUBMISSION_ERROR",
-          message: error.message || "Unable to submit form. Please try again.",
-          details: (error as any).details || JSON.stringify(error, null, 2)
-        };
-        const errorMessage = errorInfo.message || "Unable to submit form. Please try again.";
-        const errorTitle = errorInfo.code || "Unable to submit your form.";
-        setAlert("error", errorMessage, errorTitle);
+      .catch((error: unknown) => {
+        setAlert("error", error as Error);
       })
       .finally(() => {
         setIsSubmitting(false);

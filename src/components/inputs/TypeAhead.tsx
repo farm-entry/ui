@@ -1,7 +1,8 @@
 import { Autocomplete, AutocompleteProps, FormControl, TextField } from "@mui/material";
 import * as React from "react";
-import { useMemo } from "react";
+import { useContext, useMemo, useRef } from "react";
 import { UseFormWatch } from "react-hook-form";
+import { FormAnalyticsContext, trackInputFocus, trackTypeAheadSelection } from "../../analytics";
 
 export interface TypeAheadOption {
   label: string;
@@ -62,6 +63,9 @@ export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props
     ...other
   } = props;
 
+  const { formName } = useContext(FormAnalyticsContext);
+  const userHasTyped = useRef(false);
+
   const customChange = (
     _event: React.SyntheticEvent,
     newValue: TypeAheadOption | string | null
@@ -76,6 +80,8 @@ export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props
       // Handle option selection
       handleChange(newValue || null);
     }
+    trackTypeAheadSelection(fieldName, formName, userHasTyped.current ? "typed" : "scrolled");
+    userHasTyped.current = false;
   };
 
   const useValue = useTypeAheadValue(props);
@@ -87,6 +93,10 @@ export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props
         ref={ref}
         value={useValue}
         onChange={customChange}
+        onInputChange={(_e, _val, reason) => {
+          if (reason === "input") userHasTyped.current = true;
+          if (reason === "clear") userHasTyped.current = false;
+        }}
         options={(valueList || []).map((event, index) => ({
           label: labelFormatter ? labelFormatter(event) : (String(event[labelKey]) ||  String(event[valueKey])),
           value: event[valueKey] as string | number
@@ -95,7 +105,13 @@ export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props
           `${option.value}-${(valueList || []).findIndex((item) => item[valueKey] === option.value)}`
         }
         renderInput={(params) => (
-          <TextField placeholder={placeholder} {...params} variant="outlined" label={props.label} />
+          <TextField
+            placeholder={placeholder}
+            {...params}
+            variant="outlined"
+            label={props.label}
+            onFocus={() => trackInputFocus(fieldName, formName, "typeahead")}
+          />
         )}
       />
     </FormControl>

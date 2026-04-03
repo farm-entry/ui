@@ -32,7 +32,7 @@ export default function ScorecardSetup() {
     getScorecardTypes(job).then((result) => {
       if (result === undefined) {
         const { error } = useScorecardStore.getState();
-        setAlert("error", error ?? "Failed to load scorecard types");
+        setAlert("error", error || "Failed to load scorecard types");
       } else if (result.length === 0) {
         setError("job", { type: "manual", message: "No scorecard types found for this job" });
       } else {
