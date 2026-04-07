@@ -13,6 +13,7 @@ import {
 } from "../../../components/inputs";
 import CustomFormsLayout from "../../../layouts/forms";
 import { livestockActivityApi } from "../../../services/livestockActivityApi";
+import { PostingGroup } from "../../../services/postingGroupsApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
@@ -148,6 +149,8 @@ export default function GradeOffPage() {
     );
   };
 
+  const formatLabel = (group: PostingGroup) => `${group.number} ${group.description}`;
+
   return (
     <CustomFormsLayout<GradeOffFormData>
       notice={{ formType: GRADEOFF_STORAGE_KEY, onLoad: (data) => reset(data) }}
@@ -166,6 +169,7 @@ export default function GradeOffPage() {
                   fieldName={"job"}
                   labelKey={"description"}
                   valueKey={"number"}
+                  labelFormatter={formatLabel}
                   valueList={postingGroups}
                   loading={postingGroupsLoading}
                   placeholder="Job"
