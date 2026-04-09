@@ -17,8 +17,7 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import * as React from "react";
 import LoadingSpinner from "../../components/framework/LoadingSpinner";
-import { useMaintenanceStore } from "../../store/maintenanceStore";
-import { MaintenanceHistoryAsset } from "../../store/types/maintenance";
+import { MaintenanceAssetDetails, MaintenanceHistoryAsset } from "../../store/types/maintenance";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -81,11 +80,14 @@ const formatCurrency = (amount: number): string => {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
 };
 
-export default function MaintenanceHistoryDataTable() {
+interface Props {
+  selectedAsset: MaintenanceAssetDetails | null;
+  isLoading: boolean;
+}
+
+export default function MaintenanceHistoryDataTable({ selectedAsset: selectedMaintenanceAsset, isLoading }: Props) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
-  const { selectedMaintenanceAsset, isLoading } = useMaintenanceStore();
 
   const historyData = selectedMaintenanceAsset?.history || [];
 

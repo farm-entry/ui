@@ -13,11 +13,11 @@ import {
   TypeAheadOption
 } from "../../components/inputs";
 import CustomFormsLayout from "../../layouts/forms";
+import { maintenanceService } from "../../services/maintenanceApi";
 import { useConfirmationStore } from "../../store/confirmationStore";
 import { useFormStorageStore } from "../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../store/globalAlertStore";
-import { useMaintenanceStore } from "../../store/maintenanceStore";
-import { MaintenanceFormData } from "../../store/types/maintenance";
+import { MaintenanceAsset, MaintenanceAssetDetails, MaintenanceFormData } from "../../store/types/maintenance";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
 import MaintenanceHistory from "./MaintenanceHistory";
 
@@ -36,18 +36,10 @@ const defaultValues: MaintenanceFormData = {
 export default function MaintenancePage() {
   const navigate = useNavigate();
   const [initLoading, setInitLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [overlayOpen, setOverlayOpen] = useState(false);
-
-  const {
-    isLoading: isMaintenanceLoading,
-    maintenanceAssets,
-    selectedMaintenanceAsset,
-    getMaintenanceAssetDetails,
-    setSelectedMaintenanceAsset,
-    getMaintenanceAssets,
-    postMaintenance
-  } = useMaintenanceStore();
+  const [maintenanceAssets, setMaintenanceAssets] = useState<MaintenanceAsset[]>([]);
+  const [selectedMaintenanceAsset, setSelectedMaintenanceAsset] = useState<MaintenanceAssetDetails | null>(null);
+  const [isMaintenanceLoading, setIsMaintenanceLoading] = useState(false);
 
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const { setAlert } = useGlobalAlertStore();
@@ -66,12 +58,20 @@ export default function MaintenancePage() {
   useEffect(() => {
     let isMounted = true;
     setInitLoading(true);
-    const promises = maintenanceAssets.length === 0 ? [getMaintenanceAssets()] : [];
-
-    Promise.all(promises).then(() => {
-      if (isMounted) setInitLoading(false);
-    });
-
+    maintenanceService
+      .getMaintenanceAssets()
+      .then((assets) => {
+        if (isMounted) {
+          setMaintenanceAssets(assets);
+          setInitLoading(false);
+        }
+      })
+      .catch((error: unknown) => {
+        setAlert("error", error as Error);
+      })
+      .finally(() => {
+        setInitLoading(false);
+      });
     return () => {
       isMounted = false;
     };
@@ -86,7 +86,9 @@ export default function MaintenancePage() {
     }
 
     if (value.value && value.value !== selectedMaintenanceAsset?.number) {
-      const asset = await getMaintenanceAssetDetails(String(value.value));
+      setIsMaintenanceLoading(true);
+      const asset = await maintenanceService.getMaintenanceAssetDetails(String(value.value));
+      setIsMaintenanceLoading(false);
       if (asset) {
         setValue("asset", asset.number);
         setValue("type", asset.code);
@@ -111,17 +113,24 @@ export default function MaintenancePage() {
   };
 
   const onSubmit = async (data: MaintenanceFormData) => {
-    setIsSubmitting(true);
+    if (process.env.NODE_ENV === "development") {
+      console.log("All required fields validated successfully!");
+    }
+    setInitLoading(true);
     const state = { formData: data, section: "maintenance" };
-    postMaintenance(data)
+    maintenanceService
+      .postMaintenance(data)
       .then(() => {
+        if (process.env.NODE_ENV === "development") {
+          console.log("Form submitted:", data);
+        }
         navigate("/post-success", { state });
       })
       .catch((error: unknown) => {
         setAlert("error", error as Error);
       })
       .finally(() => {
-        setIsSubmitting(false);
+        setInitLoading(false);
       });
   };
 
@@ -138,8 +147,8 @@ export default function MaintenancePage() {
       }}
       headerOptions={{ button: { label: "reset", onClick: handleReset } }}
     >
-      {(initLoading || isSubmitting) && <LoadingSpinner />}
-      {!initLoading && !isSubmitting && (
+      {initLoading && <LoadingSpinner />}
+      {!initLoading && (
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2}>
             <Stack>
@@ -254,7 +263,7 @@ export default function MaintenancePage() {
       )}
 
       <Overlay open={overlayOpen} onClose={() => setOverlayOpen(false)} title="Maintenance History">
-        <MaintenanceHistory />
+        <MaintenanceHistory selectedAsset={selectedMaintenanceAsset} isLoading={isMaintenanceLoading} />
       </Overlay>
 
       <CustomConfirmation />

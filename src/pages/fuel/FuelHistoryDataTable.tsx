@@ -17,8 +17,7 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import * as React from "react";
 import LoadingSpinner from "../../components/framework/LoadingSpinner";
-import { useFuelStore } from "../../store/fuelStore";
-import { FuelHistory } from "../../store/types/fuel";
+import { FuelAssetDetails, FuelHistory } from "../../store/types/fuel";
 
 interface TablePaginationActionsProps {
   count: number;
@@ -89,11 +88,14 @@ const calculateEfficiency = (amount: number, quantity: number): string => {
   return `$${(amount / quantity).toFixed(2)}/gal`;
 };
 
-export default function FuelHistoryDataTable() {
+interface Props {
+  selectedAsset: FuelAssetDetails | null;
+  isLoading: boolean;
+}
+
+export default function FuelHistoryDataTable({ selectedAsset: selectedFuelAsset, isLoading }: Props) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-
-  const { selectedFuelAsset, isLoading } = useFuelStore();
 
   const historyData = selectedFuelAsset?.history || [];
 

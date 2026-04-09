@@ -1,12 +1,13 @@
 import React from "react";
 import { Card, CardContent, Typography, Stack, Paper } from "@mui/material";
 import { groupBy, map, maxBy, minBy, sumBy, takeRight, reverse } from "lodash";
-import { useMaintenanceStore } from "../../store/maintenanceStore";
-import { MaintenanceHistoryAsset } from "../../store/types/maintenance";
+import { MaintenanceAssetDetails, MaintenanceHistoryAsset } from "../../store/types/maintenance";
 
-const MaintenanceHistorySummary: React.FC = () => {
-  const { selectedMaintenanceAsset } = useMaintenanceStore();
+interface Props {
+  selectedAsset: MaintenanceAssetDetails | null;
+}
 
+const MaintenanceHistorySummary: React.FC<Props> = ({ selectedAsset: selectedMaintenanceAsset }) => {
   if (!selectedMaintenanceAsset?.history || selectedMaintenanceAsset.history.length === 0) {
     return (
       <Card>

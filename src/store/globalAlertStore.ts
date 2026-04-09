@@ -23,7 +23,12 @@ export const useGlobalAlertStore = create<GlobalAlertState>()(
       title: undefined,
 
       setAlert: (severity: AlertSeverity, message: string | Error, title?: string) => {
-        const resolvedMessage = message instanceof Error ? message.message : message;
+        const resolvedMessage =
+          typeof message === "string"
+            ? message
+            : typeof (message as { message?: unknown }).message === "string"
+              ? (message as { message: string }).message
+              : String(message);
         if (severity === "error") reportLastFormSubmit("failure", resolvedMessage);
         set({ open: true, severity, message: resolvedMessage, title });
       },

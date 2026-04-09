@@ -1,11 +1,13 @@
 import React from "react";
 import { Card, CardContent, Typography, Stack, Box, Paper } from "@mui/material";
 import { groupBy, map, maxBy, minBy, sumBy, takeRight, reverse } from "lodash";
-import { useFuelStore } from "../../store/fuelStore";
-import { FuelHistory } from "../../store/types/fuel";
+import { FuelAssetDetails, FuelHistory } from "../../store/types/fuel";
 
-const FuelHistorySummary: React.FC = () => {
-  const { selectedFuelAsset } = useFuelStore();
+interface Props {
+  selectedAsset: FuelAssetDetails | null;
+}
+
+const FuelHistorySummary: React.FC<Props> = ({ selectedAsset: selectedFuelAsset }) => {
 
   if (!selectedFuelAsset?.history || selectedFuelAsset.history.length === 0) {
     return (

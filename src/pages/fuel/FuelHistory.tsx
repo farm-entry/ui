@@ -1,19 +1,24 @@
 import { Card, CardContent, Stack, Typography } from "@mui/material";
-import { useFuelStore } from "../../store/fuelStore";
+import { FuelAssetDetails } from "../../store/types/fuel";
 import FuelHistoryDataTable from "./FuelHistoryDataTable";
 import FuelHistorySummary from "./FuelHistorySummary";
 
-export default function FuelHistory() {
+interface Props {
+  selectedAsset: FuelAssetDetails | null;
+  isLoading: boolean;
+}
+
+export default function FuelHistory({ selectedAsset, isLoading }: Props) {
   return (
     <Stack spacing={2}>
       <Typography variant="h6" gutterBottom>
         Fuel Summary (3 yr totals)
       </Typography>
-      <FuelHistorySummary />
+      <FuelHistorySummary selectedAsset={selectedAsset} />
       <Typography variant="h6" gutterBottom>
         Recent Entries
       </Typography>
-      <FuelHistoryDataTable />
+      <FuelHistoryDataTable selectedAsset={selectedAsset} isLoading={isLoading} />
     </Stack>
   );
 }

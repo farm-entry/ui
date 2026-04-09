@@ -16,9 +16,8 @@ import CustomFormsLayout from "../../layouts/forms";
 import { fuelService } from "../../services/fuelApi";
 import { useConfirmationStore } from "../../store/confirmationStore";
 import { useFormStorageStore } from "../../store/formStorageStore";
-import { useFuelStore } from "../../store/fuelStore";
 import { useGlobalAlertStore } from "../../store/globalAlertStore";
-import { FuelFormData } from "../../store/types/fuel";
+import { FuelAsset, FuelAssetDetails, FuelFormData } from "../../store/types/fuel";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
 import { toCamelCase } from "../../utils/strings";
 import FuelHistory from "./FuelHistory";
@@ -38,17 +37,10 @@ const defaultValues: FuelFormData = {
 export default function FuelPage() {
   const navigate = useNavigate();
   const [initLoading, setInitLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [overlayOpen, setOverlayOpen] = useState(false);
-
-  const {
-    isLoading: isFuelLoading,
-    fuelAssets,
-    selectedFuelAsset,
-    getFuelAssetDetails,
-    setSelectedFuelAsset,
-    getFuelAssets
-  } = useFuelStore();
+  const [fuelAssets, setFuelAssets] = useState<FuelAsset[]>([]);
+  const [selectedFuelAsset, setSelectedFuelAsset] = useState<FuelAssetDetails | null>(null);
+  const [isFuelLoading, setIsFuelLoading] = useState(false);
 
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const { setAlert } = useGlobalAlertStore();
@@ -67,15 +59,20 @@ export default function FuelPage() {
   useEffect(() => {
     let isMounted = true;
     setInitLoading(true);
-    const promises = [];
-    if (fuelAssets.length === 0) promises.push(getFuelAssets());
-
-    Promise.all(promises).then(() => {
-      if (isMounted) {
+    fuelService
+      .getFuelAssets()
+      .then((assets) => {
+        if (isMounted) {
+          setFuelAssets(assets);
+          setInitLoading(false);
+        }
+      })
+      .catch((error: unknown) => {
+        setAlert("error", error as Error);
+      })
+      .finally(() => {
         setInitLoading(false);
-      }
-    });
-
+      });
     return () => {
       isMounted = false;
     };
@@ -89,7 +86,9 @@ export default function FuelPage() {
     }
 
     if (value.value && value.value !== selectedFuelAsset?.number) {
-      const asset = await getFuelAssetDetails(String(value.value));
+      setIsFuelLoading(true);
+      const asset = await fuelService.getFuelAssetDetails(String(value.value));
+      setIsFuelLoading(false);
       if (asset) {
         setValue("asset", asset.number);
         setSelectedFuelAsset(asset);
@@ -114,7 +113,10 @@ export default function FuelPage() {
   };
 
   const onSubmit = async (data: FuelFormData) => {
-    setIsSubmitting(true);
+    if (process.env.NODE_ENV === "development") {
+      console.log("All required fields validated successfully!");
+    }
+    setInitLoading(true);
     const state = { formData: data, section: "fuel" };
     fuelService
       .postFuel(data)
@@ -128,7 +130,7 @@ export default function FuelPage() {
         setAlert("error", error as Error);
       })
       .finally(() => {
-        setIsSubmitting(false);
+        setInitLoading(false);
       });
   };
 
@@ -150,8 +152,8 @@ export default function FuelPage() {
       }}
       headerOptions={{ button: { label: "reset", onClick: handleReset } }}
     >
-      {(initLoading || isSubmitting) && <LoadingSpinner />}
-      {!initLoading && !isSubmitting && (
+      {initLoading && <LoadingSpinner />}
+      {!initLoading && (
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2}>
             <Stack>
@@ -274,7 +276,7 @@ export default function FuelPage() {
       )}
 
       <Overlay open={overlayOpen} onClose={() => setOverlayOpen(false)} title="Fuel History">
-        <FuelHistory />
+        <FuelHistory selectedAsset={selectedFuelAsset} isLoading={isFuelLoading} />
       </Overlay>
 
       <CustomConfirmation />
