@@ -6,7 +6,7 @@ import {
   ListItemText,
   Menu,
   MenuItem,
-  Typography,
+  Typography
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router";
@@ -69,7 +69,12 @@ export default function AccountMenu() {
                   {role}
                 </Typography>
                 {domain && (
-                  <Typography component="span" variant="caption" display="block" color="text.secondary">
+                  <Typography
+                    component="span"
+                    variant="caption"
+                    display="block"
+                    color="text.secondary"
+                  >
                     {domain}
                   </Typography>
                 )}

@@ -26,7 +26,7 @@ const CustomPageContainer = ({ headerOptions, children, ...props }: CustomPageCo
         header: () => (
           <>
             {breadcrumbs.length > 0 && (
-              <Breadcrumbs aria-label="breadcrumb">
+              <Breadcrumbs aria-label="breadcrumb" separator=">">
                 {breadcrumbs.map(({ title, path }, i) =>
                   i < breadcrumbs.length - 1 && path ? (
                     <Link

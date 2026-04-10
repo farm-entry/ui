@@ -45,7 +45,7 @@ const StyledButton = styled(MuiButton)<{ center?: boolean; fullWidth?: boolean }
   // Tertiary variant
   "&.variant-text": {
     backgroundColor: "transparent",
-    color: theme.palette.text.primary,
+    color: theme.palette.primary.main,
     "&:hover": {
       backgroundColor: theme.palette.action.hover,
     },

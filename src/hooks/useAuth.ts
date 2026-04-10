@@ -16,7 +16,7 @@ function msUntilExpiry(token: string): number | null {
 }
 
 const REFRESH_BUFFER_MS = 2 * 60 * 1000;  // refresh 2 min before expiry
-const IDLE_TIMEOUT_MS   = 15 * 60 * 1000; // match access token lifetime
+const IDLE_TIMEOUT_MS = 15 * 60 * 1000; // match access token lifetime
 
 export function useAuth() {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,8 +24,8 @@ export function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const { setUser, resetUser } = useUserStore();
   const { fetchDomains } = useConfigStore();
-  const refreshTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastActivityRef  = useRef<number>(Date.now());
+  const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastActivityRef = useRef<number>(Date.now());
 
   // Update last-activity timestamp on user interaction
   useEffect(() => {
@@ -93,7 +93,6 @@ export function useAuth() {
         });
         setIsAuthenticated(true);
         scheduleProactiveRefresh();
-        fetchDomains().catch(() => { });
       })
       .catch(() => {
         tokenStorage.clear();
