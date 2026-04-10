@@ -19,6 +19,7 @@ import { useFormStorageStore } from "../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../store/globalAlertStore";
 import { MaintenanceAsset, MaintenanceAssetDetails, MaintenanceFormData } from "../../store/types/maintenance";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
+import { numberDescriptionPostingGroupFormatter } from "../../utils/strings";
 import MaintenanceHistory from "./MaintenanceHistory";
 
 const MAINTENANCE_STORAGE_KEY = "maintenance-form";
@@ -159,6 +160,7 @@ export default function MaintenancePage() {
                 fieldName="asset"
                 labelKey="description"
                 valueKey="number"
+                labelFormatter={numberDescriptionPostingGroupFormatter}
                 valueList={maintenanceAssets}
                 placeholder="Select an Asset..."
               />

@@ -19,7 +19,7 @@ import { useFormStorageStore } from "../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../store/globalAlertStore";
 import { FuelAsset, FuelAssetDetails, FuelFormData } from "../../store/types/fuel";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
-import { toCamelCase } from "../../utils/strings";
+import { numberDescriptionPostingGroupFormatter, toCamelCase } from "../../utils/strings";
 import FuelHistory from "./FuelHistory";
 
 const FUEL_STORAGE_KEY = "fuel-form";
@@ -161,6 +161,7 @@ export default function FuelPage() {
                 {...register("asset", { required: "Fuel asset is required." })}
                 handleChange={setFuelAsset}
                 watch={watch}
+                labelFormatter={numberDescriptionPostingGroupFormatter}
                 fieldName="asset"
                 labelKey="description"
                 valueKey="number"

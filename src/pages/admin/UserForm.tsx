@@ -13,12 +13,14 @@ import {
   Select,
   Stack,
   Switch,
-  Typography,
+  Typography
 } from "@mui/material";
 import { Controller, useForm } from "react-hook-form";
 import { TextField } from "../../components/inputs";
 import { useAdminStore } from "../../store/adminStore";
+import { useUserStore } from "../../store/userStore";
 import { RolesType } from "../../store/types/user";
+import { assignableRoles } from "../../utils/roles";
 
 export interface UserFormData {
   username: string;
@@ -39,12 +41,6 @@ interface UserFormProps {
   editMode?: boolean;
 }
 
-const ROLE_OPTIONS = [
-  { value: "user", label: "User" },
-  { value: "admin", label: "Admin" },
-  { value: "app_admin", label: "App Admin" }
-];
-
 export default function UserForm({
   onSubmit,
   onCancel,
@@ -52,6 +48,8 @@ export default function UserForm({
   editMode = false
 }: UserFormProps) {
   const { domains: availableDomains } = useAdminStore();
+  const { role: currentUserRole } = useUserStore();
+  const roleOptions = assignableRoles(currentUserRole);
 
   const {
     register,
@@ -182,7 +180,7 @@ export default function UserForm({
                 onChange={(e) => field.onChange(e.target.value)}
                 input={<OutlinedInput label="Role" />}
               >
-                {ROLE_OPTIONS.map((opt) => (
+                {roleOptions.map((opt) => (
                   <MenuItem key={opt.value} value={opt.value}>
                     {opt.label}
                   </MenuItem>

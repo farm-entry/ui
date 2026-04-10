@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { tokenStorage } from '../services/tokenStorage';
 import { userApi, LoginCredentials } from '../services/userApi';
 import { useUserStore } from '../store/userStore';
+import { useConfigStore } from '../store/configStore';
 
 // Parse JWT expiry — returns ms until expiry, or null
 function msUntilExpiry(token: string): number | null {
@@ -22,6 +23,7 @@ export function useAuth() {
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const { setUser, resetUser } = useUserStore();
+  const { fetchDomains } = useConfigStore();
   const refreshTimerRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastActivityRef  = useRef<number>(Date.now());
 
@@ -91,6 +93,7 @@ export function useAuth() {
         });
         setIsAuthenticated(true);
         scheduleProactiveRefresh();
+        fetchDomains().catch(() => { });
       })
       .catch(() => {
         tokenStorage.clear();
@@ -115,6 +118,7 @@ export function useAuth() {
       });
       setIsAuthenticated(true);
       scheduleProactiveRefresh();
+      fetchDomains().catch(() => { });
       return response;
     } catch (err) {
       setIsAuthenticated(false);

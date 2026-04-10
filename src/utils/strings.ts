@@ -1,3 +1,5 @@
+import { PostingGroup } from "../services/postingGroupsApi";
+
 export function toCamelCase(str: string): string {
     try {
         return str[0].toUpperCase() + str.slice(1).toLowerCase();
@@ -5,4 +7,8 @@ export function toCamelCase(str: string): string {
         console.error("Error converting string to camelCase:", error);
         return str;
     }
+}
+
+export function numberDescriptionPostingGroupFormatter(job: PostingGroup): string {
+    return `${job.number} ${job.description}`;
 }

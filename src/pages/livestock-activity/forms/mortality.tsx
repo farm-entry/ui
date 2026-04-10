@@ -17,6 +17,7 @@ import type { EventType } from "../../../store/types/livestockActivity";
 import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { MORTALITY_STORAGE_KEY } from "./constants-livestock.json";
+import { numberDescriptionPostingGroupFormatter } from "../../../utils/strings";
 
 const FORM_STORAGE_HOURS = 48;
 
@@ -179,6 +180,7 @@ export default function MortalityPage() {
                   fieldName={"job"}
                   labelKey={"description"}
                   valueKey={"number"}
+                  labelFormatter={numberDescriptionPostingGroupFormatter}
                   valueList={postingGroups}
                   loading={postingGroupsLoading}
                   placeholder="Job"

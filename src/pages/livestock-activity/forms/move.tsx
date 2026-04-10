@@ -6,7 +6,6 @@ import LoadingSpinner from "../../../components/framework/LoadingSpinner";
 import { DatePicker, TextArea, TextField, TypeAhead } from "../../../components/inputs";
 import DenseTable from "../../../components/table/DenseTable";
 import CustomFormsLayout from "../../../layouts/forms";
-import { PostingGroup } from "../../../services/postingGroupsApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
@@ -17,6 +16,7 @@ import { MOVE_STORAGE_KEY } from "./constants-livestock.json";
 import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { useNavigate } from "react-router";
 import { FormData } from "../../../store/types/forms";
+import { numberDescriptionPostingGroupFormatter } from "../../../utils/strings";
 const FORM_STORAGE_HOURS = 48;
 
 interface MoveFormData extends FormData {
@@ -155,8 +155,6 @@ export default function MovePage() {
     }
   };
 
-  const formatLabel = (job: PostingGroup) => `${job.number} ${job.description}`;
-
   return (
     <CustomFormsLayout<MoveFormData>
       notice={{ formType: MOVE_STORAGE_KEY, onLoad: (data) => reset(data) }}
@@ -173,7 +171,7 @@ export default function MovePage() {
                   handleChange={(v) => setJob(v, "fromJob")}
                   watch={watch}
                   fieldName={"fromJob"}
-                  labelFormatter={formatLabel}
+                  labelFormatter={numberDescriptionPostingGroupFormatter}
                   labelKey={"description"}
                   valueKey={"number"}
                   valueList={postingGroups}
@@ -188,7 +186,7 @@ export default function MovePage() {
                   handleChange={(v) => setJob(v, "toJob")}
                   watch={watch}
                   fieldName={"toJob"}
-                  labelFormatter={formatLabel}
+                  labelFormatter={numberDescriptionPostingGroupFormatter}
                   labelKey={"description"}
                   valueKey={"number"}
                   valueList={postingGroups}

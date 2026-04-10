@@ -8,7 +8,7 @@ export default function CustomDashboardLayout() {
   return (
     <DashboardLayout slots={{ toolbarActions: ToolbarActions, toolbarAccount: AccountMenu }}>
       <DomainNotice />
-<Outlet />
+      <Outlet />
     </DashboardLayout>
   );
 }

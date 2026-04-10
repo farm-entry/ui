@@ -7,7 +7,6 @@ import { DatePicker, TextArea, TextField, TypeAhead } from "../../../components/
 import DenseTable from "../../../components/table/DenseTable";
 import CustomFormsLayout from "../../../layouts/forms";
 import { livestockActivityApi } from "../../../services/livestockActivityApi";
-import { PostingGroup } from "../../../services/postingGroupsApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
@@ -17,6 +16,7 @@ import { FormData } from "../../../store/types/forms";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { PURCHASE_STORAGE_KEY } from "./constants-livestock.json";
 import { useNavigate } from "react-router";
+import { numberDescriptionPostingGroupFormatter } from "../../../utils/strings";
 
 const FORM_STORAGE_HOURS = 48;
 
@@ -155,8 +155,6 @@ export default function PurchasePage() {
     );
   };
 
-  const formatLabel = (group: PostingGroup) => `${group.number} ${group.description}`;
-
   return (
     <CustomFormsLayout<PurchaseFormData>
       notice={{
@@ -177,7 +175,7 @@ export default function PurchasePage() {
                 fieldName={"group"}
                 labelKey={"description"}
                 valueKey={"number"}
-                labelFormatter={formatLabel}
+                labelFormatter={numberDescriptionPostingGroupFormatter}
                 valueList={postingGroups}
                 loading={postingGroupsLoading}
                 placeholder="Group"

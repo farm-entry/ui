@@ -11,7 +11,6 @@ import UpdateIcon from "@mui/icons-material/Update";
 import { SvgIconProps } from "@mui/material";
 import React from "react";
 import BabyBottleIcon from "./assets/BabyBottleIcon";
-import WeanIcon from "./assets/WeanIcon";
 import HealthAndSafetyOutlinedIcon from "@mui/icons-material/HealthAndSafetyOutlined";
 export interface RouteConfig {
   segment: string;

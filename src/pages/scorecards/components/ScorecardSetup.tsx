@@ -5,6 +5,7 @@ import { useFormContext } from "react-hook-form";
 import { TypeAhead } from "../../../components/inputs";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { numberDescriptionPostingGroupFormatter } from "../../../utils/strings";
 import { useScorecardStore } from "../../../store/scorecardStore";
 
 export default function ScorecardSetup() {
@@ -55,6 +56,7 @@ export default function ScorecardSetup() {
             fieldName={"job"}
             labelKey={"description"}
             valueKey={"number"}
+            labelFormatter={numberDescriptionPostingGroupFormatter}
             valueList={postingGroups}
             loading={postingGroupsLoading}
             placeholder="Select Job"

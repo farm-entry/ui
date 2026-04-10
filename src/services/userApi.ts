@@ -1,4 +1,5 @@
 import { UserType } from '../store/types/user';
+import type { DomainConfig } from '../store/types/config';
 import { apiFetch } from './apiFetch';
 import { tokenStorage } from './tokenStorage';
 
@@ -71,6 +72,12 @@ class UserApi {
   async fetchDomains(): Promise<string[]> {
     const res = await apiFetch('/api/admin/domains');
     if (!res.ok) throw new Error('Failed to fetch domains');
+    return res.json();
+  }
+
+  async fetchDomainConfigs(): Promise<DomainConfig[]> {
+    const res = await apiFetch('/api/config/domains');
+    if (!res.ok) throw new Error('Failed to fetch domain configs');
     return res.json();
   }
 
