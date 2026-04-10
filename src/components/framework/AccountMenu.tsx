@@ -1,21 +1,36 @@
-import { AccountCircle, Settings, SwapHoriz } from "@mui/icons-material";
 import {
+  AccountCircle,
+  ExpandLess,
+  ExpandMore,
+  Logout,
+  Settings,
+  SwapHoriz
+} from "@mui/icons-material";
+import {
+  Avatar,
+  Collapse,
   Divider,
   IconButton,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
+  MenuList,
   Typography
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { useAuth } from "../../hooks/useAuth";
+import { useConfirmationStore } from "../../store/confirmationStore";
 import { useUserStore } from "../../store/userStore";
 
 export default function AccountMenu() {
+  const { logout } = useAuth();
+  const { showConfirmation } = useConfirmationStore();
   const { firstName, username, role, domain, domains, switchDomain } = useUserStore();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [domainsOpen, setDomainsOpen] = useState(false);
   const [switching, setSwitching] = useState(false);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -24,6 +39,7 @@ export default function AccountMenu() {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+    setDomainsOpen(false);
   };
 
   const handleSwitchDomain = async (target: string) => {
@@ -37,8 +53,9 @@ export default function AccountMenu() {
     }
   };
 
-  // Domains the user can switch to (exclude current active domain)
   const switchableDomains = domains.filter((d) => d !== domain);
+  const displayName = firstName || username;
+  const initials = displayName?.charAt(0).toUpperCase();
 
   return (
     <>
@@ -59,54 +76,85 @@ export default function AccountMenu() {
         onClose={handleMenuClose}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
+        slotProps={{ paper: { sx: { width: 240, mt: 0.5 } } }}
       >
-        <MenuItem disabled>
-          <ListItemText
-            primary={firstName || username}
-            secondary={
-              <>
-                <Typography component="span" variant="caption" display="block">
-                  {role}
-                </Typography>
-                {domain && (
-                  <Typography
-                    component="span"
-                    variant="caption"
-                    display="block"
-                    color="text.secondary"
-                  >
-                    {domain}
+        <MenuList dense disablePadding>
+          {/* Identity block */}
+          <MenuItem disabled sx={{ opacity: "1 !important", py: 1.5, gap: 1.5 }}>
+            <Avatar sx={{ width: 32, height: 32, bgcolor: "primary.main", fontSize: 14 }}>
+              {initials}
+            </Avatar>
+            <ListItemText
+              primary={displayName}
+              secondary={
+                <>
+                  <Typography component="span" variant="caption" display="block">
+                    {role}
                   </Typography>
-                )}
-              </>
-            }
-          />
-        </MenuItem>
-
-        {switchableDomains.length > 0 && <Divider />}
-
-        {switchableDomains.map((d) => (
-          <MenuItem key={d} onClick={() => handleSwitchDomain(d)} disabled={switching}>
-            <ListItemIcon>
-              <SwapHoriz fontSize="small" />
-            </ListItemIcon>
-            <ListItemText primary={d} secondary="Switch to" />
+                  {domain && (
+                    <Typography
+                      component="span"
+                      variant="caption"
+                      display="block"
+                      color="text.secondary"
+                    >
+                      {domain}
+                    </Typography>
+                  )}
+                </>
+              }
+            />
           </MenuItem>
-        ))}
 
-        <Divider />
+          {switchableDomains.length > 0 && <Divider />}
+          {switchableDomains.length > 0 && (
+            <MenuItem onClick={() => setDomainsOpen((prev) => !prev)}>
+              <ListItemIcon>
+                <SwapHoriz fontSize="small" />
+              </ListItemIcon>
+              <ListItemText primary="Switch Domain" />
+              {domainsOpen ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+            </MenuItem>
+          )}
+          <Collapse in={domainsOpen} timeout="auto" unmountOnExit>
+            {switchableDomains.map((d) => (
+              <MenuItem
+                key={d}
+                onClick={() => handleSwitchDomain(d)}
+                disabled={switching}
+                sx={{ pl: 4 }}
+              >
+                <ListItemText primary={d} slotProps={{ primary: { variant: "body2" } }} />
+              </MenuItem>
+            ))}
+          </Collapse>
 
-        <MenuItem
-          onClick={() => {
-            handleMenuClose();
-            navigate("/settings");
-          }}
-        >
-          <ListItemIcon>
-            <Settings fontSize="small" />
-          </ListItemIcon>
-          <ListItemText>Settings</ListItemText>
-        </MenuItem>
+          <Divider />
+
+          <MenuItem
+            onClick={() => {
+              handleMenuClose();
+              navigate("/settings");
+            }}
+          >
+            <ListItemIcon>
+              <Settings fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Settings" />
+          </MenuItem>
+
+          <MenuItem
+            onClick={() => {
+              handleMenuClose();
+              showConfirmation("Logout", "Are you sure you want to logout?", logout);
+            }}
+          >
+            <ListItemIcon>
+              <Logout fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
+          </MenuItem>
+        </MenuList>
       </Menu>
     </>
   );

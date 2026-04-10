@@ -2,7 +2,6 @@ import { Button, Divider, FormHelperText, Stack, Typography } from "@mui/materia
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import CustomConfirmation from "../../components/framework/CustomConfirmation";
 import LoadingSpinner from "../../components/framework/LoadingSpinner";
 import Overlay from "../../components/framework/Overlay";
 import {
@@ -268,7 +267,6 @@ export default function MaintenancePage() {
         <MaintenanceHistory selectedAsset={selectedMaintenanceAsset} isLoading={isMaintenanceLoading} />
       </Overlay>
 
-      <CustomConfirmation />
     </CustomFormsLayout>
   );
 }

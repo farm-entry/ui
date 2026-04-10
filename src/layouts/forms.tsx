@@ -2,7 +2,6 @@ import { Card } from "@mui/material";
 import * as React from "react";
 import { useLocation, useNavigate } from "react-router";
 import { FormAnalyticsContext, useFormAnalytics } from "../analytics";
-import CustomConfirmation from "../components/framework/CustomConfirmation";
 import CustomNotice from "../components/framework/CustomNotice";
 import CustomPageContainer, { HeaderOptions } from "../components/framework/CustomPageContainer";
 import { Button } from "../components/inputs";
@@ -42,8 +41,7 @@ export default function CustomFormsLayout<T>({
         <Card variant="outlined" sx={{ mt: 0, mb: 2, p: 2 }}>
           {children}
         </Card>
-        <CustomConfirmation />
-        <Button variant="text" onClick={handleCancel}>Cancel</Button>
+<Button variant="text" onClick={handleCancel}>Cancel</Button>
       </CustomPageContainer>
     </FormAnalyticsContext.Provider>
   );

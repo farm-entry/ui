@@ -6,7 +6,6 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import CustomConfirmation from "../../components/framework/CustomConfirmation";
 import InventoryItemList from "./InventoryItemList";
 import LoadingSpinner from "../../components/framework/LoadingSpinner";
 import {
@@ -178,7 +177,6 @@ export default function InventoryConsumptionPage() {
         </form>
       )}
 
-      <CustomConfirmation />
     </CustomFormsLayout>
   );
 }

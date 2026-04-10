@@ -10,7 +10,6 @@ import {
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import CustomConfirmation from "../../../components/framework/CustomConfirmation";
 import LoadingSpinner from "../../../components/framework/LoadingSpinner";
 import { DatePicker, TextArea, TextField, TypeAhead } from "../../../components/inputs";
 import DenseTable from "../../../components/table/DenseTable";
@@ -339,7 +338,6 @@ export default function QuantityAdjPage() {
         </form>
       )}
 
-      <CustomConfirmation />
     </CustomFormsLayout>
   );
 }

@@ -2,7 +2,6 @@ import { Button, Divider, FormHelperText, Stack, Typography } from "@mui/materia
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import CustomConfirmation from "../../../components/framework/CustomConfirmation";
 import LoadingSpinner from "../../../components/framework/LoadingSpinner";
 import { DatePicker, EventNumberInput, TextArea, TypeAhead } from "../../../components/inputs";
 import CustomFormsLayout from "../../../layouts/forms";
@@ -301,7 +300,6 @@ export default function MortalityPage() {
             </Stack>
           </form>
 
-          <CustomConfirmation />
         </>
       )}
     </CustomFormsLayout>

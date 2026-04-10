@@ -1,7 +1,6 @@
 import { Button, Divider, FormHelperText, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import CustomConfirmation from "../../../components/framework/CustomConfirmation";
 import LoadingSpinner from "../../../components/framework/LoadingSpinner";
 import { DatePicker, TextArea, TextField, TypeAhead } from "../../../components/inputs";
 import DenseTable from "../../../components/table/DenseTable";
@@ -307,7 +306,6 @@ export default function MovePage() {
             </Stack>
           </form>
 
-          <CustomConfirmation />
         </>
       )}
     </CustomFormsLayout>

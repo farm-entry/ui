@@ -1,7 +1,6 @@
 import { AdminPanelSettings, Refresh } from "@mui/icons-material";
 import { IconButton, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
-import CustomConfirmation from "../../components/framework/CustomConfirmation";
 import CustomHeader from "../../components/framework/CustomHeader";
 import { Select } from "../../components/inputs";
 import { useAdminStore } from "../../store/adminStore";
@@ -97,7 +96,6 @@ export default function AdminPage() {
           onReset={resetPassword}
         />
 
-        <CustomConfirmation />
       </Stack>
     </Stack>
   );

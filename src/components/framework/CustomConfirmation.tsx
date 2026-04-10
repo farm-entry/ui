@@ -12,16 +12,25 @@ export default function CustomConfirmation() {
   const { open, title, message, handleConfirm, handleCancel } = useConfirmationStore();
 
   return (
-    <Dialog open={open} onClose={handleCancel} disableRestoreFocus>
-      <DialogTitle>{title}</DialogTitle>
-      <DialogContent sx={{ p: 2 }}>
-        <DialogContentText>{message}</DialogContentText>
+    <Dialog
+      open={open}
+      onClose={handleCancel}
+      disableRestoreFocus
+      aria-labelledby="confirmation-dialog-title"
+      aria-describedby="confirmation-dialog-description"
+      role="alertdialog"
+    >
+      <DialogTitle id="confirmation-dialog-title">{title}</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="confirmation-dialog-description">{message}</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCancel} autoFocus color="error" variant="contained">
+        <Button onClick={handleCancel} autoFocus>
           Cancel
         </Button>
-        <Button onClick={handleConfirm}>Confirm</Button>
+        <Button onClick={handleConfirm} color="error" variant="outlined">
+          Confirm
+        </Button>
       </DialogActions>
     </Dialog>
   );
