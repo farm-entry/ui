@@ -170,7 +170,7 @@ export default function GradeOffPage() {
                   labelFormatter={numberDescriptionPostingGroupFormatter}
                   valueList={postingGroups}
                   loading={postingGroupsLoading}
-                  placeholder="group"
+                  placeholder="Group"
                 />
                 {errors.group && <FormHelperText error>{errors.group.message}</FormHelperText>}
               </Stack>
