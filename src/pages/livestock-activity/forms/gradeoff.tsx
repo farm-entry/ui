@@ -27,7 +27,7 @@ import { numberDescriptionPostingGroupFormatter } from "../../../utils/strings";
 const FORM_STORAGE_HOURS = 48;
 
 interface GradeOffFormData extends FormData {
-  job: string | number | null;
+  group: string | number | null;
   healthStatus: string | number | null;
   event: string | number | null;
   postingDate: string;
@@ -38,7 +38,7 @@ interface GradeOffFormData extends FormData {
 
 const defaultValues: GradeOffFormData = {
   form: "GRADEOFF",
-  job: null,
+  group: null,
   healthStatus: null,
   event: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
@@ -88,12 +88,12 @@ export default function GradeOffPage() {
     setValue("quantities", []);
   }, [eventValue, eventTypes, setValue]);
 
-  const jobValue = watch("job");
+  const groupValue = watch("group");
   useEffect(() => {
-    if (jobValue) {
-      getPostingGroupDetails(jobValue);
+    if (groupValue) {
+      getPostingGroupDetails(groupValue);
     }
-  }, [jobValue, getPostingGroupDetails]);
+  }, [groupValue, getPostingGroupDetails]);
 
   useEffect(() => {
     let isMounted = true;
@@ -161,18 +161,18 @@ export default function GradeOffPage() {
             <Stack spacing={2}>
               <Stack>
                 <TypeAhead
-                  {...register("job", { required: "Job is required" })}
-                  handleChange={(v) => setValue("job", v?.value ?? null)}
+                  {...register("group", { required: "Group is required" })}
+                  handleChange={(v) => setValue("group", v?.value ?? null)}
                   watch={watch}
-                  fieldName={"job"}
+                  fieldName={"group"}
                   labelKey={"description"}
                   valueKey={"number"}
                   labelFormatter={numberDescriptionPostingGroupFormatter}
                   valueList={postingGroups}
                   loading={postingGroupsLoading}
-                  placeholder="Job"
+                  placeholder="group"
                 />
-                {errors.job && <FormHelperText error>{errors.job.message}</FormHelperText>}
+                {errors.group && <FormHelperText error>{errors.group.message}</FormHelperText>}
               </Stack>
 
               <Stack>
@@ -188,15 +188,15 @@ export default function GradeOffPage() {
                   defaultValue={
                     postingGroupDetails?.healthStatus?.Code
                       ? {
-                          label: postingGroupDetails.healthStatus.Description,
-                          value: postingGroupDetails.healthStatus.Code
-                        }
+                        label: postingGroupDetails.healthStatus.Description,
+                        value: postingGroupDetails.healthStatus.Code
+                      }
                       : null
                   }
                   placeholder={
                     postingGroupDetails?.healthStatus?.Description || healthStatuses.length > 0
                       ? "Health Status"
-                      : "Select a valid job"
+                      : "Select a valid group"
                   }
                 />
                 {errors.healthStatus && (

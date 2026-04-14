@@ -22,7 +22,7 @@ import { numberDescriptionPostingGroupFormatter } from "../../../utils/strings";
 const FORM_STORAGE_HOURS = 48;
 
 interface MortalityFormData extends FormData {
-  job: string | number | null;
+  group: string | number | null;
   healthStatus: string | number | null;
   postingDate: string;
   quantities: LivestockQuantity[];
@@ -31,7 +31,7 @@ interface MortalityFormData extends FormData {
 
 const defaultValues: MortalityFormData = {
   form: "MORTALITY",
-  job: null,
+  group: null,
   healthStatus: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
   quantities: [],
@@ -74,7 +74,7 @@ export default function MortalityPage() {
     mode: "onSubmit"
   });
 
-  const jobValue = watch("job");
+  const groupValue = watch("group");
 
   // Fetch posting groups on mount
   useEffect(() => {
@@ -96,19 +96,19 @@ export default function MortalityPage() {
     };
   }, []);
 
-  // Fetch events when job is selected
+  // Fetch events when group is selected
   useEffect(() => {
-    if (!jobValue) {
+    if (!groupValue) {
       setEventReasons([]);
       return;
     }
 
     // Fetch posting group details
-    getPostingGroupDetails(jobValue);
+    getPostingGroupDetails(groupValue);
 
-    // Fetch events for the selected job
+    // Fetch events for the selected group
     setEventsLoading(true);
-    getEvents("MORTALITY", `${jobValue}`)
+    getEvents("MORTALITY", `${groupValue}`)
       .then((x) => {
         setEventReasons(filterEventReasons(x?.events));
         setEventsLoading(false);
@@ -117,7 +117,7 @@ export default function MortalityPage() {
         setAlert("error", error as Error);
         setEventsLoading(false);
       });
-  }, [jobValue]);
+  }, [groupValue]);
 
   const filterEventReasons = (ev: EventType[] = []) =>
     ev?.find((et) => et.code === "MORTALITY")?.reasons || ev[0]?.reasons || [];
@@ -148,7 +148,7 @@ export default function MortalityPage() {
 
   useEffect(() => {
     clearAlert();
-  }, [jobValue]);
+  }, [groupValue]);
 
   const handleReset = () => {
     showConfirmation(
@@ -174,18 +174,18 @@ export default function MortalityPage() {
             <Stack spacing={2}>
               <Stack>
                 <TypeAhead
-                  {...register("job", { required: "Job is required" })}
-                  handleChange={(v) => setValue("job", v?.value ?? null)}
+                  {...register("group", { required: "Group is required" })}
+                  handleChange={(v) => setValue("group", v?.value ?? null)}
                   watch={watch}
-                  fieldName={"job"}
+                  fieldName={"group"}
                   labelKey={"description"}
                   valueKey={"number"}
                   labelFormatter={numberDescriptionPostingGroupFormatter}
                   valueList={postingGroups}
                   loading={postingGroupsLoading}
-                  placeholder="Job"
+                  placeholder="Group"
                 />
-                {errors.job && <FormHelperText error>{errors.job.message}</FormHelperText>}
+                {errors.group && <FormHelperText error>{errors.group.message}</FormHelperText>}
               </Stack>
 
               {eventsLoading && (
@@ -202,7 +202,7 @@ export default function MortalityPage() {
                       handleChange={(v) =>
                         setValue("healthStatus", v?.value ? String(v.value) : null)
                       }
-                      disabled={!jobValue || eventsLoading}
+                      disabled={!groupValue || eventsLoading}
                       loading={eventsLoading}
                       watch={watch}
                       valueList={healthStatuses}
@@ -212,15 +212,15 @@ export default function MortalityPage() {
                       defaultValue={
                         postingGroupDetails?.healthStatus?.Code
                           ? {
-                              label: postingGroupDetails.healthStatus.Description,
-                              value: postingGroupDetails.healthStatus.Code
-                            }
+                            label: postingGroupDetails.healthStatus.Description,
+                            value: postingGroupDetails.healthStatus.Code
+                          }
                           : null
                       }
                       placeholder={
                         postingGroupDetails?.healthStatus?.Description || healthStatuses.length > 0
                           ? "Health Status"
-                          : "Select a valid job"
+                          : "Select a valid group"
                       }
                     />
                     {errors.healthStatus && (
