@@ -93,6 +93,7 @@ export const TypeAhead = React.forwardRef<HTMLDivElement, TypeAheadProps>((props
         ref={ref}
         value={useValue}
         onChange={customChange}
+        isOptionEqualToValue={(option, value) => option.value === value.value}
         onInputChange={(_e, _val, reason) => {
           if (reason === "input") userHasTyped.current = true;
           if (reason === "clear") userHasTyped.current = false;

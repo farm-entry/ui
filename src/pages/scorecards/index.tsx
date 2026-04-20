@@ -40,7 +40,7 @@ export default function ScorecardsPage() {
     defaultValues: { form: "SCORECARDS" }
   });
 
-  const { handleSubmit, trigger, reset, watch, setValue } = methods;
+  const { handleSubmit, trigger, watch, setValue } = methods;
 
   const job = watch("job");
   const scorecardType = watch("postingGroup");
@@ -50,18 +50,10 @@ export default function ScorecardsPage() {
   const isReviewStep = activeStep === reviewStepIndex;
 
   useEffect(() => {
-    if (!scorecardType || !job) {
-      console.log(
-        `Job (${job}) or scorecard type (${scorecardType}) not selected, skipping config fetch`
-      );
-    } else {
-      getScorecardConfig(job, scorecardType);
-    }
+    if (scorecardType && job) getScorecardConfig(job, scorecardType);
   }, [scorecardType]);
 
   useEffect(() => {
-    console.log("Scorecard config updated, resetting form values");
-    reset({ job, postingGroup: scorecardType });
     if (!scorecardConfig) return;
     for (const page of scorecardConfig.pages) {
       for (const element of page.elements) {
