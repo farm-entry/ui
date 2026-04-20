@@ -103,9 +103,11 @@ export default function ScorecardReview({ onGoToStep }: ScorecardReviewProps) {
   const formValues = getValues();
   const { job, postingGroup } = formValues;
 
-  const jobLabel = postingGroups.find((g: any) => g.number === job)?.description ?? job;
+  const jobLabel = postingGroups.find((g: any) => g.number === job)?.description || job;
   const typeLabel =
-    scorecardTypes.find((t) => t.code === postingGroup)?.description ?? postingGroup;
+    scorecardTypes.find((t) => t.code === postingGroup)?.description || postingGroup;
+
+  console.log({ scorecardConfig, formValues });
 
   return (
     <Stack spacing={4} sx={{ p: 2 }}>
@@ -117,7 +119,10 @@ export default function ScorecardReview({ onGoToStep }: ScorecardReviewProps) {
 
       {scorecardConfig?.pages.map((page, index) => {
         const scoreMax = page.elements.reduce((sum, el) => sum + (el.max ?? 0), 0);
-        const scoreSum = page.elements.reduce((sum, el) => sum + (formValues[el.id]?.numericValue ?? 0), 0);
+        const scoreSum = page.elements.reduce(
+          (sum, el) => sum + (formValues[el.id]?.numericValue ?? 0),
+          0
+        );
         return (
           <ReviewSection
             key={page.title}

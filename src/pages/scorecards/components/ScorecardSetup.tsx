@@ -15,25 +15,25 @@ export default function ScorecardSetup() {
     watch,
     setError,
     clearErrors,
-    trigger,
     formState: { errors }
   } = useFormContext();
 
   const { postingGroups, isLoading: postingGroupsLoading } = usePostingGroupsStore();
-  const job: string = watch("job");
-
-  const { scorecardTypes, getScorecardTypes, isLoading: isScorecardLoading } = useScorecardStore();
+  const {
+    scorecardTypes,
+    getScorecardTypes,
+    clearScorecardTypes,
+    isLoading: scorecardLoading
+  } = useScorecardStore();
   const { setAlert } = useGlobalAlertStore();
 
+  const job: string = watch("job");
+
   useEffect(() => {
-    if (!job) {
-      console.log("No job selected, skipping setup");
-      return;
-    }
+    if (!job) return;
     getScorecardTypes(job).then((result) => {
       if (result === undefined) {
-        const { error } = useScorecardStore.getState();
-        setAlert("error", error || "Failed to load scorecard types");
+        setAlert("error", useScorecardStore.getState().error || "Failed to load scorecard types");
       } else if (result.length === 0) {
         setError("job", { type: "manual", message: "No scorecard types found for this job" });
       } else {
@@ -51,11 +51,15 @@ export default function ScorecardSetup() {
             handleChange={(v) => {
               setValue("job", v?.value ?? null);
               setValue("postingGroup", null);
+              if (!v) {
+                clearScorecardTypes();
+                clearErrors("job");
+              }
             }}
             watch={watch}
-            fieldName={"job"}
-            labelKey={"description"}
-            valueKey={"number"}
+            fieldName="job"
+            labelKey="description"
+            valueKey="number"
             labelFormatter={numberDescriptionPostingGroupFormatter}
             valueList={postingGroups}
             loading={postingGroupsLoading}
@@ -64,21 +68,19 @@ export default function ScorecardSetup() {
           {errors.job && <FormHelperText error>{errors.job.message as string}</FormHelperText>}
         </Stack>
 
-        <Stack spacing={2}>
+        <Stack>
           <TypeAhead
             {...register("postingGroup", { required: "Scorecard Type is required" })}
-            handleChange={(v) => {
-              setValue("postingGroup", v?.value ?? null);
-              trigger(["job", "postingGroup"]);
-            }}
+            handleChange={(v) => setValue("postingGroup", v?.value ?? null)}
             watch={watch}
-            fieldName={"postingGroup"}
-            labelKey={"description"}
-            valueKey={"code"}
+            fieldName="postingGroup"
+            labelKey="description"
+            valueKey="code"
             valueList={scorecardTypes}
-            loading={isScorecardLoading}
+            labelFormatter={(v) => `${v.code} ${v.description}`}
+            loading={scorecardLoading}
             placeholder="Scorecard Type"
-            disabled={!watch("job") && isScorecardLoading}
+            disabled={!job || scorecardLoading}
           />
           {errors.postingGroup && (
             <FormHelperText error>{errors.postingGroup.message as string}</FormHelperText>
