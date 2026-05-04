@@ -29,9 +29,7 @@ export default function ScorecardsPage() {
     clearScorecardConfig,
     scorecardConfig,
     getScorecardConfig,
-    isLoading: scorecardLoading,
-    currentJob,
-    currentPostingGroup
+    isLoading: scorecardLoading
   } = useScorecardStore();
 
   const pages: ScorecardPage[] = scorecardConfig?.pages || [];
@@ -101,18 +99,11 @@ export default function ScorecardsPage() {
   };
 
   useEffect(() => {
+    clearScorecardConfig();
     setInitLoading(true);
     const promises = [];
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
-
-    Promise.all(promises).finally(() => {
-      if (scorecardConfig && currentJob && currentPostingGroup) {
-        setValue("job", currentJob);
-        setValue("postingGroup", currentPostingGroup);
-        setActiveStep(1);
-      }
-      setInitLoading(false);
-    });
+    Promise.all(promises).finally(() => setInitLoading(false));
   }, []);
 
   const handleReset = () => {
