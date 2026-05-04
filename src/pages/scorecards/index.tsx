@@ -14,6 +14,7 @@ import ScorecardReview from "./components/ScorecardReview";
 import ScorecardSetup from "./components/ScorecardSetup";
 import { transformScorecardFormData } from "./helpers";
 import { Button } from "../../components/inputs";
+import CustomHeader from "../../components/framework/CustomHeader";
 
 export type { ScorecardFormData };
 
@@ -122,14 +123,17 @@ export default function ScorecardsPage() {
   };
 
   return (
-    <CustomFormsLayout headerOptions={{ button: { label: "reset", onClick: handleReset } }}>
+    <CustomFormsLayout
+      headerOptions={{
+        title: activeStep - 1 === pages.length ? "Review" : pages[activeStep - 1]?.title,
+        button: { label: "reset", onClick: handleReset }
+      }}
+    >
       {initLoading && <LoadingSpinner />}
       {!initLoading && (
         <>
           <Stepper activeStep={activeStep} sx={{ mb: 4, justifyContent: "center" }}>
-            <Step>
-              <StepLabel>Setup</StepLabel>
-            </Step>
+            {/* <Step /> */}
             {pages.map((_, index) => (
               <Step key={index}>
                 <StepLabel />

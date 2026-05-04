@@ -1,25 +1,13 @@
-import {
-  Button,
-  Divider,
-  FormHelperText,
-  Stack
-} from "@mui/material";
+import { Button, Divider, FormHelperText, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import InventoryItemList from "./InventoryItemList";
 import LoadingSpinner from "../../components/framework/LoadingSpinner";
-import {
-  DatePicker,
-  TextArea,
-  TypeAhead
-} from "../../components/inputs";
+import { DatePicker, TextArea, TypeAhead } from "../../components/inputs";
 import CustomFormsLayout from "../../layouts/forms";
 import { useConfirmationStore } from "../../store/confirmationStore";
 import { useInventoryStore } from "../../store/inventoryStore";
-import {
-  InventoryConsumptionFormData,
-  InventoryLineItem
-} from "../../store/types/inventory";
+import { InventoryConsumptionFormData, InventoryLineItem } from "../../store/types/inventory";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
 
 const defaultValues: InventoryConsumptionFormData = {
@@ -148,9 +136,7 @@ export default function InventoryConsumptionPage() {
               onAdd={handleAddLineItem}
               onRemove={handleRemoveLineItem}
             />
-
-            <Divider />
-
+            
             <TextArea
               {...register("comments", {
                 maxLength: { value: 100, message: "Comments cannot exceed 100 characters" }
@@ -176,7 +162,6 @@ export default function InventoryConsumptionPage() {
           </Stack>
         </form>
       )}
-
     </CustomFormsLayout>
   );
 }
