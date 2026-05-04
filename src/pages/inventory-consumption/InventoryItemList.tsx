@@ -100,8 +100,7 @@ export default function InventoryItemList({
               sx={{
                 border: 0,
                 backgroundColor: canAdd ? "primary.main" : "transparent",
-                background: canAdd ? "primary.main" : "transparent"
-                // borderRadius: 1
+                color: canAdd ? "primary.contrastText" : "text.secondary"
               }}
             >
               Add Item
