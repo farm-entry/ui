@@ -93,15 +93,13 @@ export default function InventoryItemList({
           </Box>
           <Box sx={{ xs: 2, sm: 1 }} display="flex" alignItems="center">
             <Button
+              fullHeight
+              variant="outlined"
               startIcon={<Add />}
               onClick={handleAdd}
               disabled={!canAdd}
+              sx={{ ...(!canAdd && { borderColor: "transparent !important" }) }}
               fullWidth
-              sx={{
-                border: 0,
-                backgroundColor: canAdd ? "primary.main" : "transparent",
-                color: canAdd ? "primary.contrastText" : "text.secondary"
-              }}
             >
               Add Item
             </Button>
