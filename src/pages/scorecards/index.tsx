@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import LoadingSpinner from "../../components/framework/LoadingSpinner";
+import { Button } from "../../components/inputs";
 import CustomFormsLayout from "../../layouts/forms";
 import { scorecardApi } from "../../services/scorecardApi";
 import { useGlobalAlertStore } from "../../store/globalAlertStore";
@@ -13,8 +14,6 @@ import ScorecardElementRenderer from "./components/ScorecardElementRenderer";
 import ScorecardReview from "./components/ScorecardReview";
 import ScorecardSetup from "./components/ScorecardSetup";
 import { transformScorecardFormData } from "./helpers";
-import { Button } from "../../components/inputs";
-import CustomHeader from "../../components/framework/CustomHeader";
 
 export type { ScorecardFormData };
 

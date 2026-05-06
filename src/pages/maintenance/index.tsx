@@ -16,15 +16,22 @@ import { maintenanceService } from "../../services/maintenanceApi";
 import { useConfirmationStore } from "../../store/confirmationStore";
 import { useFormStorageStore } from "../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../store/globalAlertStore";
-import { MaintenanceAsset, MaintenanceAssetDetails, MaintenanceFormData } from "../../store/types/maintenance";
+import {
+  MaintenanceAsset,
+  MaintenanceAssetDetails,
+  MaintenanceFormData
+} from "../../store/types/maintenance";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
 import { numberDescriptionPostingGroupFormatter } from "../../utils/strings";
 import MaintenanceHistory from "./MaintenanceHistory";
+
+declare const process: any;
 
 const MAINTENANCE_STORAGE_KEY = "maintenance-form";
 const FORM_STORAGE_HOURS = 48;
 
 const defaultValues: MaintenanceFormData = {
+  form: "MAINTENANCE",
   asset: "",
   postingDate: new Date().toLocaleDateString("en-CA"),
   type: "",
@@ -38,7 +45,8 @@ export default function MaintenancePage() {
   const [initLoading, setInitLoading] = useState(true);
   const [overlayOpen, setOverlayOpen] = useState(false);
   const [maintenanceAssets, setMaintenanceAssets] = useState<MaintenanceAsset[]>([]);
-  const [selectedMaintenanceAsset, setSelectedMaintenanceAsset] = useState<MaintenanceAssetDetails | null>(null);
+  const [selectedMaintenanceAsset, setSelectedMaintenanceAsset] =
+    useState<MaintenanceAssetDetails | null>(null);
   const [isMaintenanceLoading, setIsMaintenanceLoading] = useState(false);
 
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
@@ -117,6 +125,7 @@ export default function MaintenancePage() {
       console.log("All required fields validated successfully!");
     }
     setInitLoading(true);
+    console.log({ data });
     const state = { formData: data, section: "maintenance" };
     maintenanceService
       .postMaintenance(data)
@@ -264,9 +273,11 @@ export default function MaintenancePage() {
       )}
 
       <Overlay open={overlayOpen} onClose={() => setOverlayOpen(false)} title="Maintenance History">
-        <MaintenanceHistory selectedAsset={selectedMaintenanceAsset} isLoading={isMaintenanceLoading} />
+        <MaintenanceHistory
+          selectedAsset={selectedMaintenanceAsset}
+          isLoading={isMaintenanceLoading}
+        />
       </Overlay>
-
     </CustomFormsLayout>
   );
 }

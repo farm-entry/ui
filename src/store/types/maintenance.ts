@@ -1,3 +1,5 @@
+import { FormData } from "./forms";
+
 export interface MaintenanceAsset extends Record<string, unknown> {
   number: string;
   description: string;
@@ -27,7 +29,7 @@ export interface MaintenanceAssetDetails extends MaintenanceAsset {
   history: MaintenanceHistoryAsset[];
 }
 
-export interface MaintenanceFormData {
+export interface MaintenanceFormData extends FormData {
   asset: string;
   postingDate: string;
   type: string;
