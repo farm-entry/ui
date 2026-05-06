@@ -113,10 +113,7 @@ export default function GradeOffPage() {
     };
   }, []);
 
-  const onSubmit = async (data: GradeOffFormData) => {
-    if (process.env.NODE_ENV === "development") {
-      console.log("All required fields validated successfully!");
-    }
+  const submitForm = (data: GradeOffFormData) => {
     setInitLoading(true);
     const state = { formData: data, section: "livestock-activity" };
     livestockActivityApi
@@ -133,6 +130,20 @@ export default function GradeOffPage() {
       .finally(() => {
         setInitLoading(false);
       });
+  };
+
+  const onSubmit = (data: GradeOffFormData) => {
+    if (process.env.NODE_ENV === "development") {
+      console.log("All required fields validated successfully!");
+    }
+    const hasNegativeQuantity = data.quantities.some(
+      (q) => typeof q.quantity === "number" && q.quantity < 0
+    );
+    if (hasNegativeQuantity) {
+      showConfirmation("Entered Negative Quantity", "Are you sure?", () => submitForm(data));
+      return;
+    }
+    submitForm(data);
   };
 
   const onSave = () => {
