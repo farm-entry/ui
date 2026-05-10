@@ -166,6 +166,7 @@ export default function FuelPage() {
                 valueKey="number"
                 valueList={fuelAssets}
                 placeholder="Select an Asset..."
+                noOptionsText="No fuel assets found. Contact your administrator."
               />
               {errors.asset && <FormHelperText error>{errors.asset.message}</FormHelperText>}
             </Stack>

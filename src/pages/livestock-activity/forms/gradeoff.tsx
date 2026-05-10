@@ -10,6 +10,7 @@ import {
   TextField,
   TypeAhead
 } from "../../../components/inputs";
+import DenseTable from "../../../components/table/DenseTable";
 import CustomFormsLayout from "../../../layouts/forms";
 import { livestockActivityApi } from "../../../services/livestockActivityApi";
 import { useConfirmationStore } from "../../../store/confirmationStore";
@@ -24,6 +25,12 @@ import { GRADEOFF_STORAGE_KEY } from "./constants-livestock.json";
 import { numberDescriptionPostingGroupFormatter } from "../../../utils/strings";
 
 const FORM_STORAGE_HOURS = 48;
+
+const columns = [
+  { field: "postingGroup", headerName: "Posting Group", flex: 2 },
+  { field: "inventory", headerName: "Inventory", flex: 1 },
+  { field: "deads", headerName: "Deads", flex: 1 }
+];
 
 interface GradeOffFormData extends FormData {
   group: string | number | null;
@@ -67,6 +74,8 @@ export default function GradeOffPage() {
   const { saveForm } = useFormStorageStore();
   const [initLoading, setInitLoading] = useState(true);
   const [eventReasons, setEventReasons] = useState<Reason[]>([]);
+  const [deads, setDeads] = useState<{ group: number }>({ group: 0 });
+  const [inventory, setInventory] = useState<{ group: number }>({ group: 0 });
 
   const {
     register,
@@ -90,7 +99,10 @@ export default function GradeOffPage() {
   const groupValue = watch("group");
   useEffect(() => {
     if (groupValue) {
-      getPostingGroupDetails(groupValue);
+      getPostingGroupDetails(groupValue).then((details) => {
+        setInventory({ group: details?.inventory ?? 0 });
+        setDeads({ group: details?.deadQuantity ?? 0 });
+      });
     }
   }, [groupValue, getPostingGroupDetails]);
 
@@ -173,6 +185,21 @@ export default function GradeOffPage() {
                 />
                 {errors.group && <FormHelperText error>{errors.group.message}</FormHelperText>}
               </Stack>
+
+              {watch("group") && (
+                <DenseTable
+                  loading={postingGroupsLoading}
+                  rows={[
+                    {
+                      name: "group",
+                      postingGroup: watch("group"),
+                      inventory: inventory.group,
+                      deads: deads.group
+                    }
+                  ]}
+                  columns={columns}
+                />
+              )}
 
               <Stack>
                 <TypeAhead

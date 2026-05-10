@@ -140,7 +140,7 @@ export default function QuantityAdjPage() {
       section: "livestock-activity"
     };
     livestockActivityApi
-      .postLivestockEvent(data)
+      .postLivestockEvent(formData)
       .then(() => {
         if (process.env.NODE_ENV === "development") {
           console.log("Form submitted:", data);
