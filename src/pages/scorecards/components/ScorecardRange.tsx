@@ -31,7 +31,7 @@ export default function ScorecardRange({ element, min, max }: ScorecardRangeProp
           },
           valueAsNumber: true
         })}
-        label={element.description}
+        label={element.label}
         placeholder={`Enter value (${min}-${max})`}
         value={watch(`${element.id}.numericValue`)}
         type="number"

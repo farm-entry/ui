@@ -29,7 +29,7 @@ export default function ScorecardTemp({ element }: ScorecardTempProps) {
           },
           valueAsNumber: true
         })}
-        label={element.description}
+        label={element.label}
         placeholder="Enter temperature (-30 to 110ºF)"
         value={watch(`${element.id}.numericValue`)}
         type="number"
