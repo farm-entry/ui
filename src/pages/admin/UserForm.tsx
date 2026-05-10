@@ -83,6 +83,7 @@ export default function UserForm({
         <TextField
           {...register("username", { required: !editMode && "Username is required" })}
           value={watch("username")}
+          label="Username"
           placeholder="Username"
           disabled={editMode}
           error={!!errors.username}
@@ -95,6 +96,7 @@ export default function UserForm({
             pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Invalid email" }
           })}
           value={watch("email")}
+          label="Email"
           placeholder="Email"
           error={!!errors.email}
           helperText={errors.email?.message}
@@ -107,6 +109,7 @@ export default function UserForm({
               minLength: { value: 8, message: "Minimum 8 characters" }
             })}
             value={watch("password")}
+            label="Password"
             placeholder="Password"
             type="password"
             error={!!errors.password}
@@ -122,9 +125,15 @@ export default function UserForm({
           <TextField
             {...register("firstName")}
             value={watch("firstName")}
+            label="First Name"
             placeholder="First Name"
           />
-          <TextField {...register("lastName")} value={watch("lastName")} placeholder="Last Name" />
+          <TextField
+            {...register("lastName")}
+            value={watch("lastName")}
+            label="Last Name"
+            placeholder="Last Name"
+          />
         </Stack>
 
         <Typography variant="subtitle2" color="text.secondary">

@@ -277,6 +277,7 @@ export default function GradeOffPage() {
                       message: "Weight must be greater than 0"
                     }
                   })}
+                  label="Ave Weight / Head"
                   placeholder="Ave Weight / Head"
                   type="number"
                   error={!!errors.livestockWeight}

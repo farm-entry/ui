@@ -76,12 +76,14 @@ export default function InventoryItemList({
         <Stack direction="row" spacing={1}>
           <Box sx={{ flex: { flex: 3 } }}>
             <TextField
+              label="Qty"
               placeholder="Qty"
               type="number"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               disabled={!selectedItem}
               slotProps={{
+                inputLabel: { shrink: !!quantity || undefined },
                 htmlInput: { min: 1 },
                 input: {
                   endAdornment: selectedItem ? (
