@@ -2,12 +2,15 @@ import { QrCode, SwapVert } from "@mui/icons-material";
 import AgricultureIcon from "@mui/icons-material/Agriculture";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import BuildIcon from "@mui/icons-material/Build";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import HistoryIcon from "@mui/icons-material/History";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import LibraryAddOutlinedIcon from "@mui/icons-material/LibraryAddOutlined";
 import LocalGasStationIcon from "@mui/icons-material/LocalGasStation";
 import PercentOutlinedIcon from "@mui/icons-material/PercentOutlined";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import UpdateIcon from "@mui/icons-material/Update";
+import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { SvgIconProps } from "@mui/material";
 import React from "react";
 import BabyBottleIcon from "./assets/BabyBottleIcon";
@@ -69,6 +72,16 @@ export const MAIN_ROUTES: RouteConfig[] = [
     segment: "qrcode",
     title: "QR Scanner",
     Icon: QrCode
+  },
+  {
+    segment: "data-post",
+    title: "Data Post",
+    description: "Upload CSV files and post data to Business Central.",
+    Icon: CloudUploadIcon,
+    children: [
+      { segment: "upload", title: "Upload", Icon: UploadFileIcon },
+      { segment: "history", title: "History", Icon: HistoryIcon },
+    ],
   }
 ];
 

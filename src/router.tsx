@@ -26,6 +26,8 @@ import QRScanner from "./pages/qrscanner";
 import ScorecardsPage from "./pages/scorecards";
 import SignIn from "./pages/signin";
 import Settings from "./pages/useroptions/settings";
+import DataPostUploadPage from "./pages/data-post";
+import DataPostHistoryPage from "./pages/data-post/HistoryPage";
 import { customTheme } from "./theme";
 import { MAIN_ROUTES, RouteConfig } from "./routes";
 
@@ -50,7 +52,10 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
   "maintenance": MaintenancePage,
   "inventory-consumption": InventoryConsumptionPage,
   "job-header-updates": JobHeaderUpdatesPage,
-  "qrcode": QRScanner
+  "qrcode": QRScanner,
+  "data-post": DataPostUploadPage,
+  "upload": DataPostUploadPage,
+  "history": DataPostHistoryPage,
 };
 
 function buildRouteObjects(routes: RouteConfig[]): RouteObject[] {
