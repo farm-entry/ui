@@ -41,7 +41,9 @@ export default function CustomFormsLayout<T>({
         <Card variant="outlined" sx={{ mt: 0, mb: 2, p: 2 }}>
           {children}
         </Card>
-<Button variant="text" onClick={handleCancel}>Cancel</Button>
+        <Button variant="text" onClick={handleCancel}>
+          Cancel
+        </Button>
       </CustomPageContainer>
     </FormAnalyticsContext.Provider>
   );

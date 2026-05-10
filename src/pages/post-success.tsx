@@ -94,7 +94,7 @@ export default function PostSuccessPage() {
           <Box sx={{ bgcolor: "grey.50", borderRadius: 1, p: 2 }}>{renderFormFields()}</Box>
         </Box>
 
-        <Stack direction="row" spacing={2} justifyContent="center" sx={{ pt: 2 }}>
+        <Stack spacing={2} justifyContent="center" sx={{ pt: 2 }}>
           <Button variant="outlined" startIcon={<ArrowBack />} onClick={handleBackToSection} size="large">
             Back to {section.replace("-", " ")}
           </Button>

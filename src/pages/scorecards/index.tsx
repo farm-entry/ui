@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import LoadingSpinner from "../../components/framework/LoadingSpinner";
+import { Button } from "../../components/inputs";
 import CustomFormsLayout from "../../layouts/forms";
 import { scorecardApi } from "../../services/scorecardApi";
 import { useGlobalAlertStore } from "../../store/globalAlertStore";
@@ -13,7 +14,6 @@ import ScorecardElementRenderer from "./components/ScorecardElementRenderer";
 import ScorecardReview from "./components/ScorecardReview";
 import ScorecardSetup from "./components/ScorecardSetup";
 import { transformScorecardFormData } from "./helpers";
-import { Button } from "../../components/inputs";
 
 export type { ScorecardFormData };
 
@@ -28,9 +28,7 @@ export default function ScorecardsPage() {
     clearScorecardConfig,
     scorecardConfig,
     getScorecardConfig,
-    isLoading: scorecardLoading,
-    currentJob,
-    currentPostingGroup
+    isLoading: scorecardLoading
   } = useScorecardStore();
 
   const pages: ScorecardPage[] = scorecardConfig?.pages || [];
@@ -40,7 +38,7 @@ export default function ScorecardsPage() {
     defaultValues: { form: "SCORECARDS" }
   });
 
-  const { handleSubmit, trigger, reset, watch, setValue } = methods;
+  const { handleSubmit, trigger, watch, setValue } = methods;
 
   const job = watch("job");
   const scorecardType = watch("postingGroup");
@@ -50,18 +48,10 @@ export default function ScorecardsPage() {
   const isReviewStep = activeStep === reviewStepIndex;
 
   useEffect(() => {
-    if (!scorecardType || !job) {
-      console.log(
-        `Job (${job}) or scorecard type (${scorecardType}) not selected, skipping config fetch`
-      );
-    } else {
-      getScorecardConfig(job, scorecardType);
-    }
+    if (scorecardType && job) getScorecardConfig(job, scorecardType);
   }, [scorecardType]);
 
   useEffect(() => {
-    console.log("Scorecard config updated, resetting form values");
-    reset({ job, postingGroup: scorecardType });
     if (!scorecardConfig) return;
     for (const page of scorecardConfig.pages) {
       for (const element of page.elements) {
@@ -108,18 +98,11 @@ export default function ScorecardsPage() {
   };
 
   useEffect(() => {
+    clearScorecardConfig();
     setInitLoading(true);
     const promises = [];
     if (!(postingGroups.length > 0)) promises.push(getPostingGroups());
-
-    Promise.all(promises).finally(() => {
-      if (scorecardConfig && currentJob && currentPostingGroup) {
-        setValue("job", currentJob);
-        setValue("postingGroup", currentPostingGroup);
-        setActiveStep(1);
-      }
-      setInitLoading(false);
-    });
+    Promise.all(promises).finally(() => setInitLoading(false));
   }, []);
 
   const handleReset = () => {
@@ -130,14 +113,17 @@ export default function ScorecardsPage() {
   };
 
   return (
-    <CustomFormsLayout headerOptions={{ button: { label: "reset", onClick: handleReset } }}>
+    <CustomFormsLayout
+      headerOptions={{
+        title: activeStep - 1 === pages.length ? "Review" : pages[activeStep - 1]?.title,
+        button: { label: "reset", onClick: handleReset }
+      }}
+    >
       {initLoading && <LoadingSpinner />}
       {!initLoading && (
         <>
           <Stepper activeStep={activeStep} sx={{ mb: 4, justifyContent: "center" }}>
-            <Step>
-              <StepLabel>Setup</StepLabel>
-            </Step>
+            {/* <Step /> */}
             {pages.map((_, index) => (
               <Step key={index}>
                 <StepLabel />

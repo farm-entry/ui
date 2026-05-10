@@ -248,6 +248,7 @@ export default function GradeOffPage() {
                         label={reason?.description}
                         placeholder="Quantity"
                         type="number"
+                        allowNegative="ask"
                       />
                     ))}
                   </Stack>

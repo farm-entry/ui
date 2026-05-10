@@ -6,6 +6,7 @@ import CustomHeader, { HeaderButton } from "./CustomHeader";
 import GlobalAlert from "./GlobalAlert";
 
 export interface HeaderOptions {
+  title?: string;
   button?: HeaderButton;
 }
 
@@ -48,7 +49,7 @@ const CustomPageContainer = ({ headerOptions, children, ...props }: CustomPageCo
             )}
             <CustomHeader
               icon={route?.Icon}
-              title={activePage?.title ?? ""}
+              title={(headerOptions?.title || activePage?.title) ?? ""}
               button={headerOptions?.button}
             />
           </>
