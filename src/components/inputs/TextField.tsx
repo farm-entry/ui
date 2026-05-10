@@ -30,8 +30,14 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>((pro
         helperText={helperText}
         fullWidth
         value={value}
-        slotProps={slotProps}
         onFocus={handleFocus}
+        slotProps={{
+          inputLabel: {
+            shrink: shouldShrink || undefined,
+            ...slotProps?.inputLabel,
+          },
+          ...slotProps,
+        }}
         {...rest}
       />
     </>

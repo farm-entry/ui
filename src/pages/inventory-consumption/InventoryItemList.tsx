@@ -72,17 +72,21 @@ export default function InventoryItemList({
         <Stack direction="row" spacing={1}>
           <TextField
             fullWidth
+            label="Qty"
             placeholder="Qty"
             type="number"
             size="small"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}
             disabled={!selectedItem}
-            inputProps={{ min: 1 }}
-            InputProps={{
-              endAdornment: selectedItem ? (
-                <InputAdornment position="end">{selectedItem.unit}</InputAdornment>
-              ) : undefined
+            slotProps={{
+              inputLabel: { shrink: !!quantity || undefined },
+              input: {
+                endAdornment: selectedItem ? (
+                  <InputAdornment position="end">{selectedItem.unit}</InputAdornment>
+                ) : undefined
+              },
+              htmlInput: { min: 1 },
             }}
             sx={{ width: 130 }}
           />

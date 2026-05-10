@@ -1,6 +1,6 @@
-import { Stack, TextField } from "@mui/material";
+import { Stack } from "@mui/material";
 import { useFormContext } from "react-hook-form";
-import { TextArea } from "../../../components/inputs";
+import { TextArea, TextField } from "../../../components/inputs";
 import { ScorecardElement } from "../../../store/types/scorecards";
 
 interface ScorecardRangeProps {
@@ -12,6 +12,7 @@ interface ScorecardRangeProps {
 export default function ScorecardRange({ element, min, max }: ScorecardRangeProps) {
   const {
     register,
+    watch,
     formState: { errors }
   } = useFormContext();
 
@@ -30,15 +31,16 @@ export default function ScorecardRange({ element, min, max }: ScorecardRangeProp
           },
           valueAsNumber: true
         })}
-        type="number"
+        label={element.description}
         placeholder={`Enter value (${min}-${max})`}
+        value={watch(`${element.id}.numericValue`)}
+        type="number"
         error={!!errors[`${element.id}.numericValue`]}
         helperText={
           errors[`${element.id}.numericValue`]
             ? String(errors[`${element.id}.numericValue`]?.message)
             : ""
         }
-        fullWidth
       />
       <TextArea
         {...register(`${element.id}.stringValue`)}
