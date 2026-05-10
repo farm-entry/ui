@@ -245,6 +245,7 @@ export default function MovePage() {
               <Stack spacing={2} direction="row">
                 <Stack sx={{ width: "100%" }}>
                   <TextField
+                    label="Total"
                     placeholder="Total"
                     type="number"
                     value={watch("quantity")}
@@ -261,8 +262,10 @@ export default function MovePage() {
                 </Stack>
                 <Stack sx={{ width: "100%" }}>
                   <TextField
+                    label="Smalls"
                     placeholder="Smalls"
                     type="number"
+                    value={watch("smallLivestockQuantity")}
                     {...register("smallLivestockQuantity", {
                       required: "Small livestock quantity is required",
                       min: { value: 0, message: "Quantity cannot be negative" }
@@ -279,8 +282,10 @@ export default function MovePage() {
                     required: "Total weight is required",
                     min: { value: 1, message: "Weight must be greater than 0" }
                   })}
+                  label="Total Weight"
                   placeholder="Total Weight"
                   type="number"
+                  value={watch("totalWeight")}
                   error={!!errors.totalWeight}
                   helperText={errors.totalWeight?.message}
                 />

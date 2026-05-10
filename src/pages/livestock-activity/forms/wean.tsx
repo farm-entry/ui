@@ -256,6 +256,7 @@ export default function WeanPage() {
               <Stack sx={{ width: "100%" }}>
                 <TextField
                   value={watch("quantity")}
+                  label="Total"
                   placeholder="Total"
                   type="number"
                   {...register("quantity", {
@@ -272,6 +273,7 @@ export default function WeanPage() {
               <Stack sx={{ width: "100%" }}>
                 <TextField
                   value={watch("smallLivestockQuantity")}
+                  label="Smalls"
                   placeholder="Smalls"
                   type="number"
                   {...register("smallLivestockQuantity", {
@@ -291,6 +293,7 @@ export default function WeanPage() {
                   required: "Total weight is required",
                   min: { value: 1, message: "Weight must be greater than 0" }
                 })}
+                label="Total Weight"
                 placeholder="Total Weight"
                 type="number"
                 error={!!errors.totalWeight}

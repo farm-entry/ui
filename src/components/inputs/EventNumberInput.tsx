@@ -14,7 +14,10 @@ export interface EventNumberInputProps extends Omit<MuiTextFieldProps, "variant"
 
 export const EventNumberInput = React.forwardRef<HTMLInputElement, EventNumberInputProps>(
   (props, ref) => {
-    const { placeholder, helperText, codeRegistration, quantityRegistration, allowNegative, ...rest } = props;
+    const { placeholder, helperText, codeRegistration, quantityRegistration, allowNegative, value, slotProps, ...rest } = props;
+    
+    // Auto-detect if label should shrink based on value presence
+    const shouldShrink = value !== undefined && value !== null && value !== "";
     const { formName } = useContext(FormAnalyticsContext);
     const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
 
@@ -49,6 +52,13 @@ export const EventNumberInput = React.forwardRef<HTMLInputElement, EventNumberIn
           helperText={helperText}
           fullWidth
           onFocus={() => trackInputFocus(quantityRegistration.name ?? "unknown", formName, "event-number")}
+          slotProps={{
+            inputLabel: {
+              shrink: shouldShrink || undefined,
+              ...slotProps?.inputLabel,
+            },
+            ...slotProps,
+          }}
           {...rest}
           onChange={handleChange}
         />

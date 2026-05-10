@@ -30,6 +30,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "@types/lodash": "^4.17.21",
     "@types/node": "^24.5.1",
     "@types/react": "^19.0.0",

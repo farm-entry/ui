@@ -211,6 +211,7 @@ export default function FuelPage() {
                       min: { value: 0.01, message: "Must be greater than 0" },
                       valueAsNumber: true
                     })}
+                    label="# of Gallons"
                     placeholder="# of Gallons"
                     type="number"
                     slotProps={{
@@ -234,6 +235,7 @@ export default function FuelPage() {
                 <Stack>
                   <TextField
                     value={watch("mileage")}
+                    label={`Current Mileage/${mileageUnitLabel()}`}
                     placeholder={`Current Mileage/${mileageUnitLabel()}`}
                     {...register("mileage", {
                       required: `Mileage/${mileageUnitLabel()} field is required.`,

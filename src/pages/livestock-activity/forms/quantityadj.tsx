@@ -290,8 +290,10 @@ export default function QuantityAdjPage() {
             </Stack>
             <Stack>
               <TextField
+                label="Total Quantity"
                 placeholder="Total Quantity"
                 type="number"
+                value={watch("quantity")}
                 {...register("quantity", {
                   required: "Total quantity is required",
                   min: {
@@ -310,8 +312,10 @@ export default function QuantityAdjPage() {
                 {...register("totalWeight", {
                   required: "Total weight is required"
                 })}
+                label="Total Weight"
                 placeholder="Total Weight"
                 type="number"
+                value={watch("totalWeight")}
                 error={!!errors.totalWeight}
                 helperText={errors.totalWeight?.message}
               />
