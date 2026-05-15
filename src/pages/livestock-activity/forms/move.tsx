@@ -208,13 +208,13 @@ export default function MovePage() {
                   rows={[
                     {
                       name: "fromJob",
-                      postingGroup: watch("fromJob"),
+                      postingGroup: watch("fromJobLabel") || watch("fromJob"),
                       inventory: inventory.fromJob,
                       deads: deads.fromJob
                     },
                     {
                       name: "toJob",
-                      postingGroup: watch("toJob"),
+                      postingGroup: watch("toJobLabel") || watch("toJob"),
                       inventory: inventory.toJob,
                       deads: deads.toJob
                     }
