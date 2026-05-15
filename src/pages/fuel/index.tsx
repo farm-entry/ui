@@ -185,6 +185,7 @@ export default function FuelPage() {
                 {...register("asset", { required: "Fuel asset is required." })}
                 handleChange={setFuelAsset}
                 watch={watch}
+                label="Asset"
                 labelFormatter={numberDescriptionPostingGroupFormatter}
                 fieldName="asset"
                 labelKey="description"

@@ -60,6 +60,7 @@ export default function InventoryItemList({
           fieldName="selectedItem"
           handleChange={(v) => setSelectedValue(v ? String(v.value) : "")}
           valueList={items as unknown as Record<string, unknown>[]}
+          label="Item"
           labelKey="description"
           valueKey="number"
           placeholder="Select item"
@@ -83,7 +84,6 @@ export default function InventoryItemList({
               onChange={(e) => setQuantity(e.target.value)}
               disabled={!selectedItem}
               slotProps={{
-                inputLabel: { shrink: !!quantity || undefined },
                 htmlInput: { min: 1 },
                 input: {
                   endAdornment: selectedItem ? (

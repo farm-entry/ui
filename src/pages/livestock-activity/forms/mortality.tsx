@@ -188,6 +188,7 @@ export default function MortalityPage() {
                   {...register("group", { required: "Group is required" })}
                   handleChange={(v) => setValue("group", v?.value ?? null)}
                   watch={watch}
+                  label="Group"
                   fieldName={"group"}
                   labelKey={"description"}
                   valueKey={"number"}
@@ -231,6 +232,7 @@ export default function MortalityPage() {
                       disabled={!groupValue || eventsLoading}
                       loading={eventsLoading}
                       watch={watch}
+                      label="Health Status"
                       valueList={healthStatuses}
                       fieldName={"healthStatus"}
                       labelKey={"description"}

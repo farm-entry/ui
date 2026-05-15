@@ -218,6 +218,7 @@ export default function MaintenancePage() {
                 {...register("asset", { required: "Maintenance asset is required." })}
                 handleChange={setMaintenanceAsset}
                 watch={watch}
+                label="Asset"
                 fieldName="asset"
                 labelKey="description"
                 valueKey="number"
@@ -271,6 +272,7 @@ export default function MaintenancePage() {
                   <TypeAhead
                     {...register("type", { required: "Maintenance code is required." })}
                     fieldName="type"
+                    label="Maintenance Code"
                     placeholder="Select a Maintenance Code..."
                     labelKey="maintenanceDesc"
                     valueKey="code"

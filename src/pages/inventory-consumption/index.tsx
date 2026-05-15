@@ -94,6 +94,7 @@ export default function InventoryConsumptionPage() {
                 {...register("location", { required: "Source location is required" })}
                 handleChange={(v) => setValue("location", v ? String(v.value) : "")}
                 watch={watch}
+                label="Source Location"
                 fieldName="location"
                 labelKey="name"
                 valueKey="code"
@@ -108,6 +109,7 @@ export default function InventoryConsumptionPage() {
                 {...register("group", { required: "Group is required" })}
                 handleChange={(v) => setValue("group", v ? String(v.value) : "")}
                 watch={watch}
+                label="Group"
                 fieldName="group"
                 labelKey="description"
                 valueKey="number"
