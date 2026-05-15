@@ -29,6 +29,7 @@ const FORM_STORAGE_HOURS = 48;
 
 interface QuantityAdjFormData extends FormData {
   group: string | number | null;
+  groupLabel: string | null;
   healthStatus: string | number | null;
   healthStatusLabel: string | null;
   event: string | number | null;
@@ -42,6 +43,7 @@ interface QuantityAdjFormData extends FormData {
 const defaultValues: QuantityAdjFormData = {
   form: "QTYADJ",
   group: null,
+  groupLabel: null,
   healthStatus: null,
   healthStatusLabel: null,
   event: null,
@@ -190,7 +192,10 @@ export default function QuantityAdjPage() {
             <Stack>
               <TypeAhead
                 {...register("group", { required: "Group is required" })}
-                handleChange={(v) => setValue("group", v?.value ? String(v.value) : null)}
+                handleChange={(v) => {
+                  setValue("group", v?.value ? String(v.value) : null);
+                  setValue("groupLabel", v?.label ?? null);
+                }}
                 watch={watch}
                 label="Group"
                 fieldName={"group"}

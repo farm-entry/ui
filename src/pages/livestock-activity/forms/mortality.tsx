@@ -29,6 +29,7 @@ const columns = [
 
 interface MortalityFormData extends FormData {
   group: string | number | null;
+  groupLabel: string | null;
   healthStatus: string | number | null;
   healthStatusLabel: string | null;
   postingDate: string;
@@ -39,6 +40,7 @@ interface MortalityFormData extends FormData {
 const defaultValues: MortalityFormData = {
   form: "MORTALITY",
   group: null,
+  groupLabel: null,
   healthStatus: null,
   healthStatusLabel: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
@@ -188,7 +190,10 @@ export default function MortalityPage() {
               <Stack>
                 <TypeAhead
                   {...register("group", { required: "Group is required" })}
-                  handleChange={(v) => setValue("group", v?.value ?? null)}
+                  handleChange={(v) => {
+                    setValue("group", v?.value ?? null);
+                    setValue("groupLabel", v?.label ?? null);
+                  }}
                   watch={watch}
                   label="Group"
                   fieldName={"group"}

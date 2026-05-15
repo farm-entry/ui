@@ -34,6 +34,7 @@ const columns = [
 
 interface GradeOffFormData extends FormData {
   group: string | number | null;
+  groupLabel: string | null;
   healthStatus: string | number | null;
   healthStatusLabel: string | null;
   event: string | number | null;
@@ -47,6 +48,7 @@ interface GradeOffFormData extends FormData {
 const defaultValues: GradeOffFormData = {
   form: "GRADEOFF",
   group: null,
+  groupLabel: null,
   healthStatus: null,
   healthStatusLabel: null,
   event: null,
@@ -177,7 +179,10 @@ export default function GradeOffPage() {
               <Stack>
                 <TypeAhead
                   {...register("group", { required: "Group is required" })}
-                  handleChange={(v) => setValue("group", v?.value ?? null)}
+                  handleChange={(v) => {
+                    setValue("group", v?.value ?? null);
+                    setValue("groupLabel", v?.label ?? null);
+                  }}
                   watch={watch}
                   label="Group"
                   fieldName={"group"}

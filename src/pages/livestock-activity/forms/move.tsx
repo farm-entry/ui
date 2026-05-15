@@ -20,7 +20,9 @@ const FORM_STORAGE_HOURS = 48;
 
 interface MoveFormData extends FormData {
   fromJob: string | number | null;
+  fromJobLabel: string | null;
   toJob: string | number | null;
+  toJobLabel: string | null;
   event: string | number | null;
   eventLabel: string | null;
   postingDate: string;
@@ -33,7 +35,9 @@ interface MoveFormData extends FormData {
 const defaultValues: MoveFormData = {
   form: "MOVE",
   fromJob: null,
+  fromJobLabel: null,
   toJob: null,
+  toJobLabel: null,
   event: null,
   eventLabel: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
@@ -140,9 +144,10 @@ export default function MovePage() {
   };
 
   const setJob = (value: any, label: "fromJob" | "toJob") => {
+    const labelKey = `${label}Label` as "fromJobLabel" | "toJobLabel";
     if (!value || !value.value) {
-      // Clear the field
       setValue(label, null);
+      setValue(labelKey, null);
       setDeads({ ...deads, [label]: undefined } as any);
       setInventory({ ...inventory, [label]: undefined } as any);
       return;
@@ -151,6 +156,7 @@ export default function MovePage() {
     const job = postingGroups.find((pg) => pg.number === value.value);
     if (job) {
       setValue(label, value.value);
+      setValue(labelKey, value.label ?? null);
       setDeads({ ...deads, [label]: job.deadQuantity } as any);
       setInventory({ ...inventory, [label]: job.inventory } as any);
     }
