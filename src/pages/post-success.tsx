@@ -59,17 +59,22 @@ export default function PostSuccessPage() {
 
   const renderFormFields = () => {
     return Object.entries(formData)
-      .filter(([key, value]) => value !== null && value !== "" && !["form", "eventLabel", "healthStatusLabel"].includes(key))
+      .filter(([key, value]) => value !== null && value !== "" && !["form", "eventLabel", "healthStatusLabel", "groupLabel", "fromJobLabel", "toJobLabel"].includes(key))
       .map(([key, value]) => {
         const description = formatFieldName(key);
+        const labelOverrides: Record<string, string | null | undefined> = {
+          event: formData.eventLabel,
+          healthStatus: formData.healthStatusLabel,
+          group: formData.groupLabel,
+          fromJob: formData.fromJobLabel,
+          toJob: formData.toJobLabel,
+        };
         const displayValue =
-          key === "event" && formData.eventLabel
-            ? String(formData.eventLabel)
-            : key === "healthStatus" && formData.healthStatusLabel
-              ? String(formData.healthStatusLabel)
-              : typeof value === "string" || typeof value === "number"
-                ? value.toString()
-                : JSON.stringify(value);
+          key in labelOverrides && labelOverrides[key]
+            ? String(labelOverrides[key])
+            : typeof value === "string" || typeof value === "number"
+              ? value.toString()
+              : JSON.stringify(value);
 
         return (
           <Box key={key} sx={{ display: "flex", justifyContent: "space-between", py: 1 }}>
