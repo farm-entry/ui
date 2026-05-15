@@ -19,24 +19,23 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>((pro
     onFocus?.(e);
   };
 
+  const { inputLabel: callerInputLabel, ...restSlotProps } = slotProps ?? {};
+
   return (
     <>
       <MuiTextField
         ref={ref}
         variant="outlined"
-        label={props.label}
         placeholder={placeholder}
         helperText={helperText}
         fullWidth
         value={value}
         onFocus={handleFocus}
         slotProps={{
-          ...slotProps,
+          ...restSlotProps,
           inputLabel: {
             shrink: shouldShrink ? true : undefined,
-            ...(typeof slotProps?.inputLabel === "object" && slotProps.inputLabel !== null
-              ? slotProps.inputLabel
-              : {}),
+            ...callerInputLabel,
           },
         }}
         {...rest}
