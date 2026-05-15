@@ -215,7 +215,7 @@ export default function QuantityAdjPage() {
                 rows={[
                   {
                     name: "group",
-                    postingGroup: watch("group"),
+                    postingGroup: watch("groupLabel") || watch("group"),
                     inventory: inventory.group,
                     deads: deads.group
                   }
