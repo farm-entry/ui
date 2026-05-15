@@ -33,13 +33,13 @@ export const DatePicker = React.forwardRef<HTMLDivElement, CustomDatePickerProps
         ref={ref}
         onOpen={handleOpen}
         slotProps={{
+          ...slotProps,
           textField: {
             InputLabelProps: { shrink: true },
             ...(typeof slotProps?.textField === "object" && slotProps.textField !== null
               ? slotProps.textField
               : {}),
           },
-          ...slotProps,
         }}
       />
     </LocalizationProvider>

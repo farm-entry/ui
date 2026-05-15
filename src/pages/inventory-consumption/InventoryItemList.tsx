@@ -84,7 +84,6 @@ export default function InventoryItemList({
               onChange={(e) => setQuantity(e.target.value)}
               disabled={!selectedItem}
               slotProps={{
-                inputLabel: { shrink: !!quantity || undefined },
                 htmlInput: { min: 1 },
                 input: {
                   endAdornment: selectedItem ? (
