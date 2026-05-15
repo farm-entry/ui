@@ -40,6 +40,8 @@ export const EventNumberInput = React.forwardRef<HTMLInputElement, EventNumberIn
       quantityRegistration.onChange(e);
     };
 
+    const { inputLabel: callerInputLabel, ...restSlotProps } = slotProps ?? {};
+
     return (
       <>
         <input aria-hidden="true" type="hidden" {...codeRegistration} />
@@ -52,12 +54,10 @@ export const EventNumberInput = React.forwardRef<HTMLInputElement, EventNumberIn
           fullWidth
           onFocus={() => trackInputFocus(quantityRegistration.name ?? "unknown", formName, "event-number")}
           slotProps={{
-            ...slotProps,
+            ...restSlotProps,
             inputLabel: {
               shrink: shouldShrink ? true : undefined,
-              ...(typeof slotProps?.inputLabel === "object" && slotProps.inputLabel !== null
-                ? slotProps.inputLabel
-                : {}),
+              ...callerInputLabel,
             },
           }}
           {...rest}
