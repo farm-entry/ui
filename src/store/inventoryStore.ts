@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { inventoryService as api } from "../services/inventoryApi";
-import { InventoryItem, InventoryJob, InventoryLocation } from "./types/inventory";
+import { InventoryConsumptionFormData, InventoryItem, InventoryJob, InventoryLineItem, InventoryLocation } from "./types/inventory";
 
 interface InventoryState {
   locations: InventoryLocation[];
@@ -17,6 +17,7 @@ interface InventoryActions {
   setJobs: (jobs: InventoryJob[]) => void;
   getItems: (locationCode: string, jobNo: string) => Promise<void>;
   setItems: (items: InventoryItem[]) => void;
+  postInventory: (formData: InventoryConsumptionFormData, lineItems: InventoryLineItem[]) => Promise<void>;
 }
 
 type InventoryStore = InventoryState & InventoryActions;
@@ -62,7 +63,11 @@ export const useInventoryStore = create<InventoryStore>()(
         }
       },
 
-      setItems: (items) => set((state) => ({ ...state, items }))
+      setItems: (items) => set((state) => ({ ...state, items })),
+
+      postInventory: async (formData, lineItems) => {
+        await api.postInventory(formData, lineItems);
+      }
     }),
     { name: "inventory-store" }
   )
