@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, Typography, Stack, Box, Paper } from "@mui/material";
+import { Card, CardContent, Typography, Stack } from "@mui/material";
 import { groupBy, map, maxBy, minBy, sumBy, takeRight, reverse } from "lodash";
 import { FuelAssetDetails, FuelHistory } from "../../store/types/fuel";
 
@@ -11,13 +11,9 @@ const FuelHistorySummary: React.FC<Props> = ({ selectedAsset: selectedFuelAsset 
 
   if (!selectedFuelAsset?.history || selectedFuelAsset.history.length === 0) {
     return (
-      <Card>
-        <CardContent>
-          <Typography variant="h6" color="text.secondary" align="center">
-            No fuel history available for summary
-          </Typography>
-        </CardContent>
-      </Card>
+      <Typography variant="body2" color="text.secondary" align="center" py={2}>
+        No fuel history available for summary
+      </Typography>
     );
   }
 

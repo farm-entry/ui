@@ -2,7 +2,7 @@ import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
-import { Card, CardContent, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
@@ -112,25 +112,17 @@ export default function MaintenanceHistoryDataTable({ selectedAsset: selectedMai
 
   if (!selectedMaintenanceAsset) {
     return (
-      <Card>
-        <CardContent>
-          <Typography variant="h6" color="text.secondary" align="center">
-            Select a maintenance asset to view history
-          </Typography>
-        </CardContent>
-      </Card>
+      <Typography variant="body2" color="text.secondary" align="center" py={2}>
+        Select a maintenance asset to view history
+      </Typography>
     );
   }
 
   if (sortedHistory.length === 0) {
     return (
-      <Card>
-        <CardContent>
-          <Typography variant="h6" color="text.secondary" align="center">
-            No maintenance history available for this asset
-          </Typography>
-        </CardContent>
-      </Card>
+      <Typography variant="body2" color="text.secondary" align="center" py={2}>
+        No maintenance history available for this asset
+      </Typography>
     );
   }
 
