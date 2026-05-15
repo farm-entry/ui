@@ -154,7 +154,7 @@ export default function MaintenanceHistoryDataTable({ selectedAsset: selectedMai
               <TableCell>{record.codeDescription || record.maintenanceCode}</TableCell>
               <TableCell>{formatCurrency(record.amount)}</TableCell>
               <TableCell>{record.quantity}</TableCell>
-              <TableCell align="right">{record.meta.toLocaleString()}</TableCell>
+              <TableCell align="right">{record.meta != null ? record.meta.toLocaleString() : "—"}</TableCell>
               <TableCell>{record.description}</TableCell>
               <TableCell>{record.documentNo}</TableCell>
             </TableRow>
