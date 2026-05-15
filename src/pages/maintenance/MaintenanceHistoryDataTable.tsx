@@ -2,7 +2,7 @@ import FirstPageIcon from "@mui/icons-material/FirstPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import LastPageIcon from "@mui/icons-material/LastPage";
-import { Typography } from "@mui/material";
+import { Card, CardContent, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
@@ -112,21 +112,25 @@ export default function MaintenanceHistoryDataTable({ selectedAsset: selectedMai
 
   if (!selectedMaintenanceAsset) {
     return (
-      <Paper sx={{ p: 3, textAlign: "center" }}>
-        <Typography variant="h6" color="text.secondary">
-          Select a maintenance asset to view history
-        </Typography>
-      </Paper>
+      <Card>
+        <CardContent>
+          <Typography variant="h6" color="text.secondary" align="center">
+            Select a maintenance asset to view history
+          </Typography>
+        </CardContent>
+      </Card>
     );
   }
 
   if (sortedHistory.length === 0) {
     return (
-      <Paper sx={{ p: 3, textAlign: "center" }}>
-        <Typography variant="h6" color="text.secondary">
-          No maintenance history available for this asset
-        </Typography>
-      </Paper>
+      <Card>
+        <CardContent>
+          <Typography variant="h6" color="text.secondary" align="center">
+            No maintenance history available for this asset
+          </Typography>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -154,7 +158,7 @@ export default function MaintenanceHistoryDataTable({ selectedAsset: selectedMai
               <TableCell>{record.codeDescription || record.maintenanceCode}</TableCell>
               <TableCell>{formatCurrency(record.amount)}</TableCell>
               <TableCell>{record.quantity}</TableCell>
-              <TableCell align="right">{record.meta.toLocaleString()}</TableCell>
+              <TableCell align="right">{record.meta != null ? record.meta.toLocaleString() : "—"}</TableCell>
               <TableCell>{record.description}</TableCell>
               <TableCell>{record.documentNo}</TableCell>
             </TableRow>

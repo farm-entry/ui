@@ -123,21 +123,25 @@ export default function FuelHistoryDataTable({ selectedAsset: selectedFuelAsset,
 
   if (!selectedFuelAsset) {
     return (
-      <Paper sx={{ p: 3, textAlign: "center" }}>
-        <Typography variant="h6" color="text.secondary">
-          Select a fuel asset to view history
-        </Typography>
-      </Paper>
+      <Card>
+        <CardContent>
+          <Typography variant="h6" color="text.secondary" align="center">
+            Select a fuel asset to view history
+          </Typography>
+        </CardContent>
+      </Card>
     );
   }
 
   if (sortedHistory.length === 0) {
     return (
-      <Paper sx={{ p: 3, textAlign: "center" }}>
-        <Typography variant="h6" color="text.secondary">
-          No fuel history available for this asset
-        </Typography>
-      </Paper>
+      <Card>
+        <CardContent>
+          <Typography variant="h6" color="text.secondary" align="center">
+            No fuel history available for this asset
+          </Typography>
+        </CardContent>
+      </Card>
     );
   }
 
