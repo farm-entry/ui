@@ -55,6 +55,7 @@ export default function ScorecardSetup() {
           }
         }}
         watch={watch}
+        label="Job"
         fieldName="job"
         labelKey="description"
         valueKey="number"
@@ -69,6 +70,7 @@ export default function ScorecardSetup() {
         {...register("postingGroup", { required: "Scorecard Type is required" })}
         handleChange={(v) => setValue("postingGroup", v?.value ?? null)}
         watch={watch}
+        label="Scorecard Type"
         fieldName="postingGroup"
         labelKey="description"
         valueKey="code"

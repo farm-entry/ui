@@ -188,6 +188,7 @@ export default function QuantityAdjPage() {
                 {...register("group", { required: "Group is required" })}
                 handleChange={(v) => setValue("group", v?.value ? String(v.value) : null)}
                 watch={watch}
+                label="Group"
                 fieldName={"group"}
                 labelKey={"description"}
                 valueKey={"number"}
@@ -220,6 +221,7 @@ export default function QuantityAdjPage() {
                 handleChange={(v) => setValue("healthStatus", v?.value ? String(v.value) : null)}
                 loading={postingGroupsLoading}
                 watch={watch}
+                label="Health Status"
                 valueList={healthStatuses}
                 fieldName={"healthStatus"}
                 labelKey={"description"}
@@ -250,6 +252,7 @@ export default function QuantityAdjPage() {
                 {...register("event", { required: "Event is required" })}
                 handleChange={(v) => setValue("event", v?.value ?? null)}
                 watch={watch}
+                label="Event"
                 fieldName={"event"}
                 labelKey={"description"}
                 valueKey={"code"}

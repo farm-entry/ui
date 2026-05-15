@@ -60,6 +60,7 @@ export default function InventoryItemList({
           fieldName="selectedItem"
           handleChange={(v) => setSelectedValue(v ? String(v.value) : "")}
           valueList={items as unknown as Record<string, unknown>[]}
+          label="Item"
           labelKey="description"
           valueKey="number"
           placeholder="Select item"

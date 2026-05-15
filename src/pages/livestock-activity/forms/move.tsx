@@ -169,6 +169,7 @@ export default function MovePage() {
                   {...register("fromJob", { required: "From Job is required" })}
                   handleChange={(v) => setJob(v, "fromJob")}
                   watch={watch}
+                  label="From"
                   fieldName={"fromJob"}
                   labelFormatter={numberDescriptionPostingGroupFormatter}
                   labelKey={"description"}
@@ -184,6 +185,7 @@ export default function MovePage() {
                   {...register("toJob", { required: "To Job is required" })}
                   handleChange={(v) => setJob(v, "toJob")}
                   watch={watch}
+                  label="To"
                   fieldName={"toJob"}
                   labelFormatter={numberDescriptionPostingGroupFormatter}
                   labelKey={"description"}
@@ -219,6 +221,7 @@ export default function MovePage() {
                   {...register("event", { required: "Event is required" })}
                   handleChange={(v) => setValue("event", v?.value ?? null)}
                   watch={watch}
+                  label="Event"
                   fieldName={"event"}
                   labelKey={"description"}
                   valueKey={"code"}

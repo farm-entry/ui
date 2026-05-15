@@ -33,6 +33,7 @@ export default function ScorecardSupervisor({ element }: ScorecardSupervisorProp
         {...register(`${element.id}.stringValue`, { required: "Supervisor is required" })}
         handleChange={(v) => setValue(`${element.id}.stringValue`, v?.value ?? null)}
         watch={watch}
+        label="Supervisor"
         fieldName={`${element.id}.stringValue`}
         defaultValue={{ value: username, label: name }}
         valueList={users}
