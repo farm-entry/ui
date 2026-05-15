@@ -306,6 +306,7 @@ export default function MovePage() {
               </Stack>
               <Divider />
               <TextArea
+                value={watch("comments")}
                 {...register("comments", {
                   maxLength: { value: 50, message: "Comments cannot exceed 50 characters" }
                 })}
