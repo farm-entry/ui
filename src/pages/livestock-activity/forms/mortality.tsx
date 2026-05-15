@@ -30,6 +30,7 @@ const columns = [
 interface MortalityFormData extends FormData {
   group: string | number | null;
   healthStatus: string | number | null;
+  healthStatusLabel: string | null;
   postingDate: string;
   quantities: LivestockQuantity[];
   comments: string;
@@ -39,6 +40,7 @@ const defaultValues: MortalityFormData = {
   form: "MORTALITY",
   group: null,
   healthStatus: null,
+  healthStatusLabel: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
   quantities: [],
   comments: ""
@@ -226,9 +228,10 @@ export default function MortalityPage() {
                   <Stack>
                     <TypeAhead
                       {...register("healthStatus")}
-                      handleChange={(v) =>
-                        setValue("healthStatus", v?.value ? String(v.value) : null)
-                      }
+                      handleChange={(v) => {
+                        setValue("healthStatus", v?.value ? String(v.value) : null);
+                        setValue("healthStatusLabel", v?.label ?? null);
+                      }}
                       disabled={!groupValue || eventsLoading}
                       loading={eventsLoading}
                       watch={watch}

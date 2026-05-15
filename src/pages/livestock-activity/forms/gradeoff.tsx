@@ -35,7 +35,9 @@ const columns = [
 interface GradeOffFormData extends FormData {
   group: string | number | null;
   healthStatus: string | number | null;
+  healthStatusLabel: string | null;
   event: string | number | null;
+  eventLabel: string | null;
   postingDate: string;
   quantities: LivestockQuantity[];
   livestockWeight: number | null;
@@ -46,7 +48,9 @@ const defaultValues: GradeOffFormData = {
   form: "GRADEOFF",
   group: null,
   healthStatus: null,
+  healthStatusLabel: null,
   event: null,
+  eventLabel: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
   quantities: [],
   livestockWeight: null,
@@ -205,7 +209,10 @@ export default function GradeOffPage() {
               <Stack>
                 <TypeAhead
                   {...register("healthStatus")}
-                  handleChange={(v) => setValue("healthStatus", v?.value ? String(v.value) : null)}
+                  handleChange={(v) => {
+                    setValue("healthStatus", v?.value ? String(v.value) : null);
+                    setValue("healthStatusLabel", v?.label ?? null);
+                  }}
                   loading={postingGroupsLoading}
                   watch={watch}
                   label="Health Status"
@@ -237,7 +244,10 @@ export default function GradeOffPage() {
               <Stack>
                 <TypeAhead
                   {...register("event", { required: "Event is required" })}
-                  handleChange={(v) => setValue("event", v?.value ?? null)}
+                  handleChange={(v) => {
+                    setValue("event", v?.value ?? null);
+                    setValue("eventLabel", v?.label ?? null);
+                  }}
                   watch={watch}
                   label="Event"
                   fieldName={"event"}

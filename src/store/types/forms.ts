@@ -1,5 +1,7 @@
 export interface FormData {
   form: ActivityType;
+  eventLabel?: string | null;
+  healthStatusLabel?: string | null;
 }
 
 export type ActivityType =
