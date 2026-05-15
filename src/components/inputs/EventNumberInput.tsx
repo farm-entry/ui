@@ -18,6 +18,8 @@ export const EventNumberInput = React.forwardRef<HTMLInputElement, EventNumberIn
     const { formName } = useContext(FormAnalyticsContext);
     const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
 
+    const shouldShrink = value !== undefined && value !== null && value !== "";
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const numValue = parseFloat(e.target.value);
       const isNegative = !isNaN(numValue) && numValue < 0;
@@ -51,6 +53,12 @@ export const EventNumberInput = React.forwardRef<HTMLInputElement, EventNumberIn
           onFocus={() => trackInputFocus(quantityRegistration.name ?? "unknown", formName, "event-number")}
           slotProps={{
             ...slotProps,
+            inputLabel: {
+              shrink: shouldShrink ? true : undefined,
+              ...(typeof slotProps?.inputLabel === "object" && slotProps.inputLabel !== null
+                ? slotProps.inputLabel
+                : {}),
+            },
           }}
           {...rest}
           onChange={handleChange}

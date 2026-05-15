@@ -12,6 +12,8 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>((pro
   const { placeholder, helperText, value, slotProps, onFocus, ...rest } = props;
   const { formName } = useContext(FormAnalyticsContext);
 
+  const shouldShrink = value !== undefined && value !== null && value !== "";
+
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     trackInputFocus(rest.name ?? "unknown", formName, "text");
     onFocus?.(e);
@@ -30,6 +32,12 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>((pro
         onFocus={handleFocus}
         slotProps={{
           ...slotProps,
+          inputLabel: {
+            shrink: shouldShrink ? true : undefined,
+            ...(typeof slotProps?.inputLabel === "object" && slotProps.inputLabel !== null
+              ? slotProps.inputLabel
+              : {}),
+          },
         }}
         {...rest}
       />

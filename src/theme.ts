@@ -13,26 +13,6 @@ const commonThemeOptions: ThemeOptions = {
         },
       },
     },
-    MuiTextField: {
-      defaultProps: {
-        InputLabelProps: { shrink: true },
-      },
-    },
-    MuiOutlinedInput: {
-      defaultProps: {
-        notched: true,
-      },
-    },
-    MuiInputLabel: {
-      defaultProps: {
-        shrink: true,
-      },
-    },
-    MuiSelect: {
-      defaultProps: {
-        notched: true,
-      },
-    },
   },
 };
 
