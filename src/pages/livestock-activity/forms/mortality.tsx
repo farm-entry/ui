@@ -287,6 +287,7 @@ export default function MortalityPage() {
                         label={reason?.description}
                         placeholder="Quantity"
                         type="number"
+                        allowNegative={true}
                       />
                     ))}
                   </Stack>
