@@ -21,6 +21,9 @@ import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../..
 import { numberDescriptionPostingGroupFormatter, toCamelCase } from "../../utils/strings";
 import FuelHistory from "./FuelHistory";
 
+const ODOMETER_WARN_MILES = 10_000;
+const ODOMETER_WARN_HOURS = 5_000;
+
 const FUEL_STORAGE_KEY = "fuel-form";
 const FORM_STORAGE_HOURS = 48;
 
@@ -137,6 +140,28 @@ export default function FuelPage() {
   const totalCost =
     gallons && selectedFuelAsset ? (gallons * selectedFuelAsset.fuelCost).toFixed(2) : "0.00";
 
+  const priorOdometer: number | null = (() => {
+    if (!selectedFuelAsset?.history?.length) return null;
+    const sorted = [...selectedFuelAsset.history].sort(
+      (a, b) => new Date(b.postingDate).getTime() - new Date(a.postingDate).getTime()
+    );
+    const val = sorted[0]?.meta;
+    return typeof val === "number" && val > 0 ? val : null;
+  })();
+
+  const fuelOdometerUnit = (() => {
+    const u = selectedFuelAsset?.unitOfMeasureCode?.toUpperCase();
+    return u === "HOUR" || u === "HOURS" ? "hours" : "miles";
+  })();
+  const fuelWarnThreshold = fuelOdometerUnit === "hours" ? ODOMETER_WARN_HOURS : ODOMETER_WARN_MILES;
+
+  const fuelMileageValue = watch("mileage");
+  const showFuelOdometerWarning =
+    priorOdometer !== null &&
+    typeof fuelMileageValue === "number" &&
+    !isNaN(fuelMileageValue) &&
+    fuelMileageValue > priorOdometer + fuelWarnThreshold;
+
   const mileageUnitLabel = () => {
     const label = toCamelCase(selectedFuelAsset?.unitOfMeasureCode || "miles");
     if (selectedFuelAsset?.unitOfMeasureCode.toLowerCase() === "gal") return "Gallons";
@@ -243,12 +268,28 @@ export default function FuelPage() {
                         value: 0,
                         message: `Mileage/${mileageUnitLabel()} cannot be negative`
                       },
-                      valueAsNumber: true
+                      valueAsNumber: true,
+                      validate: (value) => {
+                        if (priorOdometer === null || value === null || value === undefined || isNaN(value as number)) return true;
+                        if ((value as number) < priorOdometer)
+                          return `Must be at or above prior reading of ${priorOdometer.toLocaleString()}.`;
+                        return true;
+                      }
                     })}
                     type="number"
                     error={!!errors.mileage}
                     helperText={errors.mileage?.message}
                   />
+                  {priorOdometer !== null && (
+                    <FormHelperText>
+                      Prior reading: {priorOdometer.toLocaleString()} {fuelOdometerUnit}
+                    </FormHelperText>
+                  )}
+                  {showFuelOdometerWarning && (
+                    <FormHelperText sx={{ color: "warning.main" }}>
+                      This reading seems high. Please verify before submitting.
+                    </FormHelperText>
+                  )}
                 </Stack>
 
                 <Divider />
