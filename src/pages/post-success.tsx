@@ -59,10 +59,17 @@ export default function PostSuccessPage() {
 
   const renderFormFields = () => {
     return Object.entries(formData)
-      .filter(([key, value]) => value !== null && value !== "" && key !== "form")
+      .filter(([key, value]) => value !== null && value !== "" && !["form", "eventLabel", "healthStatusLabel"].includes(key))
       .map(([key, value]) => {
         const description = formatFieldName(key);
-        const displayValue = typeof value === "string" || typeof value === "number" ? value.toString() : JSON.stringify(value);
+        const displayValue =
+          key === "event" && formData.eventLabel
+            ? String(formData.eventLabel)
+            : key === "healthStatus" && formData.healthStatusLabel
+              ? String(formData.healthStatusLabel)
+              : typeof value === "string" || typeof value === "number"
+                ? value.toString()
+                : JSON.stringify(value);
 
         return (
           <Box key={key} sx={{ display: "flex", justifyContent: "space-between", py: 1 }}>

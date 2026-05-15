@@ -22,6 +22,7 @@ interface MoveFormData extends FormData {
   fromJob: string | number | null;
   toJob: string | number | null;
   event: string | number | null;
+  eventLabel: string | null;
   postingDate: string;
   quantity: number | null;
   smallLivestockQuantity: number | null;
@@ -34,6 +35,7 @@ const defaultValues: MoveFormData = {
   fromJob: null,
   toJob: null,
   event: null,
+  eventLabel: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
   quantity: null,
   smallLivestockQuantity: null,
@@ -219,7 +221,10 @@ export default function MovePage() {
               <Stack>
                 <TypeAhead
                   {...register("event", { required: "Event is required" })}
-                  handleChange={(v) => setValue("event", v?.value ?? null)}
+                  handleChange={(v) => {
+                    setValue("event", v?.value ?? null);
+                    setValue("eventLabel", v?.label ?? null);
+                  }}
                   watch={watch}
                   label="Event"
                   fieldName={"event"}

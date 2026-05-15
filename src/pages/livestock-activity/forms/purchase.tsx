@@ -22,7 +22,9 @@ const FORM_STORAGE_HOURS = 48;
 interface PurchaseFormData extends FormData {
   group: string | number | null;
   healthStatus: string | number | null;
+  healthStatusLabel: string | null;
   event: string | number | null;
+  eventLabel: string | null;
   postingDate: string | null;
   quantity: number | null;
   smallLivestockQuantity: number | null;
@@ -34,7 +36,9 @@ const defaultValues: PurchaseFormData = {
   form: "PURCHASE",
   group: null,
   healthStatus: null,
+  healthStatusLabel: null,
   event: null,
+  eventLabel: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
   quantity: null,
   smallLivestockQuantity: null,
@@ -201,7 +205,10 @@ export default function PurchasePage() {
             <Stack>
               <TypeAhead
                 {...register("healthStatus")}
-                handleChange={(v) => setValue("healthStatus", v?.value ? String(v.value) : null)}
+                handleChange={(v) => {
+                  setValue("healthStatus", v?.value ? String(v.value) : null);
+                  setValue("healthStatusLabel", v?.label ?? null);
+                }}
                 loading={postingGroupsLoading}
                 watch={watch}
                 label="Health Status"
@@ -233,7 +240,10 @@ export default function PurchasePage() {
             <Stack>
               <TypeAhead
                 {...register("event", { required: "Event is required" })}
-                handleChange={(v) => setValue("event", v?.value ?? null)}
+                handleChange={(v) => {
+                  setValue("event", v?.value ?? null);
+                  setValue("eventLabel", v?.label ?? null);
+                }}
                 watch={watch}
                 label="Event"
                 fieldName={"event"}
