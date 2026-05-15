@@ -261,13 +261,13 @@ export default function FuelPage() {
                 <Stack>
                   <TextField
                     value={watch("mileage")}
-                    label={`Current Mileage/${mileageUnitLabel()}`}
-                    placeholder={`Current Mileage/${mileageUnitLabel()}`}
+                    label={`Current ${mileageUnitLabel()}`}
+                    placeholder={`Current ${mileageUnitLabel()}`}
                     {...register("mileage", {
-                      required: `Mileage/${mileageUnitLabel()} field is required.`,
+                      required: `${mileageUnitLabel()} field is required.`,
                       min: {
                         value: 0,
-                        message: `Mileage/${mileageUnitLabel()} cannot be negative`
+                        message: `${mileageUnitLabel()} cannot be negative`
                       },
                       valueAsNumber: true,
                       validate: (value) => {
