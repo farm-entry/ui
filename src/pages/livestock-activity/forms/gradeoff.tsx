@@ -17,7 +17,7 @@ import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
-import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { usePostingGroupsStore, useFilteredPostingGroups } from "../../../store/postingGroupsStore";
 import { FormData } from "../../../store/types/forms";
 import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
@@ -63,11 +63,11 @@ export default function GradeOffPage() {
   const navigate = useNavigate();
   const {
     getPostingGroups,
-    postingGroups,
     getPostingGroupDetails,
     postingGroupDetails,
     isLoading: postingGroupsLoading
   } = usePostingGroupsStore();
+  const postingGroups = useFilteredPostingGroups();
   const {
     getEvents,
     eventTypes,

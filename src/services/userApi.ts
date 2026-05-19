@@ -1,4 +1,5 @@
 import { UserType } from '../store/types/user';
+import type { UserFilters, FilterLocation, FilterPostingGroup } from '../store/types/user';
 import type { DomainConfig } from '../store/types/config';
 import { apiFetch } from './apiFetch';
 import { tokenStorage } from './tokenStorage';
@@ -116,6 +117,33 @@ class UserApi {
       body: JSON.stringify({ newPassword }),
     });
     if (!res.ok) throw new Error('Failed to reset password');
+  }
+
+  async getFilters(): Promise<UserFilters> {
+    const res = await apiFetch('/api/user/filters');
+    if (!res.ok) throw new Error('Failed to fetch filters');
+    return res.json();
+  }
+
+  async saveFilters(filters: UserFilters): Promise<UserFilters> {
+    const res = await apiFetch('/api/user/filters', {
+      method: 'POST',
+      body: JSON.stringify(filters),
+    });
+    if (!res.ok) throw new Error('Failed to save filters');
+    return res.json();
+  }
+
+  async getFilterLocations(): Promise<FilterLocation[]> {
+    const res = await apiFetch('/api/user/filters/locations');
+    if (!res.ok) return [];
+    return res.json();
+  }
+
+  async getFilterPostingGroups(): Promise<FilterPostingGroup[]> {
+    const res = await apiFetch('/api/user/filters/posting-groups');
+    if (!res.ok) return [];
+    return res.json();
   }
 }
 
