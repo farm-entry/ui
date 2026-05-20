@@ -1,11 +1,12 @@
 import { ReactRouterAppProvider } from "@toolpad/core/react-router";
-import { createBrowserRouter, Outlet } from "react-router";
+import { createBrowserRouter, Navigate, Outlet } from "react-router";
 import type { RouteObject } from "react-router";
 import frontlineLogo from "./assets/frontlinesprout.svg";
 import RouteGuard from "./components/RouteGuard";
 import { useAnalyticsPageView } from "./analytics";
 import useDynamicNavigation from "./hooks/useDynamicNavigation";
 import CustomDashboardLayout from "./layouts/dashboard";
+import SettingsLayout from "./layouts/settings";
 import DashboardPage from "./pages";
 import AdminPage from "./pages/admin";
 import FuelPage from "./pages/fuel";
@@ -25,9 +26,11 @@ import PostSuccessPage from "./pages/post-success";
 import QRScanner from "./pages/qrscanner";
 import ScorecardsPage from "./pages/scorecards";
 import SignIn from "./pages/signin";
-import Settings from "./pages/useroptions/settings";
 import DataPostUploadPage from "./pages/data-post";
 import DataPostHistoryPage from "./pages/data-post/HistoryPage";
+import { ProfileTab } from "./pages/useroptions/components/ProfileTab";
+import { PasswordTab } from "./pages/useroptions/components/PasswordTab";
+import { FiltersTab } from "./pages/useroptions/components/FiltersTab";
 import { customTheme } from "./theme";
 import { MAIN_ROUTES, RouteConfig } from "./routes";
 
@@ -98,7 +101,6 @@ export const router = createBrowserRouter([
           { path: "/", Component: DashboardPage },
           ...buildRouteObjects(MAIN_ROUTES),
           // Routes not in MAIN_ROUTES (no nav entry, no dashboard card)
-          { path: "settings", Component: Settings },
           { path: "post-success", Component: PostSuccessPage },
           {
             path: "admin",
@@ -112,6 +114,20 @@ export const router = createBrowserRouter([
       },
       { path: "login", Component: SignIn },
       { path: "health", Component: HealthPage },
+      {
+        path: "settings",
+        Component: () => (
+          <RouteGuard>
+            <SettingsLayout />
+          </RouteGuard>
+        ),
+        children: [
+          { index: true, element: <Navigate to="profile" replace /> },
+          { path: "profile",  Component: ProfileTab },
+          { path: "password", Component: PasswordTab },
+          { path: "filters",  Component: FiltersTab },
+        ]
+      },
       { path: "*", Component: NotFoundPage }
     ]
   }

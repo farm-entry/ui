@@ -43,14 +43,8 @@ export function ProfileTab() {
   return (
     <form onSubmit={handleSubmit(onSubmitProfile)}>
       <Stack spacing={3}>
-        <Stack direction="row" spacing={2}>
-          <TextField
-            {...register("firstName")}
-            value={watch("firstName")}
-            placeholder="First Name"
-          />
-          <TextField {...register("lastName")} value={watch("lastName")} placeholder="Last Name" />
-        </Stack>
+        <TextField {...register("firstName")} value={watch("firstName")} placeholder="First Name" />
+        <TextField {...register("lastName")} value={watch("lastName")} placeholder="Last Name" />
 
         <TextField
           {...register("email", {
