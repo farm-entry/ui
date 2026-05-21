@@ -1,16 +1,14 @@
 import {
   Alert,
-  Box,
   Button,
   Chip,
-  Drawer,
-  Stack,
   Typography,
 } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useCallback, useEffect, useState } from 'react';
 import CustomPageContainer from '../../components/framework/CustomPageContainer';
 import { dataloadApi, DataloadLog } from '../../services/dataloadApi';
+import ResultsDrawer from './ResultsDrawer';
 
 export default function DataPostHistoryPage() {
   const [logs, setLogs] = useState<DataloadLog[]>([]);
@@ -89,23 +87,6 @@ export default function DataPostHistoryPage() {
     },
   ];
 
-  const detailColumns: GridColDef[] = [
-    { field: 'rowNumber', headerName: 'Row', width: 70 },
-    {
-      field: 'status',
-      headerName: 'Status',
-      width: 100,
-      renderCell: ({ value }) => (
-        <Chip
-          label={value}
-          size="small"
-          color={value === 'fulfilled' ? 'success' : 'error'}
-        />
-      ),
-    },
-    { field: 'message', headerName: 'Message', flex: 1 },
-  ];
-
   return (
     <CustomPageContainer
       headerOptions={{
@@ -135,62 +116,11 @@ export default function DataPostHistoryPage() {
         disableRowSelectionOnClick
       />
 
-      {/* Log detail drawer */}
-      <Drawer
-        anchor="right"
-        open={!!selectedLog || detailLoading}
+      <ResultsDrawer
+        log={selectedLog}
+        loading={detailLoading}
         onClose={() => setSelectedLog(null)}
-        PaperProps={{ sx: { width: { xs: '100%', sm: 560 }, p: 3 } }}
-      >
-        {detailLoading && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', pt: 8 }}>
-            <Typography color="text.secondary">Loading…</Typography>
-          </Box>
-        )}
-
-        {selectedLog && (
-          <Stack spacing={2}>
-            <Typography variant="h6" noWrap title={selectedLog.filename}>
-              {selectedLog.filename}
-            </Typography>
-
-            <Stack direction="row" spacing={1} flexWrap="wrap">
-              <Chip label={selectedLog.domain} size="small" />
-              <Chip label={selectedLog.entitySet} size="small" variant="outlined" />
-              <Chip
-                label={`${selectedLog.count} rows`}
-                size="small"
-                variant="outlined"
-              />
-              <Chip
-                label={`${selectedLog.errorCount} error${selectedLog.errorCount !== 1 ? 's' : ''}`}
-                size="small"
-                color={selectedLog.errorCount === 0 ? 'success' : 'error'}
-              />
-            </Stack>
-
-            <Typography variant="caption" color="text.secondary">
-              {new Date(selectedLog.createdAt).toLocaleString()} · {selectedLog.user}
-            </Typography>
-
-            {selectedLog.errorCount > 0 && (
-              <Alert severity="warning">
-                {selectedLog.errorCount} row{selectedLog.errorCount !== 1 ? 's' : ''} failed to post.
-              </Alert>
-            )}
-
-            <DataGrid
-              rows={selectedLog.results ?? []}
-              columns={detailColumns}
-              getRowId={(r) => r.rowNumber}
-              autoHeight
-              hideFooter={(selectedLog.results?.length ?? 0) <= 100}
-              pageSizeOptions={[100]}
-              density="compact"
-            />
-          </Stack>
-        )}
-      </Drawer>
+      />
     </CustomPageContainer>
   );
 }

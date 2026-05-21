@@ -19,7 +19,7 @@ import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
-import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { usePostingGroupsStore, useFilteredPostingGroups } from "../../../store/postingGroupsStore";
 import { FormData } from "../../../store/types/forms";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { QTYADJ_STORAGE_KEY } from "./constants-livestock.json";
@@ -66,9 +66,9 @@ export default function QuantityAdjPage() {
     isLoading: postingGroupsLoading,
     getPostingGroups,
     getPostingGroupDetails,
-    postingGroups,
     postingGroupDetails
   } = usePostingGroupsStore();
+  const postingGroups = useFilteredPostingGroups();
   const {
     getEvents,
     eventTypes,

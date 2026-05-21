@@ -9,7 +9,7 @@ import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
-import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { usePostingGroupsStore, useFilteredPostingGroups } from "../../../store/postingGroupsStore";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { MOVE_STORAGE_KEY } from "./constants-livestock.json";
 import { livestockActivityApi } from "../../../services/livestockActivityApi";
@@ -55,7 +55,8 @@ const columns = [
 
 export default function MovePage() {
   const navigate = useNavigate();
-  const { getPostingGroups, postingGroups } = usePostingGroupsStore();
+  const { getPostingGroups } = usePostingGroupsStore();
+  const postingGroups = useFilteredPostingGroups();
   const { getEvents, eventTypes, currentTemplate } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const { setAlert } = useGlobalAlertStore();

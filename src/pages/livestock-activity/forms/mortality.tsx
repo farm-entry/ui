@@ -11,7 +11,7 @@ import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
-import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { usePostingGroupsStore, useFilteredPostingGroups } from "../../../store/postingGroupsStore";
 import { FormData } from "../../../store/types/forms";
 import type { EventType } from "../../../store/types/livestockActivity";
 import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
@@ -52,12 +52,12 @@ export default function MortalityPage() {
   const navigate = useNavigate();
   const {
     getPostingGroups,
-    postingGroups,
     getPostingGroupDetails,
     clearPostingGroupDetails,
     postingGroupDetails,
     isLoading: postingGroupsLoading
   } = usePostingGroupsStore();
+  const postingGroups = useFilteredPostingGroups();
   const {
     getEvents,
     healthStatuses,

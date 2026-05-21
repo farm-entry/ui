@@ -6,7 +6,7 @@ import LoadingSpinner from "../../components/framework/LoadingSpinner";
 import { DatePicker, TextArea, TypeAhead } from "../../components/inputs";
 import CustomFormsLayout from "../../layouts/forms";
 import { useConfirmationStore } from "../../store/confirmationStore";
-import { useInventoryStore } from "../../store/inventoryStore";
+import { useInventoryStore, useFilteredLocations } from "../../store/inventoryStore";
 import { InventoryConsumptionFormData, InventoryLineItem } from "../../store/types/inventory";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
 
@@ -24,8 +24,9 @@ export default function InventoryConsumptionPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
-  const { locations, jobs, items, isLoading, getLocationsAndJobs, getItems, setItems } =
+  const { jobs, items, isLoading, getLocationsAndJobs, getItems, setItems } =
     useInventoryStore();
+  const locations = useFilteredLocations();
 
   const {
     register,

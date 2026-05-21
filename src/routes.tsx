@@ -1,5 +1,6 @@
 import { QrCode, SwapVert } from "@mui/icons-material";
 import AgricultureIcon from "@mui/icons-material/Agriculture";
+import type { FilterMenuOption } from './store/types/user';
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import BuildIcon from "@mui/icons-material/Build";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
@@ -97,3 +98,31 @@ export function findRouteByPath(pathname: string): RouteConfig | null {
   }
   return found;
 }
+
+export const MENU_OPTION_GROUPS: Record<string, string> = Object.fromEntries(
+  MAIN_ROUTES.flatMap((route) =>
+    route.children?.length
+      ? route.children.map((child) => [child.segment, route.title] as [string, string])
+      : []
+  )
+);
+
+export function expandToMenuOptions(segments: string[]): FilterMenuOption[] {
+  return segments.flatMap((segment) => {
+    const route = MAIN_ROUTES.find((r) => r.segment === segment);
+    if (route?.children?.length) {
+      return route.children.map((child) => ({ title: child.title, segment: child.segment }));
+    }
+    return route ? [{ title: route.title, segment }] : [];
+  });
+}
+
+export const ALL_ROUTE_OPTIONS: FilterMenuOption[] = expandToMenuOptions(
+  MAIN_ROUTES.map((r) => r.segment)
+);
+
+/** Union of all navigable leaf segments — must stay in sync with MAIN_ROUTES. */
+export type LeafSegment =
+  | "livestock-activity" | "move" | "wean" | "gradeoff" | "mortality" | "purchase" | "quantityadj"
+  | "scorecards" | "fuel" | "maintenance" | "inventory-consumption" | "job-header-updates"
+  | "qrcode" | "data-post" | "upload" | "history";
