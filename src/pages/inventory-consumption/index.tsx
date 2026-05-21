@@ -1,6 +1,7 @@
 import { Button, Divider, FormHelperText, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router";
 import InventoryItemList from "./InventoryItemList";
 import LoadingSpinner from "../../components/framework/LoadingSpinner";
 import { DatePicker, TextArea, TypeAhead } from "../../components/inputs";
@@ -23,6 +24,7 @@ export default function InventoryConsumptionPage() {
   const [lineItems, setLineItems] = useState<InventoryLineItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const navigate = useNavigate();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const { jobs, items, isLoading, getLocationsAndJobs, getItems, setItems } =
     useInventoryStore();
@@ -74,21 +76,25 @@ export default function InventoryConsumptionPage() {
     setLineItems((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const onSubmit = (data: InventoryConsumptionFormData) => {
+  const onSubmit = async (data: InventoryConsumptionFormData) => {
     if (lineItems.length === 0) return;
     setIsSubmitting(true);
-    // TODO: wire up to service/store
-    console.log("Submit", { ...data, lineItems });
-    setIsSubmitting(false);
+    try {
+      await postInventory(data, lineItems);
+      const state = { formData: { ...data, lineItems }, section: "inventory-consumption" };
+      navigate("/post-success", { state });
+    } catch (error) {
+      setAlert("error", error as Error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <CustomFormsLayout<InventoryConsumptionFormData>
       headerOptions={{ button: { label: "reset", onClick: handleReset } }}
     >
-      {isSubmitting && <LoadingSpinner />}
-      {!isSubmitting && (
-        <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={2}>
             <Stack>
               <TypeAhead
@@ -101,6 +107,7 @@ export default function InventoryConsumptionPage() {
                 valueKey="code"
                 valueList={locations}
                 placeholder="Source Location"
+                labelFormatter={(item) => `${item.code} · ${item.name}`}
               />
               {errors.location && <FormHelperText error>{errors.location.message}</FormHelperText>}
             </Stack>
@@ -116,6 +123,7 @@ export default function InventoryConsumptionPage() {
                 valueKey="number"
                 valueList={jobs}
                 placeholder="Group"
+                labelFormatter={(item) => `${item.number} · ${item.description}`}
               />
               {errors.group && <FormHelperText error>{errors.group.message}</FormHelperText>}
             </Stack>
@@ -139,7 +147,7 @@ export default function InventoryConsumptionPage() {
               onAdd={handleAddLineItem}
               onRemove={handleRemoveLineItem}
             />
-            
+
             <TextArea
               {...register("comments", {
                 maxLength: { value: 100, message: "Comments cannot exceed 100 characters" }
@@ -151,20 +159,21 @@ export default function InventoryConsumptionPage() {
               helperText={errors.comments?.message}
             />
 
+            {isSubmitting && <LoadingSpinner />}
+
             <Stack direction="row" spacing={2}>
               <Button
                 variant="contained"
                 color="primary"
                 fullWidth
                 type="submit"
-                disabled={lineItems.length === 0}
+                disabled={lineItems.length === 0 || isSubmitting}
               >
                 Submit
               </Button>
             </Stack>
           </Stack>
         </form>
-      )}
     </CustomFormsLayout>
   );
 }

@@ -66,6 +66,7 @@ export default function InventoryItemList({
           placeholder="Select item"
           disabled={items.length === 0}
           noOptionsText="No items available"
+          labelFormatter={(item) => `${item.number} · ${item.description}`}
         />
 
         {selectedItem && (
@@ -84,6 +85,7 @@ export default function InventoryItemList({
               onChange={(e) => setQuantity(e.target.value)}
               disabled={!selectedItem}
               slotProps={{
+                inputLabel: { shrink: !!quantity || undefined },
                 htmlInput: { min: 1 },
                 input: {
                   endAdornment: selectedItem ? (
@@ -128,7 +130,7 @@ export default function InventoryItemList({
               }
             >
               <ListItemText
-                primary={li.description}
+                primary={`${li.itemNumber} · ${li.description}`}
                 secondary={`${li.quantity} ${li.unit}  ·  $${li.cost.toFixed(2)} each`}
                 primaryTypographyProps={{ fontWeight: 500 }}
                 secondaryTypographyProps={{ variant: "body2" }}
