@@ -79,6 +79,22 @@ async function getLog(logId: string): Promise<DataloadLog> {
   return res.json();
 }
 
+export interface NavError {
+  code: string;
+  message: string;
+}
+
+export function parseNavError(message: string): NavError | null {
+  try {
+    const parsed = JSON.parse(message) as { error?: { code?: string; message?: string } };
+    const { code, message: msg } = parsed?.error ?? {};
+    if (code && msg) return { code, message: msg };
+  } catch {
+    // not parseable JSON
+  }
+  return null;
+}
+
 export const dataloadApi = {
   getPresignedUrl,
   uploadToS3,
