@@ -109,7 +109,7 @@ export default function InventoryConsumptionPage() {
                 valueKey="code"
                 valueList={locations}
                 placeholder="Source Location"
-                labelFormatter={(item) => `${item.code} · ${item.name}`}
+                labelFormatter={(item) => `${item.name}`}
               />
               {errors.location && <FormHelperText error>{errors.location.message}</FormHelperText>}
             </Stack>
@@ -125,7 +125,7 @@ export default function InventoryConsumptionPage() {
                 valueKey="number"
                 valueList={jobs}
                 placeholder="Group"
-                labelFormatter={(item) => `${item.number} · ${item.description}`}
+                labelFormatter={(item) => `${item.number} ${item.description}`}
               />
               {errors.group && <FormHelperText error>{errors.group.message}</FormHelperText>}
             </Stack>
