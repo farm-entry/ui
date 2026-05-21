@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { inventoryService as api } from "../services/inventoryApi";
-import { InventoryItem, InventoryJob, InventoryLocation } from "./types/inventory";
+import { InventoryConsumptionFormData, InventoryItem, InventoryJob, InventoryLineItem, InventoryLocation } from "./types/inventory";
 import { applyLocationFilter } from "../utils/filterHelpers";
 import { useUserStore } from "./userStore";
 
