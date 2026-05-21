@@ -21,7 +21,9 @@ function applyNavFilter(navItems: Navigation, filter: FilterCategory<FilterMenuO
       const keptChildren = navItem.children.filter(
         (c) => !("segment" in c) || passes((c as NavigationPageItem).segment as string)
       );
-      return keptChildren.length > 0 ? [{ ...navItem, children: keptChildren }] : [];
+      if (keptChildren.length === 0) return [];
+      if (keptChildren.length === navItem.children.length) return [item]; // all kept — preserve ref
+      return [{ ...navItem, children: keptChildren }]; // some filtered — new object needed
     }
 
     if (!seg) return [item]; // Home (empty segment) always visible
