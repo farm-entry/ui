@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, Typography, Stack, Paper } from "@mui/material";
+import { Card, CardContent, Typography, Stack } from "@mui/material";
 import { groupBy, map, maxBy, minBy, sumBy, takeRight, reverse } from "lodash";
 import { MaintenanceAssetDetails, MaintenanceHistoryAsset } from "../../store/types/maintenance";
 
@@ -10,13 +10,9 @@ interface Props {
 const MaintenanceHistorySummary: React.FC<Props> = ({ selectedAsset: selectedMaintenanceAsset }) => {
   if (!selectedMaintenanceAsset?.history || selectedMaintenanceAsset.history.length === 0) {
     return (
-      <Card>
-        <CardContent>
-          <Typography variant="h6" color="text.secondary" align="center">
-            No maintenance history available for summary
-          </Typography>
-        </CardContent>
-      </Card>
+      <Typography variant="body2" color="text.secondary" align="center" py={2}>
+        No maintenance history available for summary
+      </Typography>
     );
   }
 

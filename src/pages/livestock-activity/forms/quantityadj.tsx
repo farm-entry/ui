@@ -19,7 +19,7 @@ import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
-import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { usePostingGroupsStore, useFilteredPostingGroups } from "../../../store/postingGroupsStore";
 import { FormData } from "../../../store/types/forms";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { QTYADJ_STORAGE_KEY } from "./constants-livestock.json";
@@ -29,8 +29,11 @@ const FORM_STORAGE_HOURS = 48;
 
 interface QuantityAdjFormData extends FormData {
   group: string | number | null;
+  groupLabel: string | null;
   healthStatus: string | number | null;
+  healthStatusLabel: string | null;
   event: string | number | null;
+  eventLabel: string | null;
   postingDate: string | null;
   quantity: number | null;
   totalWeight: number | null;
@@ -40,8 +43,11 @@ interface QuantityAdjFormData extends FormData {
 const defaultValues: QuantityAdjFormData = {
   form: "QTYADJ",
   group: null,
+  groupLabel: null,
   healthStatus: null,
+  healthStatusLabel: null,
   event: null,
+  eventLabel: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
   quantity: null,
   totalWeight: null,
@@ -60,9 +66,9 @@ export default function QuantityAdjPage() {
     isLoading: postingGroupsLoading,
     getPostingGroups,
     getPostingGroupDetails,
-    postingGroups,
     postingGroupDetails
   } = usePostingGroupsStore();
+  const postingGroups = useFilteredPostingGroups();
   const {
     getEvents,
     eventTypes,
@@ -186,8 +192,12 @@ export default function QuantityAdjPage() {
             <Stack>
               <TypeAhead
                 {...register("group", { required: "Group is required" })}
-                handleChange={(v) => setValue("group", v?.value ? String(v.value) : null)}
+                handleChange={(v) => {
+                  setValue("group", v?.value ? String(v.value) : null);
+                  setValue("groupLabel", v?.label ?? null);
+                }}
                 watch={watch}
+                label="Group"
                 fieldName={"group"}
                 labelKey={"description"}
                 valueKey={"number"}
@@ -205,7 +215,7 @@ export default function QuantityAdjPage() {
                 rows={[
                   {
                     name: "group",
-                    postingGroup: watch("group"),
+                    postingGroup: watch("groupLabel") || watch("group"),
                     inventory: inventory.group,
                     deads: deads.group
                   }
@@ -217,9 +227,13 @@ export default function QuantityAdjPage() {
             <Stack>
               <TypeAhead
                 {...register("healthStatus")}
-                handleChange={(v) => setValue("healthStatus", v?.value ? String(v.value) : null)}
+                handleChange={(v) => {
+                  setValue("healthStatus", v?.value ? String(v.value) : null);
+                  setValue("healthStatusLabel", v?.label ?? null);
+                }}
                 loading={postingGroupsLoading}
                 watch={watch}
+                label="Health Status"
                 valueList={healthStatuses}
                 fieldName={"healthStatus"}
                 labelKey={"description"}
@@ -248,8 +262,12 @@ export default function QuantityAdjPage() {
             <Stack>
               <TypeAhead
                 {...register("event", { required: "Event is required" })}
-                handleChange={(v) => setValue("event", v?.value ?? null)}
+                handleChange={(v) => {
+                  setValue("event", v?.value ?? null);
+                  setValue("eventLabel", v?.label ?? null);
+                }}
                 watch={watch}
+                label="Event"
                 fieldName={"event"}
                 labelKey={"description"}
                 valueKey={"code"}
@@ -322,6 +340,7 @@ export default function QuantityAdjPage() {
             </Stack>
             <Divider />
             <TextArea
+              value={watch("comments")}
               {...register("comments", {
                 maxLength: { value: 50, message: "Comments cannot exceed 50 characters" }
               })}

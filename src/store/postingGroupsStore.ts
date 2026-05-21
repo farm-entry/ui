@@ -5,6 +5,8 @@ import {
   PostingGroup,
   PostingGroupDetails,
 } from "../services/postingGroupsApi";
+import { applyPostingGroupFilter } from "../utils/filterHelpers";
+import { useUserStore } from "./userStore";
 
 interface PostingGroupsDataState {
   postingGroupDetails: PostingGroupDetails;
@@ -82,6 +84,9 @@ export const usePostingGroupsStore = create<PostingGroupsDataState>()(
       setPostingGroups: (postingGroups: PostingGroup[]) =>
         set((state) => ({ ...state, postingGroups })),
 
+      clearPostingGroups: () =>
+        set((state) => ({ ...state, postingGroups: [] })),
+
       clearPostingGroupDetails: () =>
         set({ postingGroupDetails: {} as PostingGroupDetails }),
 
@@ -111,3 +116,14 @@ export const usePostingGroupsStore = create<PostingGroupsDataState>()(
     { name: "PostingGroupsStore" }
   )
 );
+
+/**
+ * Returns posting groups filtered by the current user's postingGroups filter settings.
+ * Drop-in replacement for usePostingGroupsStore(state => state.postingGroups) in components
+ * that should respect the user's filter preferences.
+ */
+export function useFilteredPostingGroups(): PostingGroup[] {
+  const postingGroups = usePostingGroupsStore(state => state.postingGroups);
+  const filter = useUserStore(state => state.filters.postingGroups);
+  return applyPostingGroupFilter(postingGroups, filter);
+}

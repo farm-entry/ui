@@ -17,7 +17,7 @@ import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
-import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { usePostingGroupsStore, useFilteredPostingGroups } from "../../../store/postingGroupsStore";
 import { FormData } from "../../../store/types/forms";
 import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
@@ -34,8 +34,11 @@ const columns = [
 
 interface GradeOffFormData extends FormData {
   group: string | number | null;
+  groupLabel: string | null;
   healthStatus: string | number | null;
+  healthStatusLabel: string | null;
   event: string | number | null;
+  eventLabel: string | null;
   postingDate: string;
   quantities: LivestockQuantity[];
   livestockWeight: number | null;
@@ -45,8 +48,11 @@ interface GradeOffFormData extends FormData {
 const defaultValues: GradeOffFormData = {
   form: "GRADEOFF",
   group: null,
+  groupLabel: null,
   healthStatus: null,
+  healthStatusLabel: null,
   event: null,
+  eventLabel: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
   quantities: [],
   livestockWeight: null,
@@ -57,11 +63,11 @@ export default function GradeOffPage() {
   const navigate = useNavigate();
   const {
     getPostingGroups,
-    postingGroups,
     getPostingGroupDetails,
     postingGroupDetails,
     isLoading: postingGroupsLoading
   } = usePostingGroupsStore();
+  const postingGroups = useFilteredPostingGroups();
   const {
     getEvents,
     eventTypes,
@@ -173,8 +179,12 @@ export default function GradeOffPage() {
               <Stack>
                 <TypeAhead
                   {...register("group", { required: "Group is required" })}
-                  handleChange={(v) => setValue("group", v?.value ?? null)}
+                  handleChange={(v) => {
+                    setValue("group", v?.value ?? null);
+                    setValue("groupLabel", v?.label ?? null);
+                  }}
                   watch={watch}
+                  label="Group"
                   fieldName={"group"}
                   labelKey={"description"}
                   valueKey={"number"}
@@ -204,9 +214,13 @@ export default function GradeOffPage() {
               <Stack>
                 <TypeAhead
                   {...register("healthStatus")}
-                  handleChange={(v) => setValue("healthStatus", v?.value ? String(v.value) : null)}
+                  handleChange={(v) => {
+                    setValue("healthStatus", v?.value ? String(v.value) : null);
+                    setValue("healthStatusLabel", v?.label ?? null);
+                  }}
                   loading={postingGroupsLoading}
                   watch={watch}
+                  label="Health Status"
                   valueList={healthStatuses}
                   fieldName={"healthStatus"}
                   labelKey={"description"}
@@ -235,8 +249,12 @@ export default function GradeOffPage() {
               <Stack>
                 <TypeAhead
                   {...register("event", { required: "Event is required" })}
-                  handleChange={(v) => setValue("event", v?.value ?? null)}
+                  handleChange={(v) => {
+                    setValue("event", v?.value ?? null);
+                    setValue("eventLabel", v?.label ?? null);
+                  }}
                   watch={watch}
+                  label="Event"
                   fieldName={"event"}
                   labelKey={"description"}
                   valueKey={"code"}
@@ -275,7 +293,7 @@ export default function GradeOffPage() {
                         label={reason?.description}
                         placeholder="Quantity"
                         type="number"
-                        allowNegative="ask"
+                        allowNegative={true}
                       />
                     ))}
                   </Stack>

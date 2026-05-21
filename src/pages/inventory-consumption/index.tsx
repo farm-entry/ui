@@ -7,8 +7,7 @@ import LoadingSpinner from "../../components/framework/LoadingSpinner";
 import { DatePicker, TextArea, TypeAhead } from "../../components/inputs";
 import CustomFormsLayout from "../../layouts/forms";
 import { useConfirmationStore } from "../../store/confirmationStore";
-import { useGlobalAlertStore } from "../../store/globalAlertStore";
-import { useInventoryStore } from "../../store/inventoryStore";
+import { useInventoryStore, useFilteredLocations } from "../../store/inventoryStore";
 import { InventoryConsumptionFormData, InventoryLineItem } from "../../store/types/inventory";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
 
@@ -27,9 +26,9 @@ export default function InventoryConsumptionPage() {
 
   const navigate = useNavigate();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
-  const { setAlert } = useGlobalAlertStore();
-  const { locations, jobs, items, isLoading, getLocationsAndJobs, getItems, setItems, postInventory } =
+  const { jobs, items, isLoading, getLocationsAndJobs, getItems, setItems } =
     useInventoryStore();
+  const locations = useFilteredLocations();
 
   const {
     register,
@@ -102,6 +101,7 @@ export default function InventoryConsumptionPage() {
                 {...register("location", { required: "Source location is required" })}
                 handleChange={(v) => setValue("location", v ? String(v.value) : "")}
                 watch={watch}
+                label="Source Location"
                 fieldName="location"
                 labelKey="name"
                 valueKey="code"
@@ -117,6 +117,7 @@ export default function InventoryConsumptionPage() {
                 {...register("group", { required: "Group is required" })}
                 handleChange={(v) => setValue("group", v ? String(v.value) : "")}
                 watch={watch}
+                label="Group"
                 fieldName="group"
                 labelKey="description"
                 valueKey="number"

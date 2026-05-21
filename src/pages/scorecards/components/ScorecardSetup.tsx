@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { TypeAhead } from "../../../components/inputs";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
-import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { usePostingGroupsStore, useFilteredPostingGroups } from "../../../store/postingGroupsStore";
 import { numberDescriptionPostingGroupFormatter } from "../../../utils/strings";
 import { useScorecardStore } from "../../../store/scorecardStore";
 
@@ -18,7 +18,8 @@ export default function ScorecardSetup() {
     formState: { errors }
   } = useFormContext();
 
-  const { postingGroups, isLoading: postingGroupsLoading } = usePostingGroupsStore();
+  const { isLoading: postingGroupsLoading } = usePostingGroupsStore();
+  const postingGroups = useFilteredPostingGroups();
   const {
     scorecardTypes,
     getScorecardTypes,
@@ -55,6 +56,7 @@ export default function ScorecardSetup() {
           }
         }}
         watch={watch}
+        label="Job"
         fieldName="job"
         labelKey="description"
         valueKey="number"
@@ -69,6 +71,7 @@ export default function ScorecardSetup() {
         {...register("postingGroup", { required: "Scorecard Type is required" })}
         handleChange={(v) => setValue("postingGroup", v?.value ?? null)}
         watch={watch}
+        label="Scorecard Type"
         fieldName="postingGroup"
         labelKey="description"
         valueKey="code"

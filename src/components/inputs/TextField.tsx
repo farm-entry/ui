@@ -12,7 +12,6 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>((pro
   const { placeholder, helperText, value, slotProps, onFocus, ...rest } = props;
   const { formName } = useContext(FormAnalyticsContext);
 
-  // Auto-detect if label should shrink based on value presence
   const shouldShrink = value !== undefined && value !== null && value !== "";
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -20,23 +19,24 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>((pro
     onFocus?.(e);
   };
 
+  const { inputLabel: callerInputLabel, ...restSlotProps } = slotProps ?? {};
+
   return (
     <>
       <MuiTextField
         ref={ref}
         variant="outlined"
-        label={props.label}
         placeholder={placeholder}
         helperText={helperText}
         fullWidth
         value={value}
         onFocus={handleFocus}
         slotProps={{
+          ...restSlotProps,
           inputLabel: {
-            shrink: shouldShrink || undefined,
-            ...slotProps?.inputLabel,
+            shrink: shouldShrink ? true : undefined,
+            ...callerInputLabel,
           },
-          ...slotProps,
         }}
         {...rest}
       />

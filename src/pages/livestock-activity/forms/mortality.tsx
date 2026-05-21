@@ -11,7 +11,7 @@ import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
-import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { usePostingGroupsStore, useFilteredPostingGroups } from "../../../store/postingGroupsStore";
 import { FormData } from "../../../store/types/forms";
 import type { EventType } from "../../../store/types/livestockActivity";
 import { LivestockQuantity, Reason } from "../../../store/types/livestockActivity";
@@ -29,7 +29,9 @@ const columns = [
 
 interface MortalityFormData extends FormData {
   group: string | number | null;
+  groupLabel: string | null;
   healthStatus: string | number | null;
+  healthStatusLabel: string | null;
   postingDate: string;
   quantities: LivestockQuantity[];
   comments: string;
@@ -38,7 +40,9 @@ interface MortalityFormData extends FormData {
 const defaultValues: MortalityFormData = {
   form: "MORTALITY",
   group: null,
+  groupLabel: null,
   healthStatus: null,
+  healthStatusLabel: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
   quantities: [],
   comments: ""
@@ -48,12 +52,12 @@ export default function MortalityPage() {
   const navigate = useNavigate();
   const {
     getPostingGroups,
-    postingGroups,
     getPostingGroupDetails,
     clearPostingGroupDetails,
     postingGroupDetails,
     isLoading: postingGroupsLoading
   } = usePostingGroupsStore();
+  const postingGroups = useFilteredPostingGroups();
   const {
     getEvents,
     healthStatuses,
@@ -186,8 +190,12 @@ export default function MortalityPage() {
               <Stack>
                 <TypeAhead
                   {...register("group", { required: "Group is required" })}
-                  handleChange={(v) => setValue("group", v?.value ?? null)}
+                  handleChange={(v) => {
+                    setValue("group", v?.value ?? null);
+                    setValue("groupLabel", v?.label ?? null);
+                  }}
                   watch={watch}
+                  label="Group"
                   fieldName={"group"}
                   labelKey={"description"}
                   valueKey={"number"}
@@ -225,12 +233,14 @@ export default function MortalityPage() {
                   <Stack>
                     <TypeAhead
                       {...register("healthStatus")}
-                      handleChange={(v) =>
-                        setValue("healthStatus", v?.value ? String(v.value) : null)
-                      }
+                      handleChange={(v) => {
+                        setValue("healthStatus", v?.value ? String(v.value) : null);
+                        setValue("healthStatusLabel", v?.label ?? null);
+                      }}
                       disabled={!groupValue || eventsLoading}
                       loading={eventsLoading}
                       watch={watch}
+                      label="Health Status"
                       valueList={healthStatuses}
                       fieldName={"healthStatus"}
                       labelKey={"description"}
@@ -285,6 +295,7 @@ export default function MortalityPage() {
                         label={reason?.description}
                         placeholder="Quantity"
                         type="number"
+                        allowNegative={true}
                       />
                     ))}
                   </Stack>

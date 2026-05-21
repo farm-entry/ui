@@ -9,7 +9,7 @@ import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
-import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { usePostingGroupsStore, useFilteredPostingGroups } from "../../../store/postingGroupsStore";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { MOVE_STORAGE_KEY } from "./constants-livestock.json";
 import { livestockActivityApi } from "../../../services/livestockActivityApi";
@@ -20,8 +20,11 @@ const FORM_STORAGE_HOURS = 48;
 
 interface MoveFormData extends FormData {
   fromJob: string | number | null;
+  fromJobLabel: string | null;
   toJob: string | number | null;
+  toJobLabel: string | null;
   event: string | number | null;
+  eventLabel: string | null;
   postingDate: string;
   quantity: number | null;
   smallLivestockQuantity: number | null;
@@ -32,8 +35,11 @@ interface MoveFormData extends FormData {
 const defaultValues: MoveFormData = {
   form: "MOVE",
   fromJob: null,
+  fromJobLabel: null,
   toJob: null,
+  toJobLabel: null,
   event: null,
+  eventLabel: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
   quantity: null,
   smallLivestockQuantity: null,
@@ -49,7 +55,8 @@ const columns = [
 
 export default function MovePage() {
   const navigate = useNavigate();
-  const { getPostingGroups, postingGroups } = usePostingGroupsStore();
+  const { getPostingGroups } = usePostingGroupsStore();
+  const postingGroups = useFilteredPostingGroups();
   const { getEvents, eventTypes, currentTemplate } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const { setAlert } = useGlobalAlertStore();
@@ -138,9 +145,10 @@ export default function MovePage() {
   };
 
   const setJob = (value: any, label: "fromJob" | "toJob") => {
+    const labelKey = `${label}Label` as "fromJobLabel" | "toJobLabel";
     if (!value || !value.value) {
-      // Clear the field
       setValue(label, null);
+      setValue(labelKey, null);
       setDeads({ ...deads, [label]: undefined } as any);
       setInventory({ ...inventory, [label]: undefined } as any);
       return;
@@ -149,6 +157,7 @@ export default function MovePage() {
     const job = postingGroups.find((pg) => pg.number === value.value);
     if (job) {
       setValue(label, value.value);
+      setValue(labelKey, value.label ?? null);
       setDeads({ ...deads, [label]: job.deadQuantity } as any);
       setInventory({ ...inventory, [label]: job.inventory } as any);
     }
@@ -169,6 +178,7 @@ export default function MovePage() {
                   {...register("fromJob", { required: "From Job is required" })}
                   handleChange={(v) => setJob(v, "fromJob")}
                   watch={watch}
+                  label="From"
                   fieldName={"fromJob"}
                   labelFormatter={numberDescriptionPostingGroupFormatter}
                   labelKey={"description"}
@@ -184,6 +194,7 @@ export default function MovePage() {
                   {...register("toJob", { required: "To Job is required" })}
                   handleChange={(v) => setJob(v, "toJob")}
                   watch={watch}
+                  label="To"
                   fieldName={"toJob"}
                   labelFormatter={numberDescriptionPostingGroupFormatter}
                   labelKey={"description"}
@@ -198,13 +209,13 @@ export default function MovePage() {
                   rows={[
                     {
                       name: "fromJob",
-                      postingGroup: watch("fromJob"),
+                      postingGroup: watch("fromJobLabel") || watch("fromJob"),
                       inventory: inventory.fromJob,
                       deads: deads.fromJob
                     },
                     {
                       name: "toJob",
-                      postingGroup: watch("toJob"),
+                      postingGroup: watch("toJobLabel") || watch("toJob"),
                       inventory: inventory.toJob,
                       deads: deads.toJob
                     }
@@ -217,8 +228,12 @@ export default function MovePage() {
               <Stack>
                 <TypeAhead
                   {...register("event", { required: "Event is required" })}
-                  handleChange={(v) => setValue("event", v?.value ?? null)}
+                  handleChange={(v) => {
+                    setValue("event", v?.value ?? null);
+                    setValue("eventLabel", v?.label ?? null);
+                  }}
                   watch={watch}
+                  label="Event"
                   fieldName={"event"}
                   labelKey={"description"}
                   valueKey={"code"}
@@ -292,6 +307,7 @@ export default function MovePage() {
               </Stack>
               <Divider />
               <TextArea
+                value={watch("comments")}
                 {...register("comments", {
                   maxLength: { value: 50, message: "Comments cannot exceed 50 characters" }
                 })}

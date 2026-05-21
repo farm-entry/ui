@@ -27,6 +27,9 @@ import MaintenanceHistory from "./MaintenanceHistory";
 
 declare const process: any;
 
+const ODOMETER_WARN_MILES = 10_000;
+const ODOMETER_WARN_HOURS = 5_000;
+
 const MAINTENANCE_STORAGE_KEY = "maintenance-form";
 const FORM_STORAGE_HOURS = 48;
 
@@ -48,6 +51,8 @@ export default function MaintenancePage() {
   const [selectedMaintenanceAsset, setSelectedMaintenanceAsset] =
     useState<MaintenanceAssetDetails | null>(null);
   const [isMaintenanceLoading, setIsMaintenanceLoading] = useState(false);
+  const [maintenanceCodes, setMaintenanceCodes] = useState<MaintenanceAsset[]>([]);
+  const [selectedMaintenanceCode, setSelectedMaintenanceCode] = useState<MaintenanceAsset | null>(null);
 
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
   const { setAlert } = useGlobalAlertStore();
@@ -88,6 +93,8 @@ export default function MaintenancePage() {
   const setMaintenanceAsset = async (value: TypeAheadOption | null) => {
     if (!value) {
       setSelectedMaintenanceAsset(null);
+      setMaintenanceCodes([]);
+      setSelectedMaintenanceCode(null);
       setValue("asset", "");
       setValue("type", "");
       return;
@@ -95,12 +102,27 @@ export default function MaintenancePage() {
 
     if (value.value && value.value !== selectedMaintenanceAsset?.number) {
       setIsMaintenanceLoading(true);
-      const asset = await maintenanceService.getMaintenanceAssetDetails(String(value.value));
-      setIsMaintenanceLoading(false);
-      if (asset) {
-        setValue("asset", asset.number);
-        setValue("type", asset.code);
-        setSelectedMaintenanceAsset(asset);
+      try {
+        const [asset, codes] = await Promise.all([
+          maintenanceService.getMaintenanceAssetDetails(String(value.value)),
+          maintenanceService.getMaintenanceAssetsByFANo(String(value.value))
+        ]);
+        if (asset) {
+          setValue("asset", asset.number);
+          setSelectedMaintenanceAsset(asset);
+        }
+        setMaintenanceCodes(codes);
+        if (codes.length === 1) {
+          setSelectedMaintenanceCode(codes[0]);
+          setValue("type", codes[0].code);
+        } else {
+          setSelectedMaintenanceCode(null);
+          setValue("type", "");
+        }
+      } catch (error) {
+        setAlert("error", error as Error);
+      } finally {
+        setIsMaintenanceLoading(false);
       }
     }
   };
@@ -111,6 +133,8 @@ export default function MaintenancePage() {
       "This will reset all form fields to their default values.",
       () => {
         setSelectedMaintenanceAsset(null);
+        setMaintenanceCodes([]);
+        setSelectedMaintenanceCode(null);
         reset(defaultValues);
       }
     );
@@ -125,7 +149,6 @@ export default function MaintenancePage() {
       console.log("All required fields validated successfully!");
     }
     setInitLoading(true);
-    console.log({ data });
     const state = { formData: data, section: "maintenance" };
     maintenanceService
       .postMaintenance(data)
@@ -143,10 +166,40 @@ export default function MaintenancePage() {
       });
   };
 
-  const unitLabel = selectedMaintenanceAsset?.unitType
-    ? selectedMaintenanceAsset.unitType.charAt(0).toUpperCase() +
-      selectedMaintenanceAsset.unitType.slice(1).toLowerCase()
-    : "Miles";
+  const mileageLabel = (() => {
+    const u = selectedMaintenanceCode?.unitType?.toUpperCase();
+    if (u === "MILE" || u === "MILES") return "Current Mileage";
+    if (u === "HOUR" || u === "HOURS") return "Current Hours";
+    return "Current Mileage / Hours";
+  })();
+
+  const isFuelRelated = selectedMaintenanceCode?.code === "FUEL";
+  const hasOdometer = ["MILE", "MILES", "HOUR", "HOURS"].includes(
+    selectedMaintenanceCode?.unitType?.toUpperCase() ?? ""
+  );
+  const mileageRequired = isFuelRelated && hasOdometer;
+
+  const odometerUnit = (() => {
+    const u = selectedMaintenanceCode?.unitType?.toUpperCase();
+    return u === "HOUR" || u === "HOURS" ? "hours" : "miles";
+  })();
+  const odometerWarnThreshold = odometerUnit === "hours" ? ODOMETER_WARN_HOURS : ODOMETER_WARN_MILES;
+
+  const priorOdometer: number | null = (() => {
+    if (!hasOdometer || !selectedMaintenanceAsset?.history?.length) return null;
+    const sorted = [...selectedMaintenanceAsset.history].sort(
+      (a, b) => new Date(b.postingDate).getTime() - new Date(a.postingDate).getTime()
+    );
+    const val = sorted[0]?.meta;
+    return typeof val === "number" && val > 0 ? val : null;
+  })();
+
+  const mileageValue = watch("mileage");
+  const showOdometerWarning =
+    priorOdometer !== null &&
+    typeof mileageValue === "number" &&
+    !isNaN(mileageValue) &&
+    mileageValue > priorOdometer + odometerWarnThreshold;
 
   return (
     <CustomFormsLayout<MaintenanceFormData>
@@ -165,6 +218,7 @@ export default function MaintenancePage() {
                 {...register("asset", { required: "Maintenance asset is required." })}
                 handleChange={setMaintenanceAsset}
                 watch={watch}
+                label="Asset"
                 fieldName="asset"
                 labelKey="description"
                 valueKey="number"
@@ -215,6 +269,31 @@ export default function MaintenancePage() {
                 </Typography>
 
                 <Stack>
+                  <TypeAhead
+                    {...register("type", { required: "Maintenance code is required." })}
+                    fieldName="type"
+                    label="Maintenance Code"
+                    placeholder="Select a Maintenance Code..."
+                    labelKey="maintenanceDesc"
+                    valueKey="code"
+                    valueList={maintenanceCodes}
+                    watch={watch}
+                    noOptionsText="No maintenance codes found for this asset."
+                    handleChange={(option) => {
+                      if (!option) {
+                        setSelectedMaintenanceCode(null);
+                        setValue("type", "");
+                        return;
+                      }
+                      const code = maintenanceCodes.find((c) => c.code === String(option.value)) ?? null;
+                      setSelectedMaintenanceCode(code);
+                      setValue("type", String(option.value));
+                    }}
+                  />
+                  {errors.type && <FormHelperText error>{errors.type.message}</FormHelperText>}
+                </Stack>
+
+                <Stack>
                   <TextField
                     value={watch("workHours") ?? ""}
                     {...register("workHours", {
@@ -234,15 +313,33 @@ export default function MaintenancePage() {
                   <TextField
                     value={watch("mileage") ?? ""}
                     {...register("mileage", {
+                      required: mileageRequired ? "Current Mileage / Hours is required." : false,
                       min: { value: 0, message: "Cannot be negative" },
-                      valueAsNumber: true
+                      valueAsNumber: true,
+                      validate: (value) => {
+                        if (priorOdometer === null || value === null || value === undefined || isNaN(value as number)) return true;
+                        if ((value as number) < priorOdometer)
+                          return `Must be at or above prior reading of ${priorOdometer.toLocaleString()}.`;
+                        return true;
+                      }
                     })}
-                    label={`Current ${unitLabel}`}
-                    placeholder="0"
+                    label={mileageLabel}
+                    placeholder={mileageLabel}
                     type="number"
+                    required={mileageRequired}
                     error={!!errors.mileage}
                     helperText={errors.mileage?.message}
                   />
+                  {priorOdometer !== null && (
+                    <FormHelperText>
+                      Prior reading: {priorOdometer.toLocaleString()} {odometerUnit}
+                    </FormHelperText>
+                  )}
+                  {showOdometerWarning && (
+                    <FormHelperText sx={{ color: "warning.main" }}>
+                      This reading seems high. Please verify before submitting.
+                    </FormHelperText>
+                  )}
                 </Stack>
 
                 <Divider />

@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router";
 import { reportLastFormSubmit } from "../analytics";
 import CustomHeader from "../components/framework/CustomHeader";
 import CustomFormsLayout from "../layouts/forms";
-import LEFTNAV_NAVIGATION from "../LeftNavConfig";
+import { MAIN_ROUTES } from "../routes";
 
 interface PostSuccessState {
   formData: Record<string, any>;
@@ -20,16 +20,8 @@ const formatFieldName = (fieldName: string): string => {
     .replace(/\b\w/g, (str) => str.toUpperCase()); // Capitalize each word
 };
 
-// Get section routes from LeftNavConfig
-const getSectionRoutes = () => {
-  const routes: Record<string, string> = {};
-  LEFTNAV_NAVIGATION.forEach((nav) => {
-    if ("segment" in nav && nav.segment) {
-      routes[nav.segment] = `/${nav.segment}`;
-    }
-  });
-  return routes;
-};
+const getSectionRoutes = () =>
+  Object.fromEntries(MAIN_ROUTES.map((r) => [r.segment, `/${r.segment}`]));
 
 export default function PostSuccessPage() {
   const navigate = useNavigate();
@@ -59,10 +51,22 @@ export default function PostSuccessPage() {
 
   const renderFormFields = () => {
     return Object.entries(formData)
-      .filter(([key, value]) => value !== null && value !== "" && key !== "form")
+      .filter(([key, value]) => value !== null && value !== "" && !["form", "eventLabel", "healthStatusLabel", "groupLabel", "fromJobLabel", "toJobLabel"].includes(key))
       .map(([key, value]) => {
         const description = formatFieldName(key);
-        const displayValue = typeof value === "string" || typeof value === "number" ? value.toString() : JSON.stringify(value);
+        const labelOverrides: Record<string, string | null | undefined> = {
+          event: formData.eventLabel,
+          healthStatus: formData.healthStatusLabel,
+          group: formData.groupLabel,
+          fromJob: formData.fromJobLabel,
+          toJob: formData.toJobLabel,
+        };
+        const displayValue =
+          key in labelOverrides && labelOverrides[key]
+            ? String(labelOverrides[key])
+            : typeof value === "string" || typeof value === "number"
+              ? value.toString()
+              : JSON.stringify(value);
 
         return (
           <Box key={key} sx={{ display: "flex", justifyContent: "space-between", py: 1 }}>

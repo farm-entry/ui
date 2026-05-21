@@ -112,21 +112,17 @@ export default function MaintenanceHistoryDataTable({ selectedAsset: selectedMai
 
   if (!selectedMaintenanceAsset) {
     return (
-      <Paper sx={{ p: 3, textAlign: "center" }}>
-        <Typography variant="h6" color="text.secondary">
-          Select a maintenance asset to view history
-        </Typography>
-      </Paper>
+      <Typography variant="body2" color="text.secondary" align="center" py={2}>
+        Select a maintenance asset to view history
+      </Typography>
     );
   }
 
   if (sortedHistory.length === 0) {
     return (
-      <Paper sx={{ p: 3, textAlign: "center" }}>
-        <Typography variant="h6" color="text.secondary">
-          No maintenance history available for this asset
-        </Typography>
-      </Paper>
+      <Typography variant="body2" color="text.secondary" align="center" py={2}>
+        No maintenance history available for this asset
+      </Typography>
     );
   }
 
@@ -154,7 +150,7 @@ export default function MaintenanceHistoryDataTable({ selectedAsset: selectedMai
               <TableCell>{record.codeDescription || record.maintenanceCode}</TableCell>
               <TableCell>{formatCurrency(record.amount)}</TableCell>
               <TableCell>{record.quantity}</TableCell>
-              <TableCell align="right">{record.meta.toLocaleString()}</TableCell>
+              <TableCell align="right">{record.meta != null ? record.meta.toLocaleString() : "—"}</TableCell>
               <TableCell>{record.description}</TableCell>
               <TableCell>{record.documentNo}</TableCell>
             </TableRow>

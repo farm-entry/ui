@@ -20,4 +20,39 @@ export interface UserType {
   domains: string[];
   role: RolesType;
   menuOptions: MenuOption[];
+  filters?: UserFilters;
 }
+
+export type InclusivityMode = 'INCLUDE' | 'EXCLUDE';
+
+export interface FilterLocation {
+  code: string;
+  name: string;
+}
+
+export interface FilterPostingGroup {
+  code: string;
+  description?: string;
+}
+
+export interface FilterMenuOption {
+  title: string;
+  segment: string;
+}
+
+export interface FilterCategory<T> {
+  mode: InclusivityMode;
+  list: T[];
+}
+
+export interface UserFilters {
+  locations: FilterCategory<FilterLocation>;
+  postingGroups: FilterCategory<FilterPostingGroup>;
+  menuOptions: FilterCategory<FilterMenuOption>;
+}
+
+export const DEFAULT_USER_FILTERS: UserFilters = {
+  locations: { mode: 'INCLUDE', list: [] },
+  postingGroups: { mode: 'INCLUDE', list: [] },
+  menuOptions: { mode: 'INCLUDE', list: [] },
+};

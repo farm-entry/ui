@@ -15,11 +15,10 @@ export interface EventNumberInputProps extends Omit<MuiTextFieldProps, "variant"
 export const EventNumberInput = React.forwardRef<HTMLInputElement, EventNumberInputProps>(
   (props, ref) => {
     const { placeholder, helperText, codeRegistration, quantityRegistration, allowNegative, value, slotProps, ...rest } = props;
-    
-    // Auto-detect if label should shrink based on value presence
-    const shouldShrink = value !== undefined && value !== null && value !== "";
     const { formName } = useContext(FormAnalyticsContext);
     const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
+
+    const shouldShrink = value !== undefined && value !== null && value !== "";
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const numValue = parseFloat(e.target.value);
@@ -41,6 +40,8 @@ export const EventNumberInput = React.forwardRef<HTMLInputElement, EventNumberIn
       quantityRegistration.onChange(e);
     };
 
+    const { inputLabel: callerInputLabel, ...restSlotProps } = slotProps ?? {};
+
     return (
       <>
         <input aria-hidden="true" type="hidden" {...codeRegistration} />
@@ -53,11 +54,11 @@ export const EventNumberInput = React.forwardRef<HTMLInputElement, EventNumberIn
           fullWidth
           onFocus={() => trackInputFocus(quantityRegistration.name ?? "unknown", formName, "event-number")}
           slotProps={{
+            ...restSlotProps,
             inputLabel: {
-              shrink: shouldShrink || undefined,
-              ...slotProps?.inputLabel,
+              shrink: shouldShrink ? true : undefined,
+              ...callerInputLabel,
             },
-            ...slotProps,
           }}
           {...rest}
           onChange={handleChange}

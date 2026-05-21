@@ -18,7 +18,7 @@ export interface CustomDatePickerProps extends Omit<MuiDatePickerProps, "variant
 }
 
 export const DatePicker = React.forwardRef<HTMLDivElement, CustomDatePickerProps>((props, ref) => {
-  const { noTimestamp = false, name, onOpen, ...other } = props;
+  const { noTimestamp = false, name, onOpen, slotProps, ...other } = props;
   const { formName } = useContext(FormAnalyticsContext);
 
   const handleOpen = () => {
@@ -28,7 +28,14 @@ export const DatePicker = React.forwardRef<HTMLDivElement, CustomDatePickerProps
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <MuiDatePicker {...other} ref={ref} onOpen={handleOpen} />
+      <MuiDatePicker
+        {...other}
+        ref={ref}
+        onOpen={handleOpen}
+        slotProps={{
+          ...slotProps,
+        }}
+      />
     </LocalizationProvider>
   );
 });

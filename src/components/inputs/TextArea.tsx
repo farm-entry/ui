@@ -12,8 +12,7 @@ export const TextArea = React.forwardRef<HTMLInputElement, TextAreaProps>((props
   const { label, rows = 4, placeholder, value, slotProps, onFocus, ...rest } = props;
   const { formName } = useContext(FormAnalyticsContext);
 
-  // Auto-detect if label should shrink based on value presence
-  const shouldShrink = value !== undefined && value !== null && value !== '';
+  const shouldShrink = value !== undefined && value !== null && value !== "";
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     trackInputFocus(rest.name ?? "unknown", formName, "textarea");
@@ -32,11 +31,13 @@ export const TextArea = React.forwardRef<HTMLInputElement, TextAreaProps>((props
       value={value}
       onFocus={handleFocus}
       slotProps={{
-        inputLabel: {
-          shrink: shouldShrink,
-          ...slotProps?.inputLabel,
-        },
         ...slotProps,
+        inputLabel: {
+          shrink: shouldShrink ? true : undefined,
+          ...(typeof slotProps?.inputLabel === "object" && slotProps.inputLabel !== null
+            ? slotProps.inputLabel
+            : {}),
+        },
       }}
       {...rest}
     />

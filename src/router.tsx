@@ -1,11 +1,14 @@
 import { ReactRouterAppProvider } from "@toolpad/core/react-router";
-import { createBrowserRouter, Outlet } from "react-router";
+import type { Navigation } from "@toolpad/core/AppProvider";
+import { FilterList, LockOutlined, PersonOutline } from "@mui/icons-material";
+import { createBrowserRouter, Navigate, Outlet } from "react-router";
 import type { RouteObject } from "react-router";
 import frontlineLogo from "./assets/frontlinesprout.svg";
 import RouteGuard from "./components/RouteGuard";
 import { useAnalyticsPageView } from "./analytics";
 import useDynamicNavigation from "./hooks/useDynamicNavigation";
 import CustomDashboardLayout from "./layouts/dashboard";
+import SettingsLayout from "./pages/useroptions/settings";
 import DashboardPage from "./pages";
 import AdminPage from "./pages/admin";
 import FuelPage from "./pages/fuel";
@@ -25,11 +28,13 @@ import PostSuccessPage from "./pages/post-success";
 import QRScanner from "./pages/qrscanner";
 import ScorecardsPage from "./pages/scorecards";
 import SignIn from "./pages/signin";
-import Settings from "./pages/useroptions/settings";
 import DataPostUploadPage from "./pages/data-post";
 import DataPostHistoryPage from "./pages/data-post/HistoryPage";
+import { ProfileTab } from "./pages/useroptions/components/ProfileTab";
+import { PasswordTab } from "./pages/useroptions/components/PasswordTab";
+import { FiltersTab } from "./pages/useroptions/components/FiltersTab";
 import { customTheme } from "./theme";
-import { MAIN_ROUTES, RouteConfig } from "./routes";
+import { MAIN_ROUTES, RouteConfig, LeafSegment } from "./routes";
 
 const Logo = () => <img src={frontlineLogo} alt="Frontline Farms Logo" />;
 
@@ -38,8 +43,16 @@ const BRANDING = {
   title: "Frontline Farms"
 };
 
+const SETTINGS_NAV: Navigation = [
+  { kind: "header", title: "Settings" },
+  { title: "Profile",  icon: <PersonOutline />,  segment: "settings/profile"  },
+  { title: "Password", icon: <LockOutlined />,    segment: "settings/password" },
+  { title: "Filters",  icon: <FilterList />,      segment: "settings/filters"  },
+];
+
 // Map segment → page component. Add an entry here when adding a new route to MAIN_ROUTES.
-const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
+// Typed as Record<LeafSegment, ...> so TypeScript errors if a segment is missing.
+const PAGE_COMPONENTS: Record<LeafSegment, React.ComponentType> = {
   "livestock-activity": LivestockActivityPage,
   "move": MovePage,
   "wean": WeanPage,
@@ -60,7 +73,7 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
 
 function buildRouteObjects(routes: RouteConfig[]): RouteObject[] {
   return routes.map(({ segment, children }) => {
-    const Component = PAGE_COMPONENTS[segment];
+    const Component = PAGE_COMPONENTS[segment as LeafSegment];
     if (children?.length) {
       return {
         path: segment,
@@ -73,17 +86,41 @@ function buildRouteObjects(routes: RouteConfig[]): RouteObject[] {
 }
 
 export default function App() {
-  const navigation = useDynamicNavigation();
+  const { appNav } = useDynamicNavigation();
   useAnalyticsPageView();
 
   return (
-    <ReactRouterAppProvider navigation={navigation} branding={BRANDING} theme={customTheme}>
+    <ReactRouterAppProvider navigation={appNav} branding={BRANDING} theme={customTheme}>
       <Outlet />
     </ReactRouterAppProvider>
   );
 }
 
+function SettingsApp() {
+  useAnalyticsPageView();
+
+  return (
+    <ReactRouterAppProvider navigation={SETTINGS_NAV} branding={BRANDING} theme={customTheme}>
+      <RouteGuard>
+        <SettingsLayout />
+      </RouteGuard>
+    </ReactRouterAppProvider>
+  );
+}
+
 export const router = createBrowserRouter([
+  // Settings has its own ReactRouterAppProvider so the sidebar shows settings nav.
+  // Must come before the pathless App route so /settings/* matches here first.
+  {
+    path: "settings",
+    Component: SettingsApp,
+    children: [
+      { index: true, element: <Navigate to="profile" replace /> },
+      { path: "profile",  Component: ProfileTab },
+      { path: "password", Component: PasswordTab },
+      { path: "filters",  Component: FiltersTab },
+    ]
+  },
   {
     Component: App,
     children: [
@@ -98,7 +135,6 @@ export const router = createBrowserRouter([
           { path: "/", Component: DashboardPage },
           ...buildRouteObjects(MAIN_ROUTES),
           // Routes not in MAIN_ROUTES (no nav entry, no dashboard card)
-          { path: "settings", Component: Settings },
           { path: "post-success", Component: PostSuccessPage },
           {
             path: "admin",

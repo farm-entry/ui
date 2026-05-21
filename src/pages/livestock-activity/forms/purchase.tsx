@@ -10,7 +10,7 @@ import { useConfirmationStore } from "../../../store/confirmationStore";
 import { useFormStorageStore } from "../../../store/formStorageStore";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { useLivestockActivityStore } from "../../../store/livestockActivityStore";
-import { usePostingGroupsStore } from "../../../store/postingGroupsStore";
+import { usePostingGroupsStore, useFilteredPostingGroups } from "../../../store/postingGroupsStore";
 import { FormData } from "../../../store/types/forms";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../../utils/date";
 import { PURCHASE_STORAGE_KEY } from "./constants-livestock.json";
@@ -21,8 +21,11 @@ const FORM_STORAGE_HOURS = 48;
 
 interface PurchaseFormData extends FormData {
   group: string | number | null;
+  groupLabel: string | null;
   healthStatus: string | number | null;
+  healthStatusLabel: string | null;
   event: string | number | null;
+  eventLabel: string | null;
   postingDate: string | null;
   quantity: number | null;
   smallLivestockQuantity: number | null;
@@ -33,8 +36,11 @@ interface PurchaseFormData extends FormData {
 const defaultValues: PurchaseFormData = {
   form: "PURCHASE",
   group: null,
+  groupLabel: null,
   healthStatus: null,
+  healthStatusLabel: null,
   event: null,
+  eventLabel: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
   quantity: null,
   smallLivestockQuantity: null,
@@ -54,9 +60,9 @@ export default function PurchasePage() {
     isLoading: postingGroupsLoading,
     getPostingGroups,
     getPostingGroupDetails,
-    postingGroups,
     postingGroupDetails
   } = usePostingGroupsStore();
+  const postingGroups = useFilteredPostingGroups();
   const {
     getEvents,
     eventTypes,
@@ -169,8 +175,12 @@ export default function PurchasePage() {
             <Stack>
               <TypeAhead
                 {...register("group", { required: "Group is required" })}
-                handleChange={(v) => setValue("group", v?.value ? String(v.value) : null)}
+                handleChange={(v) => {
+                  setValue("group", v?.value ? String(v.value) : null);
+                  setValue("groupLabel", v?.label ?? null);
+                }}
                 watch={watch}
+                label="Group"
                 fieldName={"group"}
                 labelKey={"description"}
                 valueKey={"number"}
@@ -200,9 +210,13 @@ export default function PurchasePage() {
             <Stack>
               <TypeAhead
                 {...register("healthStatus")}
-                handleChange={(v) => setValue("healthStatus", v?.value ? String(v.value) : null)}
+                handleChange={(v) => {
+                  setValue("healthStatus", v?.value ? String(v.value) : null);
+                  setValue("healthStatusLabel", v?.label ?? null);
+                }}
                 loading={postingGroupsLoading}
                 watch={watch}
+                label="Health Status"
                 valueList={healthStatuses}
                 fieldName={"healthStatus"}
                 labelKey={"description"}
@@ -231,8 +245,12 @@ export default function PurchasePage() {
             <Stack>
               <TypeAhead
                 {...register("event", { required: "Event is required" })}
-                handleChange={(v) => setValue("event", v?.value ?? null)}
+                handleChange={(v) => {
+                  setValue("event", v?.value ?? null);
+                  setValue("eventLabel", v?.label ?? null);
+                }}
                 watch={watch}
+                label="Event"
                 fieldName={"event"}
                 labelKey={"description"}
                 valueKey={"code"}
