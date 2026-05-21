@@ -25,6 +25,7 @@ export default function CustomDashboardLayout() {
   return (
     <DashboardLayout
       slots={{ toolbarActions: ToolbarActions, toolbarAccount: AccountMenu }}
+      // renderPageItem: bypass Toolpad's ref-keyed WeakMap by providing href explicitly
       renderPageItem={(item, params) => {
         const seg = item.segment as string;
         const sidebarItem = visibleItems.get(seg);

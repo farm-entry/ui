@@ -34,7 +34,7 @@ import { ProfileTab } from "./pages/useroptions/components/ProfileTab";
 import { PasswordTab } from "./pages/useroptions/components/PasswordTab";
 import { FiltersTab } from "./pages/useroptions/components/FiltersTab";
 import { customTheme } from "./theme";
-import { MAIN_ROUTES, RouteConfig } from "./routes";
+import { MAIN_ROUTES, RouteConfig, LeafSegment } from "./routes";
 
 const Logo = () => <img src={frontlineLogo} alt="Frontline Farms Logo" />;
 
@@ -51,7 +51,8 @@ const SETTINGS_NAV: Navigation = [
 ];
 
 // Map segment → page component. Add an entry here when adding a new route to MAIN_ROUTES.
-const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
+// Typed as Record<LeafSegment, ...> so TypeScript errors if a segment is missing.
+const PAGE_COMPONENTS: Record<LeafSegment, React.ComponentType> = {
   "livestock-activity": LivestockActivityPage,
   "move": MovePage,
   "wean": WeanPage,
@@ -72,7 +73,7 @@ const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
 
 function buildRouteObjects(routes: RouteConfig[]): RouteObject[] {
   return routes.map(({ segment, children }) => {
-    const Component = PAGE_COMPONENTS[segment];
+    const Component = PAGE_COMPONENTS[segment as LeafSegment];
     if (children?.length) {
       return {
         path: segment,

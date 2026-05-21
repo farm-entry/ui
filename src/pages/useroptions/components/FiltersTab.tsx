@@ -13,33 +13,8 @@ import type {
 } from "../../../store/types/user";
 import { DEFAULT_USER_FILTERS } from "../../../store/types/user";
 import { useUserStore } from "../../../store/userStore";
-import { MAIN_ROUTES } from "../../../routes";
+import { MENU_OPTION_GROUPS, expandToMenuOptions, ALL_ROUTE_OPTIONS } from "../../../routes";
 import { FilterAccordion } from "./FilterAccordion";
-
-// ── Menu option helpers ───────────────────────────────────────────────────────
-
-const MENU_OPTION_GROUPS: Record<string, string> = Object.fromEntries(
-  MAIN_ROUTES.flatMap((route) =>
-    route.children?.length
-      ? route.children.map((child) => [child.segment, route.title] as [string, string])
-      : []
-  )
-);
-
-const getMenuOptionGroup = (mo: FilterMenuOption) =>
-  MENU_OPTION_GROUPS[mo.segment] || "Other Forms";
-
-function expandToMenuOptions(segments: string[]): FilterMenuOption[] {
-  return segments.flatMap((segment) => {
-    const route = MAIN_ROUTES.find((r) => r.segment === segment);
-    if (route?.children?.length) {
-      return route.children.map((child) => ({ title: child.title, segment: child.segment }));
-    }
-    return route ? [{ title: route.title, segment }] : [];
-  });
-}
-
-const ALL_ROUTE_OPTIONS = expandToMenuOptions(MAIN_ROUTES.map((r) => r.segment));
 
 // ── Filters Tab ───────────────────────────────────────────────────────────────
 
@@ -168,7 +143,7 @@ export function FiltersTab() {
         availableOptions={availableMenuOptions}
         getLabel={(mo) => mo.title}
         getKey={(mo) => mo.segment}
-        getGroup={getMenuOptionGroup}
+        getGroup={(mo) => MENU_OPTION_GROUPS[mo.segment] || "Other Forms"}
         onModeChange={handleMenuOptionsMode}
         onChange={handleMenuOptionsChange}
         isMobile={isMobile}

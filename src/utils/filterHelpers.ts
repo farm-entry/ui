@@ -1,6 +1,21 @@
 import type { FilterCategory } from '../store/types/user';
 
 /**
+ * Returns a predicate that passes items based on INCLUDE/EXCLUDE mode.
+ * If the filter list is empty the predicate always returns true.
+ */
+export function makeInclusivityPredicate<TFilter>(
+  filter: FilterCategory<TFilter>,
+  filterKey: (f: TFilter) => string,
+): (key: string) => boolean {
+  if (filter.list.length === 0) return () => true;
+  const filterSet = new Set(filter.list.map(filterKey));
+  return filter.mode === 'INCLUDE'
+    ? (key) => filterSet.has(key)
+    : (key) => !filterSet.has(key);
+}
+
+/**
  * Applies an INCLUDE/EXCLUDE filter to a list of items.
  * If the filter list is empty, all items are returned regardless of mode.
  *
@@ -15,12 +30,8 @@ export function applyInclusivityFilter<TItem, TFilter>(
   getKey: (item: TItem) => string,
   filterKey: (f: TFilter) => string,
 ): TItem[] {
-  if (filter.list.length === 0) return items;
-  const filterSet = new Set(filter.list.map(filterKey));
-  if (filter.mode === 'INCLUDE') {
-    return items.filter(item => filterSet.has(getKey(item)));
-  }
-  return items.filter(item => !filterSet.has(getKey(item)));
+  const passes = makeInclusivityPredicate(filter, filterKey);
+  return items.filter(item => passes(getKey(item)));
 }
 
 import type { PostingGroup } from '../services/postingGroupsApi';

@@ -1,16 +1,28 @@
-import { AdminPanelSettings, ManageAccounts } from "@mui/icons-material";
+import { AdminPanelSettings, Home, ManageAccounts } from "@mui/icons-material";
 import type { Navigation, NavigationPageItem } from "@toolpad/core/AppProvider";
 import { useMemo } from "react";
 import { useUserStore } from "../store/userStore";
-import LEFTNAV_NAVIGATION from "../LeftNavConfig";
+import { MAIN_ROUTES, RouteConfig } from "../routes";
 import type { FilterCategory, FilterMenuOption, MenuOption } from "../store/types/user";
+import { makeInclusivityPredicate } from "../utils/filterHelpers";
+
+function buildNavigation(routes: RouteConfig[], depth = 0): Navigation {
+  const iconSize = depth === 0 ? 21 : 24;
+  return routes.map(({ segment, title, Icon, children }) => ({
+    segment,
+    title,
+    icon: Icon ? <Icon color="primary" sx={{ fontSize: iconSize }} /> : undefined,
+    ...(children?.length ? { children: buildNavigation(children, depth + 1) } : {})
+  }));
+}
+
+const LEFTNAV_NAVIGATION: Navigation = [
+  { title: "Home", icon: <Home />, segment: "" },
+  ...buildNavigation(MAIN_ROUTES)
+];
 
 function applyNavFilter(navItems: Navigation, filter: FilterCategory<FilterMenuOption>): Navigation {
-  if (filter.list.length === 0) return navItems;
-
-  const filterSet = new Set(filter.list.map((f) => f.segment));
-  const passes = (seg: string) =>
-    filter.mode === "INCLUDE" ? filterSet.has(seg) : !filterSet.has(seg);
+  const passes = makeInclusivityPredicate(filter, (f) => f.segment);
 
   return navItems.flatMap((item): Navigation => {
     if (!("segment" in item)) return [item];
