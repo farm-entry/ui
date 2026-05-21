@@ -1,21 +1,9 @@
-import {
-  Alert,
-  Box,
-  Button,
-  CircularProgress,
-  Snackbar,
-  Stack,
-  useMediaQuery,
-  useTheme
-} from "@mui/material";
-import {
-  AssignmentOutlined,
-  MenuOutlined,
-  PlaceOutlined
-} from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { AssignmentOutlined, MenuOutlined, PlaceOutlined, TuneOutlined } from "@mui/icons-material";
+import { Box, Button, CircularProgress, Stack, useMediaQuery, useTheme } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
+import CustomHeader from "../../../components/framework/CustomHeader";
+import { userApi } from "../../../services/userApi";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
-import { useUserStore } from "../../../store/userStore";
 import type {
   FilterLocation,
   FilterMenuOption,
@@ -24,8 +12,34 @@ import type {
   UserFilters
 } from "../../../store/types/user";
 import { DEFAULT_USER_FILTERS } from "../../../store/types/user";
-import { userApi } from "../../../services/userApi";
+import { useUserStore } from "../../../store/userStore";
+import { MAIN_ROUTES } from "../../../routes";
 import { FilterAccordion } from "./FilterAccordion";
+
+// ── Menu option helpers ───────────────────────────────────────────────────────
+
+const MENU_OPTION_GROUPS: Record<string, string> = Object.fromEntries(
+  MAIN_ROUTES.flatMap((route) =>
+    route.children?.length
+      ? route.children.map((child) => [child.segment, route.title] as [string, string])
+      : []
+  )
+);
+
+const getMenuOptionGroup = (mo: FilterMenuOption) =>
+  MENU_OPTION_GROUPS[mo.segment] || "Other Forms";
+
+function expandToMenuOptions(segments: string[]): FilterMenuOption[] {
+  return segments.flatMap((segment) => {
+    const route = MAIN_ROUTES.find((r) => r.segment === segment);
+    if (route?.children?.length) {
+      return route.children.map((child) => ({ title: child.title, segment: child.segment }));
+    }
+    return route ? [{ title: route.title, segment }] : [];
+  });
+}
+
+const ALL_ROUTE_OPTIONS = expandToMenuOptions(MAIN_ROUTES.map((r) => r.segment));
 
 // ── Filters Tab ───────────────────────────────────────────────────────────────
 
@@ -34,6 +48,15 @@ export function FiltersTab() {
   const saveFiltersToStore = useUserStore((state) => state.saveFilters);
   const menuOptionsFromStore = useUserStore((state) => state.menuOptions);
   const { setAlert } = useGlobalAlertStore();
+
+  // Available options are scoped to what this user is permitted to see.
+  // menuOptionsFromStore holds top-level segments (e.g. "livestock-activity").
+  // Routes with children are expanded to their children (grouped under the parent title),
+  // matching the same structure ALL_ROUTE_OPTIONS uses for the unrestricted case.
+  const availableMenuOptions = useMemo<FilterMenuOption[]>(() => {
+    const visibleSegments = menuOptionsFromStore.filter((o) => !o.hidden).map((o) => o.segment);
+    return visibleSegments.length > 0 ? expandToMenuOptions(visibleSegments) : ALL_ROUTE_OPTIONS;
+  }, [menuOptionsFromStore]);
 
   const [localFilters, setLocalFilters] = useState<UserFilters>(() => ({
     ...DEFAULT_USER_FILTERS,
@@ -46,14 +69,10 @@ export function FiltersTab() {
   const [availableLocations, setAvailableLocations] = useState<FilterLocation[]>([]);
   const [availablePostingGroups, setAvailablePostingGroups] = useState<FilterPostingGroup[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMsg, setSnackbarMsg] = useState("");
-  const [snackbarSeverity, setSnackbarSeverity] = useState<"success" | "error">("success");
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  // Fetch available filter options on tab mount
   useEffect(() => {
     userApi
       .getFilterLocations()
@@ -65,7 +84,20 @@ export function FiltersTab() {
       .catch(() => setAvailablePostingGroups([]));
   }, []);
 
-  // Dirty check
+  // Reconcile stored posting groups against fetched list so descriptions are never stale/empty.
+  useEffect(() => {
+    if (availablePostingGroups.length === 0) return;
+    setLocalFilters((prev) => ({
+      ...prev,
+      postingGroups: {
+        ...prev.postingGroups,
+        list: prev.postingGroups.list.map(
+          (item) => availablePostingGroups.find((a) => a.code === item.code) ?? item
+        )
+      }
+    }));
+  }, [availablePostingGroups]);
+
   const isDirty = JSON.stringify(localFilters) !== JSON.stringify(storeFilters);
 
   const handleSave = async () => {
@@ -73,93 +105,38 @@ export function FiltersTab() {
     try {
       await saveFiltersToStore(localFilters);
       setAlert("success", "Filters saved successfully.");
-      setSnackbarSeverity("success");
-      setSnackbarMsg("Filters saved successfully.");
-      setSnackbarOpen(true);
     } catch {
       setAlert("error", "Failed to save filters. Please try again.");
-      setSnackbarSeverity("error");
-      setSnackbarMsg("Failed to save filters. Please try again.");
-      setSnackbarOpen(true);
     } finally {
       setIsSaving(false);
     }
   };
 
-  // Locations handlers
+  // ── Mode handlers ────────────────────────────────────────────────────────────
+
   const handleLocationsMode = (mode: InclusivityMode) =>
-    setLocalFilters((prev) => ({
-      ...prev,
-      locations: { ...prev.locations, mode }
-    }));
-  const handleLocationsAdd = (item: FilterLocation) =>
-    setLocalFilters((prev) => ({
-      ...prev,
-      locations: { ...prev.locations, list: [...prev.locations.list, item] }
-    }));
-  const handleLocationsRemove = (code: string) =>
-    setLocalFilters((prev) => ({
-      ...prev,
-      locations: {
-        ...prev.locations,
-        list: prev.locations.list.filter((l) => l.code !== code)
-      }
-    }));
+    setLocalFilters((prev) => ({ ...prev, locations: { ...prev.locations, mode } }));
 
-  // PostingGroups handlers
   const handlePostingGroupsMode = (mode: InclusivityMode) =>
-    setLocalFilters((prev) => ({
-      ...prev,
-      postingGroups: { ...prev.postingGroups, mode }
-    }));
-  const handlePostingGroupsAdd = (item: FilterPostingGroup) =>
-    setLocalFilters((prev) => ({
-      ...prev,
-      postingGroups: {
-        ...prev.postingGroups,
-        list: [...prev.postingGroups.list, item]
-      }
-    }));
-  const handlePostingGroupsRemove = (code: string) =>
-    setLocalFilters((prev) => ({
-      ...prev,
-      postingGroups: {
-        ...prev.postingGroups,
-        list: prev.postingGroups.list.filter((pg) => pg.code !== code)
-      }
-    }));
+    setLocalFilters((prev) => ({ ...prev, postingGroups: { ...prev.postingGroups, mode } }));
 
-  // MenuOptions handlers
   const handleMenuOptionsMode = (mode: InclusivityMode) =>
-    setLocalFilters((prev) => ({
-      ...prev,
-      menuOptions: { ...prev.menuOptions, mode }
-    }));
-  const handleMenuOptionsAdd = (item: FilterMenuOption) =>
-    setLocalFilters((prev) => ({
-      ...prev,
-      menuOptions: {
-        ...prev.menuOptions,
-        list: [...prev.menuOptions.list, item]
-      }
-    }));
-  const handleMenuOptionsRemove = (segment: string) =>
-    setLocalFilters((prev) => ({
-      ...prev,
-      menuOptions: {
-        ...prev.menuOptions,
-        list: prev.menuOptions.list.filter((mo) => mo.segment !== segment)
-      }
-    }));
+    setLocalFilters((prev) => ({ ...prev, menuOptions: { ...prev.menuOptions, mode } }));
 
-  // Convert menuOptions from store to FilterMenuOption[]
-  const availableMenuOptions: FilterMenuOption[] = menuOptionsFromStore.map((mo) => ({
-    title: mo.title,
-    segment: mo.segment
-  }));
+  // ── List handlers ────────────────────────────────────────────────────────────
+
+  const handleLocationsChange = (list: FilterLocation[]) =>
+    setLocalFilters((prev) => ({ ...prev, locations: { ...prev.locations, list } }));
+
+  const handlePostingGroupsChange = (list: FilterPostingGroup[]) =>
+    setLocalFilters((prev) => ({ ...prev, postingGroups: { ...prev.postingGroups, list } }));
+
+  const handleMenuOptionsChange = (list: FilterMenuOption[]) =>
+    setLocalFilters((prev) => ({ ...prev, menuOptions: { ...prev.menuOptions, list } }));
 
   return (
     <Stack spacing={2}>
+      <CustomHeader icon={TuneOutlined} title="Filters" sx={{ mb: 0 }} />
       <FilterAccordion<FilterLocation>
         title="Locations"
         icon={<PlaceOutlined fontSize="small" />}
@@ -169,21 +146,18 @@ export function FiltersTab() {
         getKey={(l) => l.code}
         defaultExpanded
         onModeChange={handleLocationsMode}
-        onAdd={handleLocationsAdd}
-        onRemove={handleLocationsRemove}
+        onChange={handleLocationsChange}
         isMobile={isMobile}
       />
-
       <FilterAccordion<FilterPostingGroup>
         title="Posting Groups"
         icon={<AssignmentOutlined fontSize="small" />}
         category={localFilters.postingGroups}
         availableOptions={availablePostingGroups}
-        getLabel={(pg) => `${pg.code} ${pg.description}`}
+        getLabel={(pg) => (pg.description ? `${pg.code} – ${pg.description}` : pg.code)}
         getKey={(pg) => pg.code}
         onModeChange={handlePostingGroupsMode}
-        onAdd={handlePostingGroupsAdd}
-        onRemove={handlePostingGroupsRemove}
+        onChange={handlePostingGroupsChange}
         isMobile={isMobile}
       />
 
@@ -194,51 +168,21 @@ export function FiltersTab() {
         availableOptions={availableMenuOptions}
         getLabel={(mo) => mo.title}
         getKey={(mo) => mo.segment}
+        getGroup={getMenuOptionGroup}
         onModeChange={handleMenuOptionsMode}
-        onAdd={handleMenuOptionsAdd}
-        onRemove={handleMenuOptionsRemove}
+        onChange={handleMenuOptionsChange}
         isMobile={isMobile}
       />
 
-      <Box
-        sx={
-          isMobile
-            ? {
-                position: "sticky",
-                bottom: 0,
-                pt: 1,
-                pb: 2,
-                bgcolor: "background.paper",
-                zIndex: 1
-              }
-            : undefined
-        }
+      <Button
+        variant="contained"
+        onClick={handleSave}
+        disabled={!isDirty || isSaving}
+        fullWidth={isMobile}
+        startIcon={isSaving ? <CircularProgress size={16} /> : undefined}
       >
-        <Button
-          variant="contained"
-          onClick={handleSave}
-          disabled={!isDirty || isSaving}
-          fullWidth={isMobile}
-          startIcon={isSaving ? <CircularProgress size={16} /> : undefined}
-        >
-          {isSaving ? "Saving…" : "Save Filters"}
-        </Button>
-      </Box>
-
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={4000}
-        onClose={() => setSnackbarOpen(false)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={() => setSnackbarOpen(false)}
-          severity={snackbarSeverity}
-          sx={{ width: "100%" }}
-        >
-          {snackbarMsg}
-        </Alert>
-      </Snackbar>
+        {isSaving ? "Saving…" : "Save Filters"}
+      </Button>
     </Stack>
   );
 }

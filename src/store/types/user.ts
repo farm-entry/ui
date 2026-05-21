@@ -32,7 +32,7 @@ export interface FilterLocation {
 
 export interface FilterPostingGroup {
   code: string;
-  description: string;
+  description?: string;
 }
 
 export interface FilterMenuOption {

@@ -1,6 +1,8 @@
-import { Button, Stack } from "@mui/material";
+import { Button, Card, Stack } from "@mui/material";
+import { LockOutlined } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import { TextField } from "../../../components/inputs";
+import CustomHeader from "../../../components/framework/CustomHeader";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { useUserStore } from "../../../store/userStore";
 
@@ -38,41 +40,44 @@ export function PasswordTab() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmitPassword)}>
-      <Stack spacing={3}>
-        <TextField
-          {...register("newPassword", {
-            required: "Password is required",
-            minLength: { value: 8, message: "Minimum 8 characters" }
-          })}
-          value={watch("newPassword")}
-          placeholder="New Password"
-          type="password"
-          error={!!errors.newPassword}
-          helperText={errors.newPassword?.message}
-        />
+    <Card variant="outlined" sx={{ p: 3 }}>
+      <form onSubmit={handleSubmit(onSubmitPassword)}>
+        <CustomHeader icon={LockOutlined} title="Change Password" />
+        <Stack spacing={3}>
+          <TextField
+            {...register("newPassword", {
+              required: "Password is required",
+              minLength: { value: 8, message: "Minimum 8 characters" }
+            })}
+            value={watch("newPassword")}
+            placeholder="New Password"
+            type="password"
+            error={!!errors.newPassword}
+            helperText={errors.newPassword?.message}
+          />
 
-        <TextField
-          {...register("confirmPassword", {
-            required: "Please confirm your password",
-            validate: (v) => v === watch("newPassword") || "Passwords do not match"
-          })}
-          value={watch("confirmPassword")}
-          placeholder="Confirm Password"
-          type="password"
-          error={!!errors.confirmPassword}
-          helperText={errors.confirmPassword?.message}
-        />
+          <TextField
+            {...register("confirmPassword", {
+              required: "Please confirm your password",
+              validate: (v) => v === watch("newPassword") || "Passwords do not match"
+            })}
+            value={watch("confirmPassword")}
+            placeholder="Confirm Password"
+            type="password"
+            error={!!errors.confirmPassword}
+            helperText={errors.confirmPassword?.message}
+          />
 
-        <Button
-          variant="contained"
-          type="submit"
-          disabled={isSubmitting || !isDirty}
-          sx={{ alignSelf: "flex-end" }}
-        >
-          Update Password
-        </Button>
-      </Stack>
-    </form>
+          <Button
+            variant="contained"
+            type="submit"
+            disabled={isSubmitting || !isDirty}
+            sx={{ alignSelf: "flex-end" }}
+          >
+            Update Password
+          </Button>
+        </Stack>
+      </form>
+    </Card>
   );
 }

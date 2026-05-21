@@ -1,20 +1,18 @@
+import { ExpandMore } from "@mui/icons-material";
+import type { SelectChangeEvent } from "@mui/material";
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Autocomplete,
   Chip,
   Stack,
-  TextField as MuiTextField,
   ToggleButton,
   ToggleButtonGroup,
   Typography
 } from "@mui/material";
-import { ExpandMore } from "@mui/icons-material";
-import { useState } from "react";
+import type { SelectOption } from "../../../components/inputs";
+import { Select } from "../../../components/inputs";
 import type { FilterCategory, InclusivityMode } from "../../../store/types/user";
-
-// ── Filter Accordion helpers ─────────────────────────────────────────────────
 
 export interface FilterAccordionProps<TItem extends object> {
   title: string;
@@ -23,10 +21,10 @@ export interface FilterAccordionProps<TItem extends object> {
   availableOptions: TItem[];
   getLabel: (item: TItem) => string;
   getKey: (item: TItem) => string;
+  getGroup?: (item: TItem) => string | undefined;
   defaultExpanded?: boolean;
   onModeChange: (mode: InclusivityMode) => void;
-  onAdd: (item: TItem) => void;
-  onRemove: (key: string) => void;
+  onChange: (newList: TItem[]) => void;
   isMobile: boolean;
 }
 
@@ -37,16 +35,27 @@ export function FilterAccordion<TItem extends object>({
   availableOptions,
   getLabel,
   getKey,
+  getGroup,
   defaultExpanded = false,
   onModeChange,
-  onAdd,
-  onRemove,
+  onChange,
   isMobile
 }: FilterAccordionProps<TItem>) {
-  const [autocompleteKey, setAutocompleteKey] = useState(0);
+  const options: SelectOption[] = availableOptions.map((item) => ({
+    value: getKey(item),
+    label: getLabel(item),
+    group: getGroup?.(item)
+  }));
 
-  const selectedKeys = new Set(category.list.map(getKey));
-  const unselectedOptions = availableOptions.filter((opt) => !selectedKeys.has(getKey(opt)));
+  const selectedKeys = category.list.map(getKey);
+
+  const handleChange = (e: SelectChangeEvent<unknown>) => {
+    const keys = e.target.value as string[];
+    const newList = keys
+      .map((key) => availableOptions.find((opt) => getKey(opt) === key))
+      .filter(Boolean) as TItem[];
+    onChange(newList);
+  };
 
   return (
     <Accordion defaultExpanded={defaultExpanded} disableGutters>
@@ -82,29 +91,12 @@ export function FilterAccordion<TItem extends object>({
             </ToggleButton>
           </ToggleButtonGroup>
 
-          <Autocomplete
-            key={autocompleteKey}
-            options={unselectedOptions}
-            getOptionLabel={getLabel}
-            value={null}
-            onChange={(_, selected) => {
-              if (selected) {
-                onAdd(selected);
-                setAutocompleteKey((k) => k + 1);
-              }
-            }}
-            renderInput={(params) => (
-              <MuiTextField
-                {...params}
-                size="small"
-                placeholder={`Search ${title}`}
-                label={`Add ${title}`}
-              />
-            )}
-            isOptionEqualToValue={(opt, val) => getKey(opt) === getKey(val)}
-            noOptionsText={
-              availableOptions.length === 0 ? "No options available" : "All options selected"
-            }
+          <Select
+            label={title}
+            options={options}
+            multiselect
+            value={selectedKeys}
+            onChange={handleChange}
           />
 
           {category.list.length > 0 && (
@@ -113,8 +105,8 @@ export function FilterAccordion<TItem extends object>({
                 <Chip
                   key={getKey(item)}
                   label={getLabel(item)}
-                  onDelete={() => onRemove(getKey(item))}
                   size="small"
+                  onDelete={() => onChange(category.list.filter((i) => getKey(i) !== getKey(item)))}
                 />
               ))}
             </Stack>

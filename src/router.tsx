@@ -1,4 +1,6 @@
 import { ReactRouterAppProvider } from "@toolpad/core/react-router";
+import type { Navigation } from "@toolpad/core/AppProvider";
+import { FilterList, LockOutlined, PersonOutline } from "@mui/icons-material";
 import { createBrowserRouter, Navigate, Outlet } from "react-router";
 import type { RouteObject } from "react-router";
 import frontlineLogo from "./assets/frontlinesprout.svg";
@@ -6,7 +8,7 @@ import RouteGuard from "./components/RouteGuard";
 import { useAnalyticsPageView } from "./analytics";
 import useDynamicNavigation from "./hooks/useDynamicNavigation";
 import CustomDashboardLayout from "./layouts/dashboard";
-import SettingsLayout from "./layouts/settings";
+import SettingsLayout from "./pages/useroptions/settings";
 import DashboardPage from "./pages";
 import AdminPage from "./pages/admin";
 import FuelPage from "./pages/fuel";
@@ -40,6 +42,13 @@ const BRANDING = {
   logo: <Logo />,
   title: "Frontline Farms"
 };
+
+const SETTINGS_NAV: Navigation = [
+  { kind: "header", title: "Settings" },
+  { title: "Profile",  icon: <PersonOutline />,  segment: "settings/profile"  },
+  { title: "Password", icon: <LockOutlined />,    segment: "settings/password" },
+  { title: "Filters",  icon: <FilterList />,      segment: "settings/filters"  },
+];
 
 // Map segment → page component. Add an entry here when adding a new route to MAIN_ROUTES.
 const PAGE_COMPONENTS: Record<string, React.ComponentType> = {
@@ -76,17 +85,41 @@ function buildRouteObjects(routes: RouteConfig[]): RouteObject[] {
 }
 
 export default function App() {
-  const navigation = useDynamicNavigation();
+  const { appNav } = useDynamicNavigation();
   useAnalyticsPageView();
 
   return (
-    <ReactRouterAppProvider navigation={navigation} branding={BRANDING} theme={customTheme}>
+    <ReactRouterAppProvider navigation={appNav} branding={BRANDING} theme={customTheme}>
       <Outlet />
     </ReactRouterAppProvider>
   );
 }
 
+function SettingsApp() {
+  useAnalyticsPageView();
+
+  return (
+    <ReactRouterAppProvider navigation={SETTINGS_NAV} branding={BRANDING} theme={customTheme}>
+      <RouteGuard>
+        <SettingsLayout />
+      </RouteGuard>
+    </ReactRouterAppProvider>
+  );
+}
+
 export const router = createBrowserRouter([
+  // Settings has its own ReactRouterAppProvider so the sidebar shows settings nav.
+  // Must come before the pathless App route so /settings/* matches here first.
+  {
+    path: "settings",
+    Component: SettingsApp,
+    children: [
+      { index: true, element: <Navigate to="profile" replace /> },
+      { path: "profile",  Component: ProfileTab },
+      { path: "password", Component: PasswordTab },
+      { path: "filters",  Component: FiltersTab },
+    ]
+  },
   {
     Component: App,
     children: [
@@ -114,20 +147,6 @@ export const router = createBrowserRouter([
       },
       { path: "login", Component: SignIn },
       { path: "health", Component: HealthPage },
-      {
-        path: "settings",
-        Component: () => (
-          <RouteGuard>
-            <SettingsLayout />
-          </RouteGuard>
-        ),
-        children: [
-          { index: true, element: <Navigate to="profile" replace /> },
-          { path: "profile",  Component: ProfileTab },
-          { path: "password", Component: PasswordTab },
-          { path: "filters",  Component: FiltersTab },
-        ]
-      },
       { path: "*", Component: NotFoundPage }
     ]
   }
