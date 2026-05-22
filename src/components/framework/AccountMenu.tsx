@@ -20,8 +20,8 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { useAdminStore } from "../../store/adminStore";
 import { useAuth } from "../../hooks/useAuth";
-import { useConfigStore } from "../../store/configStore";
 import { useConfirmationStore } from "../../store/confirmationStore";
 import { useUserStore } from "../../store/userStore";
 
@@ -29,14 +29,19 @@ export default function AccountMenu() {
   const { logout } = useAuth();
   const { showConfirmation } = useConfirmationStore();
   const { firstName, username, role, domain, domains, switchDomain } = useUserStore();
-  const configDomains = useConfigStore((state) => state.domains);
+  const { domains: adminDomains, fetchDomains } = useAdminStore();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [domainsOpen, setDomainsOpen] = useState(false);
   const [switching, setSwitching] = useState(false);
 
+  const needsAdminDomains = role === 'app_admin' || Object.values(domains).flat().includes('*');
+
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
+    if (needsAdminDomains && Object.keys(adminDomains).length === 0) {
+      fetchDomains();
+    }
   };
 
   const handleMenuClose = () => {
@@ -62,18 +67,12 @@ export default function AccountMenu() {
   };
 
   const switchableDomains = (() => {
-    if (role === 'app_admin') {
-      return configDomains.map((d) => d.name).filter((d) => d !== domain);
+    // app_admin can switch to any domain; admin with "*" gets all sub-domains under their farms.
+    // Both resolve via adminStore.domains (GET /admin/domains), fetched lazily on menu open.
+    if (needsAdminDomains) {
+      return Object.values(adminDomains).flat().filter((d) => d !== domain);
     }
-    const flat = Object.values(domains).flat();
-    if (flat.includes('*')) {
-      const wildcardFarms = Object.keys(domains).filter((farm) => domains[farm].includes('*'));
-      return configDomains
-        .filter((d) => wildcardFarms.includes(d.parent))
-        .map((d) => d.name)
-        .filter((d) => d !== domain);
-    }
-    return flat.filter((d) => d !== domain);
+    return Object.values(domains).flat().filter((d) => d !== domain);
   })();
   const displayName = firstName || username;
   const initials = displayName?.charAt(0).toUpperCase();
