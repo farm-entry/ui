@@ -20,16 +20,18 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import { useAdminStore } from "../../store/adminStore";
 import { useAuth } from "../../hooks/useAuth";
 import { useConfigStore } from "../../store/configStore";
 import { useConfirmationStore } from "../../store/confirmationStore";
 import { useUserStore } from "../../store/userStore";
+import { getSwitchableDomains } from "../../utils/domains";
 
 export default function AccountMenu() {
   const { logout } = useAuth();
   const { showConfirmation } = useConfirmationStore();
   const { firstName, username, role, domain, domains, switchDomain } = useUserStore();
-  const configDomains = useConfigStore((state) => state.domains);
+  const { domains: adminDomains, fetchDomains } = useAdminStore();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [domainsOpen, setDomainsOpen] = useState(false);
@@ -37,6 +39,10 @@ export default function AccountMenu() {
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
+    const needsAdminDomains = role === 'app_admin' || Object.values(domains).flat().includes('*');
+    if (needsAdminDomains && Object.keys(adminDomains).length === 0) {
+      fetchDomains();
+    }
   };
 
   const handleMenuClose = () => {
@@ -61,20 +67,7 @@ export default function AccountMenu() {
     );
   };
 
-  const switchableDomains = (() => {
-    if (role === 'app_admin') {
-      return configDomains.map((d) => d.name).filter((d) => d !== domain);
-    }
-    const flat = Object.values(domains).flat();
-    if (flat.includes('*')) {
-      const wildcardFarms = Object.keys(domains).filter((farm) => domains[farm].includes('*'));
-      return configDomains
-        .filter((d) => wildcardFarms.includes(d.parent))
-        .map((d) => d.name)
-        .filter((d) => d !== domain);
-    }
-    return flat.filter((d) => d !== domain);
-  })();
+  const switchableDomains = getSwitchableDomains(role, domains, adminDomains, domain);
   const displayName = firstName || username;
   const initials = displayName?.charAt(0).toUpperCase();
 
