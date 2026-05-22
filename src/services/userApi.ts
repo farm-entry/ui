@@ -70,7 +70,7 @@ class UserApi {
     return res.json();
   }
 
-  async fetchDomains(): Promise<string[]> {
+  async fetchDomains(): Promise<Record<string, string[]>> {
     const res = await apiFetch('/api/admin/domains');
     if (!res.ok) throw new Error('Failed to fetch domains');
     return res.json();
@@ -88,7 +88,7 @@ class UserApi {
     return res.json();
   }
 
-  async createUser(payload: { email: string; password: string; role: string; domains: string[] }): Promise<UserType> {
+  async createUser(payload: { email: string; password: string; role: string; domains: Record<string, string[]> }): Promise<UserType> {
     const res = await apiFetch('/api/admin/users', {
       method: 'POST',
       body: JSON.stringify(payload),

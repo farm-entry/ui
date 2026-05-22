@@ -5,23 +5,28 @@ import { UserType } from './types/user';
 
 interface AdminState {
   users: UserType[];
-  domains: string[];
+  domains: Record<string, string[]>;
   isLoading: boolean;
   error: string | null;
   fetchUsers: (domain: string) => Promise<void>;
   fetchDomains: () => Promise<void>;
-  createUser: (payload: { email: string; password: string; role: string; domains: string[] }) => Promise<void>;
+  createUser: (payload: { email: string; password: string; role: string; domains: Record<string, string[]> }) => Promise<void>;
   updateUser: (userId: string, payload: Partial<Pick<UserType, 'email' | 'firstName' | 'lastName' | 'domains' | 'role'>>) => Promise<void>;
   deleteUser: (userId: string) => Promise<void>;
   resetPassword: (userId: string, newPassword: string) => Promise<void>;
+  reset: () => void;
 }
+
+const initialAdminState = {
+  users: [] as UserType[],
+  domains: {} as Record<string, string[]>,
+  isLoading: false,
+  error: null as string | null,
+};
 
 export const useAdminStore = create<AdminState>()(
   devtools((set) => ({
-    users: [],
-    domains: [],
-    isLoading: false,
-    error: null,
+    ...initialAdminState,
 
     fetchUsers: async (domain) => {
       set({ isLoading: true, error: null });
@@ -60,5 +65,7 @@ export const useAdminStore = create<AdminState>()(
     resetPassword: async (userId, newPassword) => {
       await userApi.resetPassword(userId, newPassword);
     },
+
+    reset: () => set(initialAdminState),
   }), { name: 'AdminStore' })
 );

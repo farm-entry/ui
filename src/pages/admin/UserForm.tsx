@@ -28,7 +28,7 @@ export interface UserFormData {
   password: string;
   firstName: string;
   lastName: string;
-  domains: string[];
+  domains: Record<string, string[]>;
   role: RolesType;
   isActive: boolean;
   isEmailVerified: boolean;
@@ -40,6 +40,220 @@ interface UserFormProps {
   initialValues?: Partial<UserFormData>;
   editMode?: boolean;
 }
+
+// ── DomainSelector ────────────────────────────────────────────────────────────
+
+interface DomainSelectorProps {
+  role: RolesType;
+  control: any;
+  errors: any;
+  setValue: (name: 'domains', value: Record<string, string[]>) => void;
+  watch: (name: 'domains') => Record<string, string[]>;
+  availableDomains: Record<string, string[]>;
+}
+
+function DomainSelector({
+  role,
+  control,
+  errors,
+  setValue,
+  watch,
+  availableDomains,
+}: DomainSelectorProps) {
+  const selectedDomains = watch('domains');
+
+  // app_admin — no domain selector needed
+  if (role === 'app_admin') {
+    return (
+      <Typography variant="body2" color="text.secondary">
+        App admins are granted access to all domains automatically.
+      </Typography>
+    );
+  }
+
+  // no role selected — disabled placeholder
+  if (!role) {
+    return (
+      <FormControl fullWidth disabled>
+        <InputLabel id="domains-label">Domains</InputLabel>
+        <Select
+          labelId="domains-label"
+          value={[]}
+          multiple
+          input={<OutlinedInput label="Domains" />}
+        >
+          {/* empty */}
+        </Select>
+        <FormHelperText>Select a role first</FormHelperText>
+      </FormControl>
+    );
+  }
+
+  const parentFarms = Object.keys(availableDomains);
+
+  // admin — parent farms only, multi-select
+  if (role === 'admin') {
+    const selectedParents = Object.keys(selectedDomains);
+
+    return (
+      <Controller
+        name="domains"
+        control={control}
+        rules={{
+          validate: (v: Record<string, string[]>) =>
+            Object.keys(v).length > 0 || 'At least one domain is required',
+        }}
+        render={() => (
+          <FormControl fullWidth error={!!errors.domains}>
+            <InputLabel id="domains-label">Domains</InputLabel>
+            <Select
+              labelId="domains-label"
+              multiple
+              value={selectedParents}
+              onChange={(e) => {
+                const selected = e.target.value as string[];
+                const next: Record<string, string[]> = {};
+                for (const farm of selected) {
+                  next[farm] = availableDomains[farm] ?? [];
+                }
+                setValue('domains', next);
+              }}
+              input={<OutlinedInput label="Domains" />}
+              renderValue={(selected) => (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {(selected as string[]).map((val) => (
+                    <Chip key={val} label={val} size="small" />
+                  ))}
+                </Box>
+              )}
+            >
+              {parentFarms.map((farm) => (
+                <MenuItem key={farm} value={farm}>
+                  <Checkbox checked={selectedParents.includes(farm)} />
+                  <ListItemText primary={farm} />
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText>
+              {(errors.domains as any)?.message ??
+                'All sub-domains under selected farms will be granted automatically'}
+            </FormHelperText>
+          </FormControl>
+        )}
+      />
+    );
+  }
+
+  // user — grouped tree with parent select-all
+  const selectedSubDomains = Object.values(selectedDomains).flat();
+
+  const handleSelectAll = (farm: string, subDomains: string[]) => {
+    const allSelected =
+      subDomains.length > 0 && subDomains.every((sd) => selectedSubDomains.includes(sd));
+    if (allSelected) {
+      const next = { ...selectedDomains };
+      delete next[farm];
+      setValue('domains', next);
+    } else {
+      setValue('domains', { ...selectedDomains, [farm]: subDomains });
+    }
+  };
+
+  const handleToggleChild = (farm: string, child: string) => {
+    const currentFarmSelected = selectedDomains[farm] ?? [];
+    const isSelected = currentFarmSelected.includes(child);
+    let nextFarmList: string[];
+    if (isSelected) {
+      nextFarmList = currentFarmSelected.filter((d) => d !== child);
+    } else {
+      nextFarmList = [...currentFarmSelected, child];
+    }
+    const next = { ...selectedDomains };
+    if (nextFarmList.length === 0) {
+      delete next[farm];
+    } else {
+      next[farm] = nextFarmList;
+    }
+    setValue('domains', next);
+  };
+
+  return (
+    <Controller
+      name="domains"
+      control={control}
+      rules={{
+        validate: (v: Record<string, string[]>) =>
+          Object.values(v).flat().length > 0 || 'At least one domain is required',
+      }}
+      render={() => (
+        <FormControl fullWidth error={!!errors.domains}>
+          <InputLabel id="domains-label">Domains</InputLabel>
+          <Select
+            labelId="domains-label"
+            multiple
+            value={selectedSubDomains}
+            input={<OutlinedInput label="Domains" />}
+            renderValue={(selected) => (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {(selected as string[]).map((val) => (
+                  <Chip key={val} label={val} size="small" />
+                ))}
+              </Box>
+            )}
+          >
+            {parentFarms.map((farm) => {
+              const subDomains = availableDomains[farm] ?? [];
+              const allSelected =
+                subDomains.length > 0 &&
+                subDomains.every((sd) => selectedSubDomains.includes(sd));
+              const someSelected = subDomains.some((sd) => selectedSubDomains.includes(sd));
+              return [
+                <MenuItem
+                  key={`header-${farm}`}
+                  disableRipple
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSelectAll(farm, subDomains);
+                  }}
+                  sx={{ bgcolor: 'action.hover' }}
+                >
+                  <Checkbox
+                    checked={allSelected}
+                    indeterminate={someSelected && !allSelected}
+                    inputProps={{ 'aria-label': `Select all ${farm} domains` }}
+                  />
+                  <ListItemText
+                    primary={farm}
+                    primaryTypographyProps={{ fontWeight: 'bold' }}
+                  />
+                </MenuItem>,
+                ...subDomains.map((sub) => (
+                  <MenuItem
+                    key={sub}
+                    value={sub}
+                    sx={{ pl: 4 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleChild(farm, sub);
+                    }}
+                  >
+                    <Checkbox checked={selectedSubDomains.includes(sub)} />
+                    <ListItemText primary={sub} />
+                  </MenuItem>
+                )),
+              ];
+            })}
+          </Select>
+          {errors.domains && (
+            <FormHelperText>{(errors.domains as any)?.message}</FormHelperText>
+          )}
+        </FormControl>
+      )}
+    />
+  );
+}
+
+// ── UserForm ──────────────────────────────────────────────────────────────────
 
 export default function UserForm({
   onSubmit,
@@ -65,7 +279,7 @@ export default function UserForm({
       password: "",
       firstName: "",
       lastName: "",
-      domains: [],
+      domains: {},
       role: "user",
       isActive: true,
       isEmailVerified: false,
@@ -140,53 +354,21 @@ export default function UserForm({
           Permissions
         </Typography>
 
-        {/* Multi-select: Companies / Domains */}
-        <Controller
-          name="domains"
-          control={control}
-          rules={{ validate: (v) => v.length > 0 || "At least one company is required" }}
-          render={({ field }) => (
-            <FormControl fullWidth error={!!errors.domains}>
-              <InputLabel id="domains-label">Companies</InputLabel>
-              <Select
-                labelId="domains-label"
-                multiple
-                value={field.value}
-                onChange={(e) => field.onChange(e.target.value as string[])}
-                input={<OutlinedInput label="Companies" />}
-                renderValue={(selected) => (
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                    {(selected as string[]).map((val) => (
-                      <Chip key={val} label={val} size="small" />
-                    ))}
-                  </Box>
-                )}
-              >
-                {availableDomains.map((d) => (
-                  <MenuItem key={d} value={d}>
-                    <Checkbox checked={field.value.includes(d)} />
-                    <ListItemText primary={d} />
-                  </MenuItem>
-                ))}
-              </Select>
-              {errors.domains && (
-                <FormHelperText>{(errors.domains as any)?.message}</FormHelperText>
-              )}
-            </FormControl>
-          )}
-        />
-
+        {/* ── ROLE SELECTOR — always first ── */}
         <Controller
           name="role"
           control={control}
-          rules={{ required: "Role is required" }}
+          rules={{ required: 'Role is required' }}
           render={({ field }) => (
             <FormControl fullWidth error={!!errors.role}>
               <InputLabel id="role-label">Role</InputLabel>
               <Select
                 labelId="role-label"
-                value={field.value ?? ""}
-                onChange={(e) => field.onChange(e.target.value)}
+                value={field.value ?? ''}
+                onChange={(e) => {
+                  field.onChange(e.target.value);
+                  setValue('domains', {}); // clear domains on role change
+                }}
                 input={<OutlinedInput label="Role" />}
               >
                 {roleOptions.map((opt) => (
@@ -198,6 +380,16 @@ export default function UserForm({
               {errors.role && <FormHelperText>{errors.role.message}</FormHelperText>}
             </FormControl>
           )}
+        />
+
+        {/* ── DOMAIN SELECTOR — conditional on role ── */}
+        <DomainSelector
+          role={watch('role')}
+          control={control}
+          errors={errors}
+          setValue={setValue}
+          watch={watch}
+          availableDomains={availableDomains}
         />
 
         <Box>

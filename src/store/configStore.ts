@@ -36,6 +36,7 @@ interface ConfigState {
   getDomainColor: (name: string) => string | undefined;
   getDomain: (name: string) => DomainConfig | undefined;
   invalidate: () => void;
+  reset: () => void;
 }
 
 const cached = loadFromCache();
@@ -64,6 +65,8 @@ export const useConfigStore = create<ConfigState>()(
         localStorage.removeItem(CACHE_KEY);
         set({ domains: [], loadedAt: null });
       },
+
+      reset: () => get().invalidate(),
     }),
     { name: 'ConfigStore' }
   )
