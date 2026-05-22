@@ -24,6 +24,7 @@ import { useAdminStore } from "../../store/adminStore";
 import { useAuth } from "../../hooks/useAuth";
 import { useConfirmationStore } from "../../store/confirmationStore";
 import { useUserStore } from "../../store/userStore";
+import { getSwitchableDomains } from "../../utils/domains";
 
 export default function AccountMenu() {
   const { logout } = useAuth();
@@ -35,10 +36,9 @@ export default function AccountMenu() {
   const [domainsOpen, setDomainsOpen] = useState(false);
   const [switching, setSwitching] = useState(false);
 
-  const needsAdminDomains = role === 'app_admin' || Object.values(domains).flat().includes('*');
-
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
+    const needsAdminDomains = role === 'app_admin' || Object.values(domains).flat().includes('*');
     if (needsAdminDomains && Object.keys(adminDomains).length === 0) {
       fetchDomains();
     }
@@ -66,14 +66,7 @@ export default function AccountMenu() {
     );
   };
 
-  const switchableDomains = (() => {
-    // app_admin can switch to any domain; admin with "*" gets all sub-domains under their farms.
-    // Both resolve via adminStore.domains (GET /admin/domains), fetched lazily on menu open.
-    if (needsAdminDomains) {
-      return Object.values(adminDomains).flat().filter((d) => d !== domain);
-    }
-    return Object.values(domains).flat().filter((d) => d !== domain);
-  })();
+  const switchableDomains = getSwitchableDomains(role, domains, adminDomains, domain);
   const displayName = firstName || username;
   const initials = displayName?.charAt(0).toUpperCase();
 

@@ -92,9 +92,6 @@ export const useUserStore = create<UserState>()(
       usePostingGroupsStore.getState().reset();
       useScorecardStore.getState().reset();
 
-      // Navigate home — use window.location for simplicity (store cannot use useNavigate hook)
-      window.location.href = '/';
-
       // Update token and user state
       tokenStorage.set(accessToken, refresh ?? '');
       set((state) => ({ ...state, domain: targetDomain }));
