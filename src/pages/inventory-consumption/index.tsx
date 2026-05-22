@@ -7,6 +7,7 @@ import LoadingSpinner from "../../components/framework/LoadingSpinner";
 import { DatePicker, TextArea, TypeAhead } from "../../components/inputs";
 import CustomFormsLayout from "../../layouts/forms";
 import { useConfirmationStore } from "../../store/confirmationStore";
+import { useGlobalAlertStore } from "../../store/globalAlertStore";
 import { useInventoryStore, useFilteredLocations } from "../../store/inventoryStore";
 import { InventoryConsumptionFormData, InventoryLineItem } from "../../store/types/inventory";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
@@ -26,7 +27,8 @@ export default function InventoryConsumptionPage() {
 
   const navigate = useNavigate();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
-  const { jobs, items, isLoading, getLocationsAndJobs, getItems, setItems } =
+  const { setAlert } = useGlobalAlertStore();
+  const { jobs, items, isLoading, getLocationsAndJobs, getItems, setItems, postInventory } =
     useInventoryStore();
   const locations = useFilteredLocations();
 
@@ -107,7 +109,7 @@ export default function InventoryConsumptionPage() {
                 valueKey="code"
                 valueList={locations}
                 placeholder="Source Location"
-                labelFormatter={(item) => `${item.code} · ${item.name}`}
+                labelFormatter={(item) => `${item.name}`}
               />
               {errors.location && <FormHelperText error>{errors.location.message}</FormHelperText>}
             </Stack>
@@ -123,7 +125,7 @@ export default function InventoryConsumptionPage() {
                 valueKey="number"
                 valueList={jobs}
                 placeholder="Group"
-                labelFormatter={(item) => `${item.number} · ${item.description}`}
+                labelFormatter={(item) => `${item.number} ${item.description}`}
               />
               {errors.group && <FormHelperText error>{errors.group.message}</FormHelperText>}
             </Stack>

@@ -32,16 +32,23 @@ interface LivestockActivityStore {
 
   //get data
   getEvents: (template: ActivityType, job?: string) => Promise<EventsType | undefined>;
+
+  reset: () => void;
 }
+
+const initialLivestockActivityState = {
+  jobs: [] as Job[],
+  currentTemplate: null as ActivityType | null,
+  eventTypes: [] as EventType[],
+  healthStatuses: [] as HealthStatus[],
+  isLoading: false,
+  error: null as string | null,
+};
 
 export const useLivestockActivityStore = create<LivestockActivityStore>()(
   devtools(
     (set, get) => ({
-      // Reference data
-      jobs: [],
-      currentTemplate: null,
-      eventTypes: [],
-      healthStatuses: [],
+      ...initialLivestockActivityState,
 
       //get data
       getEvents: async (template: ActivityType, job?: string): Promise<EventsType | undefined> => {
@@ -78,12 +85,12 @@ export const useLivestockActivityStore = create<LivestockActivityStore>()(
       setHealthStatuses: (healthStatuses) => set({ healthStatuses }),
 
       // Loading states
-      isLoading: false,
       setLoading: (loading) => set({ isLoading: loading }),
 
       // Error handling
-      error: null,
-      setError: (error) => set({ error })
+      setError: (error) => set({ error }),
+
+      reset: () => set(initialLivestockActivityState),
     }),
     { name: "LivestockActivityStore" }
   )

@@ -4,6 +4,16 @@ import { tokenStorage } from '../services/tokenStorage';
 import { userApi } from '../services/userApi';
 import type { DomainType, MenuOption, UserFilters, UserType } from './types/user';
 import { DEFAULT_USER_FILTERS } from './types/user';
+import { useAdminStore } from './adminStore';
+import { useConfigStore } from './configStore';
+import { useEmployeeStore } from './employeeStore';
+import { useFormStorageStore } from './formStorageStore';
+import { useGlobalAlertStore } from './globalAlertStore';
+import { useInventoryStore } from './inventoryStore';
+import { useLivestockActivityStore } from './livestockActivityStore';
+import { useMaintenanceStore } from './maintenanceStore';
+import { usePingStore } from './pingStore';
+import { useScorecardStore } from './scorecardStore';
 
 interface UserState extends UserType {
   isLoading: boolean;
@@ -29,7 +39,7 @@ const EMPTY_USER: UserType = {
   username: '',
   role: 'user',
   domain: null,
-  domains: [],
+  domains: {},
   loginTime: '',
   menuOptions: [],
 };
@@ -63,9 +73,29 @@ export const useUserStore = create<UserState>()(
     changePassword: async (newPassword) => {
       await userApi.resetPassword(get().username, newPassword);
     },
-    switchDomain: async (targetDomain) => {
+    switchDomain: async (targetDomain: string) => {
       const { accessToken } = await userApi.switchDomain(targetDomain);
       const refresh = tokenStorage.getRefresh();
+
+      // Reset every store except userStore itself and confirmationStore
+      useAdminStore.getState().reset();
+      useConfigStore.getState().reset();
+      useEmployeeStore.getState().reset();
+      useFormStorageStore.getState().reset();
+      useGlobalAlertStore.getState().reset();
+      useInventoryStore.getState().reset();
+      useLivestockActivityStore.getState().reset();
+      useMaintenanceStore.getState().reset();
+      usePingStore.getState().reset();
+      // Dynamic import to avoid circular dependency (postingGroupsStore imports userStore)
+      const { usePostingGroupsStore } = await import('./postingGroupsStore');
+      usePostingGroupsStore.getState().reset();
+      useScorecardStore.getState().reset();
+
+      // Navigate home — use window.location for simplicity (store cannot use useNavigate hook)
+      window.location.href = '/';
+
+      // Update token and user state
       tokenStorage.set(accessToken, refresh ?? '');
       set((state) => ({ ...state, domain: targetDomain }));
     },

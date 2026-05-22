@@ -18,6 +18,7 @@ interface MaintenanceActions {
   setSelectedMaintenanceAsset: (asset: MaintenanceAssetDetails | null) => void;
   clearSelectedMaintenanceAsset: () => void;
   postMaintenance: (data: MaintenanceFormData) => Promise<void>;
+  reset: () => void;
 }
 
 type MaintenanceStore = MaintenanceState & MaintenanceActions;
@@ -80,6 +81,8 @@ export const useMaintenanceStore = create<MaintenanceStore>()(
       clearSelectedMaintenanceAsset: () => {
         set((state) => ({ ...state, selectedMaintenanceAsset: null }));
       },
+
+      reset: () => set({ maintenanceAssets: [], selectedMaintenanceAsset: null, isLoading: false, error: null }),
 
       postMaintenance: async (data) => {
         try {

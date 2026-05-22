@@ -55,6 +55,7 @@ interface ScorecardActions {
 
   // Clear all
   clearAll: () => void;
+  reset: () => void;
 }
 
 type ScorecardStore = ScorecardState & ScorecardActions;
@@ -232,6 +233,8 @@ export const useScorecardStore = create<ScorecardStore>()(
       clearError: () => {
         set((state) => ({ ...state, error: null }));
       },
+
+      reset: () => get().clearAll(),
 
       // Clear all
       clearAll: () => {

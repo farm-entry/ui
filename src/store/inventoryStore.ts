@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { inventoryService as api } from "../services/inventoryApi";
-import { InventoryItem, InventoryJob, InventoryLocation } from "./types/inventory";
+import { InventoryConsumptionFormData, InventoryItem, InventoryJob, InventoryLineItem, InventoryLocation } from "./types/inventory";
 import { applyLocationFilter } from "../utils/filterHelpers";
 import { useUserStore } from "./userStore";
 
@@ -20,18 +20,23 @@ interface InventoryActions {
   getItems: (locationCode: string, jobNo: string) => Promise<void>;
   setItems: (items: InventoryItem[]) => void;
   postInventory: (formData: InventoryConsumptionFormData, lineItems: InventoryLineItem[]) => Promise<void>;
+  reset: () => void;
 }
 
 type InventoryStore = InventoryState & InventoryActions;
 
+const initialInventoryState: InventoryState = {
+  locations: [],
+  jobs: [],
+  items: [],
+  isLoading: false,
+  error: null,
+};
+
 export const useInventoryStore = create<InventoryStore>()(
   devtools(
     (set) => ({
-      locations: [],
-      jobs: [],
-      items: [],
-      isLoading: false,
-      error: null,
+      ...initialInventoryState,
 
       getLocationsAndJobs: async () => {
         try {
@@ -69,7 +74,9 @@ export const useInventoryStore = create<InventoryStore>()(
 
       postInventory: async (formData, lineItems) => {
         await api.postInventory(formData, lineItems);
-      }
+      },
+
+      reset: () => set(initialInventoryState),
     }),
     { name: "inventory-store" }
   )

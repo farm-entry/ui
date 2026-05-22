@@ -59,14 +59,14 @@ export default function InventoryItemList({
           watch={mockWatch}
           fieldName="selectedItem"
           handleChange={(v) => setSelectedValue(v ? String(v.value) : "")}
-          valueList={items as unknown as Record<string, unknown>[]}
+          valueList={items as InventoryItem[]}
           label="Item"
           labelKey="description"
           valueKey="number"
           placeholder="Select item"
           disabled={items.length === 0}
           noOptionsText="No items available"
-          labelFormatter={(item) => `${item.number} · ${item.description}`}
+          labelFormatter={(item: InventoryItem) => `${item.number} · ${item.description} - ${item.balance} ${item.unit}`}
         />
 
         {selectedItem && (
