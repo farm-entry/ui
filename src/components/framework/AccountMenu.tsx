@@ -21,6 +21,7 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
+import { useConfigStore } from "../../store/configStore";
 import { useConfirmationStore } from "../../store/confirmationStore";
 import { useUserStore } from "../../store/userStore";
 
@@ -28,6 +29,7 @@ export default function AccountMenu() {
   const { logout } = useAuth();
   const { showConfirmation } = useConfirmationStore();
   const { firstName, username, role, domain, domains, switchDomain } = useUserStore();
+  const configDomains = useConfigStore((state) => state.domains);
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [domainsOpen, setDomainsOpen] = useState(false);
@@ -59,7 +61,9 @@ export default function AccountMenu() {
     );
   };
 
-  const switchableDomains = Object.values(domains).flat().filter((d) => d !== domain);
+  const switchableDomains = role === 'app_admin'
+    ? configDomains.map((d) => d.name).filter((d) => d !== domain)
+    : Object.values(domains).flat().filter((d) => d !== domain);
   const displayName = firstName || username;
   const initials = displayName?.charAt(0).toUpperCase();
 
