@@ -22,6 +22,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAdminStore } from "../../store/adminStore";
 import { useAuth } from "../../hooks/useAuth";
+import { useConfigStore } from "../../store/configStore";
 import { useConfirmationStore } from "../../store/confirmationStore";
 import { useUserStore } from "../../store/userStore";
 import { getSwitchableDomains } from "../../utils/domains";
