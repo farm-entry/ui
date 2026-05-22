@@ -114,7 +114,7 @@ function DomainSelector({
                 const selected = e.target.value as string[];
                 const next: Record<string, string[]> = {};
                 for (const farm of selected) {
-                  next[farm] = availableDomains[farm] ?? [];
+                  next[farm] = ['*'];
                 }
                 setValue('domains', next);
               }}
