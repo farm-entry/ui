@@ -61,9 +61,20 @@ export default function AccountMenu() {
     );
   };
 
-  const switchableDomains = role === 'app_admin'
-    ? configDomains.map((d) => d.name).filter((d) => d !== domain)
-    : Object.values(domains).flat().filter((d) => d !== domain);
+  const switchableDomains = (() => {
+    if (role === 'app_admin') {
+      return configDomains.map((d) => d.name).filter((d) => d !== domain);
+    }
+    const flat = Object.values(domains).flat();
+    if (flat.includes('*')) {
+      const wildcardFarms = Object.keys(domains).filter((farm) => domains[farm].includes('*'));
+      return configDomains
+        .filter((d) => wildcardFarms.includes(d.parent))
+        .map((d) => d.name)
+        .filter((d) => d !== domain);
+    }
+    return flat.filter((d) => d !== domain);
+  })();
   const displayName = firstName || username;
   const initials = displayName?.charAt(0).toUpperCase();
 
