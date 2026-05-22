@@ -42,18 +42,24 @@ export default function AccountMenu() {
     setDomainsOpen(false);
   };
 
-  const handleSwitchDomain = async (target: string) => {
+  const handleSwitchDomain = (target: string) => {
     if (target === domain || switching) return;
-    setSwitching(true);
-    try {
-      await switchDomain(target);
-    } finally {
-      setSwitching(false);
-      handleMenuClose();
-    }
+    showConfirmation(
+      'Switch Domain',
+      'Are you sure? Any existing stored data will be lost.',
+      async () => {
+        setSwitching(true);
+        try {
+          await switchDomain(target);
+        } finally {
+          setSwitching(false);
+          handleMenuClose();
+        }
+      }
+    );
   };
 
-  const switchableDomains = domains.filter((d) => d !== domain);
+  const switchableDomains = Object.values(domains).flat().filter((d) => d !== domain);
   const displayName = firstName || username;
   const initials = displayName?.charAt(0).toUpperCase();
 

@@ -9,6 +9,7 @@ interface EmployeeState {
   updateEmployee: (id: number, employee: Partial<Employee>) => void;
   deleteEmployee: (id: number) => void;
   getNextId: () => number;
+  reset: () => void;
 }
 
 const INITIAL_EMPLOYEES: Employee[] = [
@@ -66,6 +67,9 @@ export const useEmployeeStore = create<EmployeeState>()(
       const state = get();
       return state.employees.reduce((max: number, employee: Employee) => Math.max(max, employee.id), 0) + 1;
     },
+
+    reset: () =>
+      set((state: EmployeeState) => ({ ...state, employees: INITIAL_EMPLOYEES })),
   })) as EmployeeStore,
     { name: "EmployeeStore" }
   )

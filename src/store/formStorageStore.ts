@@ -13,12 +13,17 @@ interface FormStorageState {
   getForm: <T>(formType: string) => T | null;
   removeForm: (formType: string) => void;
   clearExpired: () => void;
+  reset: () => void;
 }
+
+const initialFormStorageState = {
+  forms: {} as Record<string, FormData>,
+};
 
 export const useFormStorageStore = create<FormStorageState>()(
   persist(
     (set, get) => ({
-      forms: {},
+      ...initialFormStorageState,
       
       saveForm: (formType: string, data: any, ttlHours: number = 48) => {
         const timestamp = Date.now();
@@ -63,15 +68,20 @@ export const useFormStorageStore = create<FormStorageState>()(
         const { forms } = get();
         const now = Date.now();
         const validForms: Record<string, FormData> = {};
-        
+
         Object.entries(forms).forEach(([formType, formData]) => {
           const expiresAt = formData.timestamp + (formData.ttlHours * 60 * 60 * 1000);
           if (now <= expiresAt) {
             validForms[formType] = formData;
           }
         });
-        
+
         set({ forms: validForms });
+      },
+
+      reset: () => {
+        set(initialFormStorageState);
+        useFormStorageStore.persist.clearStorage();
       },
     }),
     {

@@ -12,15 +12,20 @@ interface GlobalAlertState {
 
   setAlert: (severity: AlertSeverity, message: string | Error, title?: string) => void;
   clearAlert: () => void;
+  reset: () => void;
 }
+
+const initialGlobalAlertState = {
+  open: false,
+  severity: "info" as AlertSeverity,
+  message: "",
+  title: undefined as string | undefined,
+};
 
 export const useGlobalAlertStore = create<GlobalAlertState>()(
   devtools(
     (set) => ({
-      open: false,
-      severity: "info",
-      message: "",
-      title: undefined,
+      ...initialGlobalAlertState,
 
       setAlert: (severity: AlertSeverity, message: string | Error, title?: string) => {
         const resolvedMessage =
@@ -35,7 +40,9 @@ export const useGlobalAlertStore = create<GlobalAlertState>()(
 
       clearAlert: () => {
         set({ open: false, message: "", title: undefined });
-      }
+      },
+
+      reset: () => set(initialGlobalAlertState),
     }),
     { name: "GlobalAlertStore" }
   )
