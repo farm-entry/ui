@@ -134,6 +134,21 @@ class UserApi {
     return res.json();
   }
 
+  async getAdminUserFilters(userId: string): Promise<UserFilters> {
+    const res = await apiFetch(`/api/admin/users/${userId}/filters`);
+    if (!res.ok) throw new Error('Failed to fetch user filters');
+    return res.json();
+  }
+
+  async saveAdminUserFilters(userId: string, filters: UserFilters): Promise<UserFilters> {
+    const res = await apiFetch(`/api/admin/users/${userId}/filters`, {
+      method: 'POST',
+      body: JSON.stringify(filters),
+    });
+    if (!res.ok) throw new Error('Failed to save user filters');
+    return res.json();
+  }
+
   async getFilterLocations(): Promise<FilterLocation[]> {
     const res = await apiFetch('/api/user/filters/locations');
     if (!res.ok) return [];

@@ -1,4 +1,4 @@
-import { Delete, Edit, LockReset } from "@mui/icons-material";
+import { Delete, Edit, LockReset, TuneOutlined } from "@mui/icons-material";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { UserType } from "../../store/types/user";
@@ -8,12 +8,14 @@ interface UsersTableProps {
   onEdit: (user: UserType) => void;
   onResetPassword: (user: UserType) => void;
   onDelete: (user: UserType) => void;
+  onManageFilters: (user: UserType) => void;
 }
 
 const columns = (
   onEdit: (u: UserType) => void,
   onResetPassword: (u: UserType) => void,
-  onDelete: (u: UserType) => void
+  onDelete: (u: UserType) => void,
+  onManageFilters: (u: UserType) => void
 ): GridColDef<UserType>[] => [
   { field: "username", headerName: "Username", width: 160 },
   { field: "email", headerName: "Email", width: 220 },
@@ -30,7 +32,7 @@ const columns = (
   {
     field: "actions",
     headerName: "Actions",
-    width: 130,
+    width: 165,
     sortable: false,
     filterable: false,
     renderCell: (params: GridRenderCellParams<UserType>) => (
@@ -45,6 +47,11 @@ const columns = (
             <LockReset fontSize="small" />
           </IconButton>
         </Tooltip>
+        <Tooltip title="Manage Filters">
+          <IconButton size="small" onClick={() => onManageFilters(params.row)}>
+            <TuneOutlined fontSize="small" />
+          </IconButton>
+        </Tooltip>
         <Tooltip title="Delete User">
           <IconButton size="small" color="error" onClick={() => onDelete(params.row)}>
             <Delete fontSize="small" />
@@ -55,12 +62,12 @@ const columns = (
   }
 ];
 
-export default function UsersTable({ users, onEdit, onResetPassword, onDelete }: UsersTableProps) {
+export default function UsersTable({ users, onEdit, onResetPassword, onDelete, onManageFilters }: UsersTableProps) {
   return (
     <Box sx={{ height: 500, width: "100%" }}>
       <DataGrid
         rows={users}
-        columns={columns(onEdit, onResetPassword, onDelete)}
+        columns={columns(onEdit, onResetPassword, onDelete, onManageFilters)}
         getRowId={(row) => row.username}
         showToolbar
         initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}

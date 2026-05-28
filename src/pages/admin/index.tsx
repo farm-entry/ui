@@ -9,6 +9,7 @@ import { UserType } from "../../store/types/user";
 import { useUserStore } from "../../store/userStore";
 import ResetPasswordDialog from "./ResetPasswordDialog";
 import UserDialog, { UserDialogSubmitData } from "./UserDialog";
+import UserFiltersDialog from "./UserFiltersDialog";
 import UsersTable from "./UsersTable";
 
 export default function AdminPage() {
@@ -28,6 +29,7 @@ export default function AdminPage() {
 
   const [dialogUser, setDialogUser] = useState<UserType | "add" | null>(null);
   const [resetUser, setResetUser] = useState<UserType | null>(null);
+  const [filtersUser, setFiltersUser] = useState<UserType | null>(null);
 
   useEffect(() => {
     fetchDomains();
@@ -81,6 +83,7 @@ export default function AdminPage() {
           onEdit={setDialogUser}
           onResetPassword={setResetUser}
           onDelete={handleDelete}
+          onManageFilters={setFiltersUser}
         />
 
         <UserDialog
@@ -94,6 +97,11 @@ export default function AdminPage() {
           user={resetUser}
           onClose={() => setResetUser(null)}
           onReset={resetPassword}
+        />
+
+        <UserFiltersDialog
+          user={filtersUser}
+          onClose={() => setFiltersUser(null)}
         />
 
       </Stack>
