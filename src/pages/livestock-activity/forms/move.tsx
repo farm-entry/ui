@@ -239,7 +239,7 @@ export default function MovePage() {
                   fieldName={"event"}
                   labelKey={"description"}
                   valueKey={"code"}
-                  valueList={eventTypes}
+                  valueList={[...eventTypes].sort((a, b) => Number(a.code) - Number(b.code))}
                   placeholder="Event Name"
                 />
                 {errors.event && <FormHelperText error>{errors.event.message}</FormHelperText>}
