@@ -103,21 +103,19 @@ export default function MaintenancePage() {
     if (value.value && value.value !== selectedMaintenanceAsset?.number) {
       setIsMaintenanceLoading(true);
       try {
-        const [asset, codes] = await Promise.all([
-          maintenanceService.getMaintenanceAssetDetails(String(value.value)),
-          maintenanceService.getMaintenanceAssetsByFANo(String(value.value))
-        ]);
+        const asset = await maintenanceService.getMaintenanceAssetDetails(String(value.value));
         if (asset) {
           setValue("asset", asset.number);
           setSelectedMaintenanceAsset(asset);
-        }
-        setMaintenanceCodes(codes);
-        if (codes.length === 1) {
-          setSelectedMaintenanceCode(codes[0]);
-          setValue("type", codes[0].code);
-        } else {
-          setSelectedMaintenanceCode(null);
-          setValue("type", "");
+          const codes = asset.codes ?? [];
+          setMaintenanceCodes(codes);
+          if (codes.length === 1) {
+            setSelectedMaintenanceCode(codes[0]);
+            setValue("type", codes[0].code);
+          } else {
+            setSelectedMaintenanceCode(null);
+            setValue("type", "");
+          }
         }
       } catch (error) {
         setAlert("error", error as Error);

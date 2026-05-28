@@ -22,26 +22,6 @@ class MaintenanceService {
     }
   }
 
-  async getMaintenanceAssetsByFANo(assetNo: string): Promise<MaintenanceAsset[]> {
-    try {
-      const response = await apiFetch(`/api/maintenance/assets/${assetNo}`, { method: "GET" });
-
-      if (!response.ok) {
-        if (response.status === 404) return [];
-        await new HandleError().handleApiError(response, "MaintenanceService.getMaintenanceAssetsByFANo");
-      }
-
-      return response.json();
-    } catch (error) {
-      if (error && typeof error === "object" && "code" in error) throw error;
-      throw new HandleError().createError(
-        "FETCH_ERROR",
-        "Failed to fetch maintenance codes",
-        error instanceof Error ? error.message : "Unknown error occurred"
-      );
-    }
-  }
-
   async getMaintenanceAssetDetails(number: string): Promise<MaintenanceAssetDetails | null> {
     try {
       const response = await apiFetch(`/api/maintenance/${number}`, { method: "GET" });
