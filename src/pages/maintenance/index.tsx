@@ -167,7 +167,7 @@ export default function MaintenancePage() {
   };
 
   const mileageLabel = (() => {
-    const u = selectedMaintenanceCode?.unitType?.toUpperCase();
+    const u = selectedMaintenanceAsset?.unitType?.toUpperCase();
     if (u === "MILE" || u === "MILES") return "Current Mileage";
     if (u === "HOUR" || u === "HOURS") return "Current Hours";
     return "Current Mileage / Hours";
@@ -175,12 +175,12 @@ export default function MaintenancePage() {
 
   const isFuelRelated = selectedMaintenanceCode?.code === "FUEL";
   const hasOdometer = ["MILE", "MILES", "HOUR", "HOURS"].includes(
-    selectedMaintenanceCode?.unitType?.toUpperCase() ?? ""
+    selectedMaintenanceAsset?.unitType?.toUpperCase() ?? ""
   );
   const mileageRequired = isFuelRelated && hasOdometer;
 
   const odometerUnit = (() => {
-    const u = selectedMaintenanceCode?.unitType?.toUpperCase();
+    const u = selectedMaintenanceAsset?.unitType?.toUpperCase();
     return u === "HOUR" || u === "HOURS" ? "hours" : "miles";
   })();
   const odometerWarnThreshold = odometerUnit === "hours" ? ODOMETER_WARN_HOURS : ODOMETER_WARN_MILES;
