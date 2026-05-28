@@ -29,6 +29,7 @@ interface MoveFormData extends FormData {
   quantity: number | null;
   smallLivestockQuantity: number | null;
   totalWeight: number | null;
+  unitAmount: number | null;
   comments: string;
 }
 
@@ -44,6 +45,7 @@ const defaultValues: MoveFormData = {
   quantity: null,
   smallLivestockQuantity: null,
   totalWeight: null,
+  unitAmount: null,
   comments: ""
 };
 
@@ -55,7 +57,7 @@ const columns = [
 
 export default function MovePage() {
   const navigate = useNavigate();
-  const { getPostingGroups } = usePostingGroupsStore();
+  const { getPostingGroups, getPostingGroupDetails } = usePostingGroupsStore();
   const postingGroups = useFilteredPostingGroups();
   const { getEvents, eventTypes, currentTemplate } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
