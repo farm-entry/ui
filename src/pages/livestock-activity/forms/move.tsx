@@ -153,6 +153,9 @@ export default function MovePage() {
       setValue(labelKey, null);
       setDeads({ ...deads, [label]: undefined } as any);
       setInventory({ ...inventory, [label]: undefined } as any);
+      if (label === "fromJob") {
+        setValue("unitAmount", null);
+      }
       return;
     }
 
@@ -162,6 +165,11 @@ export default function MovePage() {
       setValue(labelKey, value.label ?? null);
       setDeads({ ...deads, [label]: job.deadQuantity } as any);
       setInventory({ ...inventory, [label]: job.inventory } as any);
+      if (label === "fromJob") {
+        getPostingGroupDetails(value.value).then((details) =>
+          setValue("unitAmount", details?.personResponsible?.Unit_Price ?? null)
+        );
+      }
     }
   };
 
@@ -305,6 +313,16 @@ export default function MovePage() {
                   value={watch("totalWeight")}
                   error={!!errors.totalWeight}
                   helperText={errors.totalWeight?.message}
+                />
+              </Stack>
+              <Stack>
+                <TextField
+                  label="Unit Amount ($)"
+                  placeholder="Auto-populated from From Job"
+                  type="number"
+                  value={watch("unitAmount") ?? ""}
+                  {...register("unitAmount")}
+                  disabled
                 />
               </Stack>
               <Divider />
