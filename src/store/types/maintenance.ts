@@ -27,6 +27,7 @@ export interface MaintenanceHistoryAsset {
 
 export interface MaintenanceAssetDetails extends MaintenanceAsset {
   history: MaintenanceHistoryAsset[];
+  codes: MaintenanceAsset[];
 }
 
 export interface MaintenanceFormData extends FormData {
