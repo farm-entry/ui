@@ -88,7 +88,7 @@ class UserApi {
     return res.json();
   }
 
-  async createUser(payload: { email: string; password: string; role: string; domains: Record<string, string[]> }): Promise<UserType> {
+  async createUser(payload: { username: string; email: string; password: string; role: string; domains: Record<string, string[]>; firstName?: string; lastName?: string; isActive?: boolean; isEmailVerified?: boolean }): Promise<UserType> {
     const res = await apiFetch('/api/admin/users', {
       method: 'POST',
       body: JSON.stringify(payload),
@@ -97,7 +97,7 @@ class UserApi {
     return res.json();
   }
 
-  async updateUser(userId: string, payload: Partial<Pick<UserType, 'email' | 'firstName' | 'lastName' | 'domains' | 'role'>>): Promise<UserType> {
+  async updateUser(userId: string, payload: Partial<Pick<UserType, 'email' | 'firstName' | 'lastName' | 'domains' | 'role' | 'isActive' | 'isEmailVerified'>>): Promise<UserType> {
     const res = await apiFetch(`/api/admin/users/${userId}`, {
       method: 'PATCH',
       body: JSON.stringify(payload),

@@ -40,6 +40,8 @@ const EMPTY_USER: UserType = {
   role: 'user',
   domain: null,
   domains: {},
+  isActive: true,
+  isEmailVerified: false,
   loginTime: '',
   menuOptions: [],
 };

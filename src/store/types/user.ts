@@ -19,6 +19,8 @@ export interface UserType {
   /** All domains this user is allowed to access, keyed by parent farm. */
   domains: Record<string, string[]>;
   role: RolesType;
+  isActive: boolean;
+  isEmailVerified: boolean;
   menuOptions: MenuOption[];
   filters?: UserFilters;
 }
