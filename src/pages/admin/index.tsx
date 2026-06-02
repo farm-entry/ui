@@ -76,6 +76,11 @@ export default function AdminPage() {
           onClose={() => setFiltersUser(null)}
         /> */}
 
+        <UserFiltersDialog
+          user={filtersUser}
+          onClose={() => setFiltersUser(null)}
+        />
+
       </Stack>
     </Stack>
   );
