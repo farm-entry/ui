@@ -1,18 +1,18 @@
-import { AdminPanelSettings, Refresh } from "@mui/icons-material";
-import { IconButton, Stack } from "@mui/material";
+import { AdminPanelSettings } from "@mui/icons-material";
+import { Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import CustomHeader from "../../components/framework/CustomHeader";
-import { Select } from "../../components/inputs";
 import { useAdminStore } from "../../store/adminStore";
 import { useConfirmationStore } from "../../store/confirmationStore";
 import { UserType } from "../../store/types/user";
 import { useUserStore } from "../../store/userStore";
 import ResetPasswordDialog from "./ResetPasswordDialog";
 import UserDialog, { UserDialogSubmitData } from "./UserDialog";
+import UserFiltersDialog from "./UserFiltersDialog";
 import UsersTable from "./UsersTable";
 
 export default function AdminPage() {
-  const { domain, setUserDomain } = useUserStore();
+  const { domain } = useUserStore();
   const {
     users,
     domains,
@@ -28,6 +28,7 @@ export default function AdminPage() {
 
   const [dialogUser, setDialogUser] = useState<UserType | "add" | null>(null);
   const [resetUser, setResetUser] = useState<UserType | null>(null);
+  const [filtersUser, setFiltersUser] = useState<UserType | null>(null);
 
   useEffect(() => {
     fetchDomains();
@@ -61,26 +62,12 @@ export default function AdminPage() {
       />
 
       <Stack spacing={2}>
-        {domains?.length > 0 && (
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <Select
-              onChange={(e) => setUserDomain((e.target.value as any) || "")}
-              label="Active Domain"
-              options={domains.map((d) => ({ label: d, value: d }))}
-              value={domain ?? ""}
-              onClear={() => setUserDomain("")}
-            />
-            <IconButton onClick={() => domain && fetchUsers(domain)}>
-              <Refresh />
-            </IconButton>
-          </Stack>
-        )}
-
         <UsersTable
           users={users}
           onEdit={setDialogUser}
           onResetPassword={setResetUser}
           onDelete={handleDelete}
+          onManageFilters={setFiltersUser}
         />
 
         <UserDialog
@@ -94,6 +81,11 @@ export default function AdminPage() {
           user={resetUser}
           onClose={() => setResetUser(null)}
           onReset={resetPassword}
+        />
+
+        <UserFiltersDialog
+          user={filtersUser}
+          onClose={() => setFiltersUser(null)}
         />
 
       </Stack>

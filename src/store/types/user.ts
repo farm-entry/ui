@@ -16,9 +16,11 @@ export interface UserType {
   email: string;
   /** Currently active domain — sent with every API request. */
   domain: DomainType;
-  /** All domains this user is allowed to access / switch into. */
+  /** All domains this user is allowed to access, keyed by parent farm. */
   domains: Record<string, string[]>;
   role: RolesType;
+  isActive: boolean;
+  isEmailVerified: boolean;
   menuOptions: MenuOption[];
   filters?: UserFilters;
 }

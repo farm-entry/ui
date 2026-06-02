@@ -17,10 +17,10 @@ function toFormValues(user: UserType): Partial<UserFormData> {
     email: user.email,
     firstName: user.firstName ?? "",
     lastName: user.lastName ?? "",
-    domains: user.domains ?? (user.domain ? [user.domain] : []),
+    domains: user.domains ?? {},
     role: user.role ?? "user",
-    isActive: (user as any).isActive ?? true,
-    isEmailVerified: (user as any).isEmailVerified ?? false
+    isActive: user.isActive ?? true,
+    isEmailVerified: user.isEmailVerified ?? false
   };
 }
 

@@ -6,7 +6,6 @@ import RouteGuard from "./components/RouteGuard";
 import { useAnalyticsPageView } from "./analytics";
 import useDynamicNavigation from "./hooks/useDynamicNavigation";
 import CustomDashboardLayout from "./layouts/dashboard";
-import SettingsLayout from "./pages/useroptions/settings";
 import DashboardPage from "./pages";
 import AdminPage from "./pages/admin";
 import FuelPage from "./pages/fuel";
@@ -28,7 +27,7 @@ import ScorecardsPage from "./pages/scorecards";
 import SignIn from "./pages/signin";
 import DataPostUploadPage from "./pages/data-post";
 import DataPostHistoryPage from "./pages/data-post/HistoryPage";
-import { ProfileSettingsTab } from "./pages/useroptions/settings";
+import SettingsLayout, { ProfileSettingsTab } from "./pages/useroptions/settings";
 import { FiltersTab } from "./pages/useroptions/components/FiltersTab";
 import { PreferencesTab } from "./pages/useroptions/components/PreferencesTab";
 import { customTheme } from "./theme";
@@ -45,21 +44,21 @@ const BRANDING = {
 // Typed as Record<LeafSegment, ...> so TypeScript errors if a segment is missing.
 const PAGE_COMPONENTS: Record<LeafSegment, React.ComponentType> = {
   "livestock-activity": LivestockActivityPage,
-  "move": MovePage,
-  "wean": WeanPage,
-  "gradeoff": GradeOffPage,
-  "mortality": MortalityPage,
-  "purchase": PurchasePage,
-  "quantityadj": QuantityAdjustmentPage,
-  "scorecards": ScorecardsPage,
-  "fuel": FuelPage,
-  "maintenance": MaintenancePage,
+  move: MovePage,
+  wean: WeanPage,
+  gradeoff: GradeOffPage,
+  mortality: MortalityPage,
+  purchase: PurchasePage,
+  quantityadj: QuantityAdjustmentPage,
+  scorecards: ScorecardsPage,
+  fuel: FuelPage,
+  maintenance: MaintenancePage,
   "inventory-consumption": InventoryConsumptionPage,
   "job-header-updates": JobHeaderUpdatesPage,
-  "qrcode": QRScanner,
+  qrcode: QRScanner,
   "data-post": DataPostUploadPage,
-  "upload": DataPostUploadPage,
-  "history": DataPostHistoryPage,
+  upload: DataPostUploadPage,
+  history: DataPostHistoryPage
 };
 
 function buildRouteObjects(routes: RouteConfig[]): RouteObject[] {

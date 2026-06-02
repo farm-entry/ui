@@ -6,4 +6,5 @@ export interface ConfirmationState {
   showConfirmation: (title: string, message: string, onConfirm: () => void) => void;
   handleConfirm: () => void;
   handleCancel: () => void;
+  reset: () => void;
 }

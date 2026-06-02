@@ -9,6 +9,7 @@ interface PingDataState {
   setPing: (ping: string) => void;
   clearPing: () => void;
   fetchPing: () => Promise<void>;
+  reset: () => void;
 }
 
 export const usePingStore = create<PingDataState>()(
@@ -24,6 +25,8 @@ export const usePingStore = create<PingDataState>()(
 
   clearPing: () => 
     set((state) => ({ ...state, ping: "" })),
+
+  reset: () => set({ ping: '', isLoading: false, error: null }),
 
   fetchPing: async () => {
     try {

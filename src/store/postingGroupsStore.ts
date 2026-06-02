@@ -19,6 +19,7 @@ interface PostingGroupsDataState {
   clearPostingGroups: () => void;
   clearPostingGroupDetails: () => void;
   fetchPostingGroups: () => Promise<void>;
+  reset: () => void;
 }
 
 export const usePostingGroupsStore = create<PostingGroupsDataState>()(
@@ -89,6 +90,8 @@ export const usePostingGroupsStore = create<PostingGroupsDataState>()(
 
       clearPostingGroupDetails: () =>
         set({ postingGroupDetails: {} as PostingGroupDetails }),
+
+      reset: () => set({ postingGroups: [], postingGroupDetails: {} as PostingGroupDetails, isLoading: false, error: null }),
 
       fetchPostingGroups: async () => {
         try {

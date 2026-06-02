@@ -36,6 +36,7 @@ interface QuantityAdjFormData extends FormData {
   eventLabel: string | null;
   postingDate: string | null;
   quantity: number | null;
+  unitAmount: number | null;
   totalWeight: number | null;
   comments: string;
 }
@@ -50,6 +51,7 @@ const defaultValues: QuantityAdjFormData = {
   eventLabel: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
   quantity: null,
+  unitAmount: null,
   totalWeight: null,
   comments: ""
 };
@@ -322,6 +324,21 @@ export default function QuantityAdjPage() {
                 onChange={(v) => setValue("quantity", Math.abs(Number(v.target.value)))}
                 error={!!errors.quantity}
                 helperText={errors.quantity?.message}
+              />
+            </Stack>
+
+            <Stack>
+              <TextField
+                label="Unit Amount ($)"
+                placeholder="Unit Amount"
+                type="number"
+                value={watch("unitAmount") ?? ""}
+                {...register("unitAmount", {
+                  required: multiplier === 1 ? "Unit amount is required for positive adjustments" : false,
+                  min: { value: 0, message: "Unit amount cannot be negative" }
+                })}
+                error={!!errors.unitAmount}
+                helperText={errors.unitAmount?.message}
               />
             </Stack>
 
