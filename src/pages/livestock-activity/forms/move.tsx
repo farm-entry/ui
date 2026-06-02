@@ -315,16 +315,11 @@ export default function MovePage() {
                   helperText={errors.totalWeight?.message}
                 />
               </Stack>
-              <Stack>
-                <TextField
-                  label="Unit Amount ($)"
-                  placeholder="Auto-populated from From Job"
-                  type="number"
-                  value={watch("unitAmount") ?? ""}
-                  {...register("unitAmount")}
-                  disabled
-                />
-              </Stack>
+              {watch("unitAmount") != null && (
+                <Typography>
+                  Unit Amount: <strong>${watch("unitAmount")}</strong>
+                </Typography>
+              )}
               <Divider />
               <TextArea
                 value={watch("comments")}

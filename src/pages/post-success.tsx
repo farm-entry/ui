@@ -95,7 +95,7 @@ export default function PostSuccessPage() {
           <Typography variant="h6" sx={{ mb: 2 }}>
             Submitted Data:
           </Typography>
-          <Box sx={{ bgcolor: "grey.50", borderRadius: 1, p: 2 }}>{renderFormFields()}</Box>
+          <Box sx={{ bgcolor: "action.hover", borderRadius: 1, p: 2 }}>{renderFormFields()}</Box>
         </Box>
 
         <Stack spacing={2} justifyContent="center" sx={{ pt: 2 }}>
