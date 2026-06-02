@@ -1,8 +1,10 @@
 import {
+  Alert,
   Box,
   Button,
   Checkbox,
   Chip,
+  Divider,
   FormControl,
   FormControlLabel,
   FormHelperText,
@@ -15,9 +17,11 @@ import {
   Switch,
   Typography
 } from "@mui/material";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { TextField } from "../../components/inputs";
 import { useAdminStore } from "../../store/adminStore";
+import { useConfirmationStore } from "../../store/confirmationStore";
 import { useUserStore } from "../../store/userStore";
 import { RolesType } from "../../store/types/user";
 import { assignableRoles } from "../../utils/roles";
@@ -39,6 +43,8 @@ interface UserFormProps {
   onCancel: () => void;
   initialValues?: Partial<UserFormData>;
   editMode?: boolean;
+  onResetPassword?: (username: string, password: string) => Promise<void>;
+  onDelete?: () => void;
 }
 
 // ── DomainSelector ────────────────────────────────────────────────────────────
@@ -47,8 +53,8 @@ interface DomainSelectorProps {
   role: RolesType;
   control: any;
   errors: any;
-  setValue: (name: 'domains', value: Record<string, string[]>) => void;
-  watch: (name: 'domains') => Record<string, string[]>;
+  setValue: (name: "domains", value: Record<string, string[]>) => void;
+  watch: (name: "domains") => Record<string, string[]>;
   availableDomains: Record<string, string[]>;
 }
 
@@ -58,12 +64,12 @@ function DomainSelector({
   errors,
   setValue,
   watch,
-  availableDomains,
+  availableDomains
 }: DomainSelectorProps) {
-  const selectedDomains = watch('domains');
+  const selectedDomains = watch("domains");
 
   // app_admin — no domain selector needed
-  if (role === 'app_admin') {
+  if (role === "app_admin") {
     return (
       <Typography variant="body2" color="text.secondary">
         App admins are granted access to all domains automatically.
@@ -92,7 +98,7 @@ function DomainSelector({
   const parentFarms = Object.keys(availableDomains);
 
   // admin — parent farms only, multi-select
-  if (role === 'admin') {
+  if (role === "admin") {
     const selectedParents = Object.keys(selectedDomains);
 
     return (
@@ -101,7 +107,7 @@ function DomainSelector({
         control={control}
         rules={{
           validate: (v: Record<string, string[]>) =>
-            Object.keys(v).length > 0 || 'At least one domain is required',
+            Object.keys(v).length > 0 || "At least one domain is required"
         }}
         render={() => (
           <FormControl fullWidth error={!!errors.domains}>
@@ -114,13 +120,13 @@ function DomainSelector({
                 const selected = e.target.value as string[];
                 const next: Record<string, string[]> = {};
                 for (const farm of selected) {
-                  next[farm] = ['*'];
+                  next[farm] = ["*"];
                 }
-                setValue('domains', next);
+                setValue("domains", next);
               }}
               input={<OutlinedInput label="Domains" />}
               renderValue={(selected) => (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                   {(selected as string[]).map((val) => (
                     <Chip key={val} label={val} size="small" />
                   ))}
@@ -136,7 +142,7 @@ function DomainSelector({
             </Select>
             <FormHelperText>
               {(errors.domains as any)?.message ??
-                'All sub-domains under selected farms will be granted automatically'}
+                "All sub-domains under selected farms will be granted automatically"}
             </FormHelperText>
           </FormControl>
         )}
@@ -153,9 +159,9 @@ function DomainSelector({
     if (allSelected) {
       const next = { ...selectedDomains };
       delete next[farm];
-      setValue('domains', next);
+      setValue("domains", next);
     } else {
-      setValue('domains', { ...selectedDomains, [farm]: subDomains });
+      setValue("domains", { ...selectedDomains, [farm]: subDomains });
     }
   };
 
@@ -174,7 +180,7 @@ function DomainSelector({
     } else {
       next[farm] = nextFarmList;
     }
-    setValue('domains', next);
+    setValue("domains", next);
   };
 
   return (
@@ -183,7 +189,7 @@ function DomainSelector({
       control={control}
       rules={{
         validate: (v: Record<string, string[]>) =>
-          Object.values(v).flat().length > 0 || 'At least one domain is required',
+          Object.values(v).flat().length > 0 || "At least one domain is required"
       }}
       render={() => (
         <FormControl fullWidth error={!!errors.domains}>
@@ -194,7 +200,7 @@ function DomainSelector({
             value={selectedSubDomains}
             input={<OutlinedInput label="Domains" />}
             renderValue={(selected) => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                 {(selected as string[]).map((val) => (
                   <Chip key={val} label={val} size="small" />
                 ))}
@@ -204,8 +210,7 @@ function DomainSelector({
             {parentFarms.map((farm) => {
               const subDomains = availableDomains[farm] ?? [];
               const allSelected =
-                subDomains.length > 0 &&
-                subDomains.every((sd) => selectedSubDomains.includes(sd));
+                subDomains.length > 0 && subDomains.every((sd) => selectedSubDomains.includes(sd));
               const someSelected = subDomains.some((sd) => selectedSubDomains.includes(sd));
               return [
                 <MenuItem
@@ -215,17 +220,14 @@ function DomainSelector({
                     e.stopPropagation();
                     handleSelectAll(farm, subDomains);
                   }}
-                  sx={{ bgcolor: 'action.hover' }}
+                  sx={{ bgcolor: "action.hover" }}
                 >
                   <Checkbox
                     checked={allSelected}
                     indeterminate={someSelected && !allSelected}
-                    inputProps={{ 'aria-label': `Select all ${farm} domains` }}
+                    inputProps={{ "aria-label": `Select all ${farm} domains` }}
                   />
-                  <ListItemText
-                    primary={farm}
-                    primaryTypographyProps={{ fontWeight: 'bold' }}
-                  />
+                  <ListItemText primary={farm} primaryTypographyProps={{ fontWeight: "bold" }} />
                 </MenuItem>,
                 ...subDomains.map((sub) => (
                   <MenuItem
@@ -240,13 +242,11 @@ function DomainSelector({
                     <Checkbox checked={selectedSubDomains.includes(sub)} />
                     <ListItemText primary={sub} />
                   </MenuItem>
-                )),
+                ))
               ];
             })}
           </Select>
-          {errors.domains && (
-            <FormHelperText>{(errors.domains as any)?.message}</FormHelperText>
-          )}
+          {errors.domains && <FormHelperText>{(errors.domains as any)?.message}</FormHelperText>}
         </FormControl>
       )}
     />
@@ -259,8 +259,13 @@ export default function UserForm({
   onSubmit,
   onCancel,
   initialValues,
-  editMode = false
+  editMode = false,
+  onResetPassword,
+  onDelete
 }: UserFormProps) {
+  const [newPassword, setNewPassword] = useState("ffpasswordtemp");
+  const [resetConfirmed, setResetConfirmed] = useState<string | null>(null);
+  const showConfirmation = useConfirmationStore((s) => s.showConfirmation);
   const { domains: availableDomains } = useAdminStore();
   const { role: currentUserRole } = useUserStore();
   const roleOptions = assignableRoles(currentUserRole);
@@ -358,16 +363,16 @@ export default function UserForm({
         <Controller
           name="role"
           control={control}
-          rules={{ required: 'Role is required' }}
+          rules={{ required: "Role is required" }}
           render={({ field }) => (
             <FormControl fullWidth error={!!errors.role}>
               <InputLabel id="role-label">Role</InputLabel>
               <Select
                 labelId="role-label"
-                value={field.value ?? ''}
+                value={field.value ?? ""}
                 onChange={(e) => {
                   field.onChange(e.target.value);
-                  setValue('domains', {}); // clear domains on role change
+                  setValue("domains", {}); // clear domains on role change
                 }}
                 input={<OutlinedInput label="Role" />}
               >
@@ -384,7 +389,7 @@ export default function UserForm({
 
         {/* ── DOMAIN SELECTOR — conditional on role ── */}
         <DomainSelector
-          role={watch('role')}
+          role={watch("role")}
           control={control}
           errors={errors}
           setValue={setValue}
@@ -415,7 +420,70 @@ export default function UserForm({
           />
         </Box>
 
-        <Stack direction="row" spacing={2} justifyContent="flex-end">
+        {editMode && onResetPassword && (
+          <>
+            <Divider />
+            <Typography variant="subtitle2" color="text.secondary">
+              Reset Password
+            </Typography>
+            <Stack direction="row" spacing={2} alignItems="center">
+              <TextField
+                label="New Password"
+                placeholder="New Password"
+                type="text"
+                value={newPassword}
+                onChange={(e) => {
+                  setNewPassword(e.target.value);
+                  setResetConfirmed(null);
+                }}
+                sx={{ flex: 1 }}
+              />
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  const pwd = newPassword;
+                  const username = watch("username");
+                  showConfirmation(
+                    "Reset Password",
+                    `Reset the password for ${username}? They will need to be notified of the new password.`,
+                    async () => {
+                      await onResetPassword!(username, pwd);
+                      setResetConfirmed(pwd);
+                    }
+                  );
+                }}
+                disabled={!newPassword || isSubmitting}
+              >
+                Reset
+              </Button>
+            </Stack>
+            {resetConfirmed && (
+              <Alert severity="success">
+                Password reset to: <strong>{resetConfirmed}</strong> — Please notify the user of their new temporary password.
+              </Alert>
+            )}
+          </>
+        )}
+        <Divider />
+        <Stack direction="row" spacing={2} sx={{ width: "100%" }}>
+          {editMode && onDelete && (
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => {
+                const username = watch("username");
+                showConfirmation(
+                  "Delete User",
+                  `Are you sure you want to delete ${username}? This cannot be undone.`,
+                  onDelete
+                );
+              }}
+              disabled={isSubmitting}
+            >
+              Delete User
+            </Button>
+          )}
+          <Box sx={{ flex: 1 }} />
           <Button variant="outlined" onClick={onCancel} disabled={isSubmitting}>
             Cancel
           </Button>

@@ -9,6 +9,8 @@ interface UserDialogProps {
   onClose: () => void;
   onSubmit: (data: UserDialogSubmitData) => Promise<void>;
   user?: UserType;
+  onResetPassword?: (username: string, password: string) => Promise<void>;
+  onDelete?: () => void;
 }
 
 function toFormValues(user: UserType): Partial<UserFormData> {
@@ -24,7 +26,7 @@ function toFormValues(user: UserType): Partial<UserFormData> {
   };
 }
 
-export default function UserDialog({ open, onClose, onSubmit, user }: UserDialogProps) {
+export default function UserDialog({ open, onClose, onSubmit, user, onResetPassword, onDelete }: UserDialogProps) {
   const editMode = Boolean(user);
 
   return (
@@ -39,6 +41,8 @@ export default function UserDialog({ open, onClose, onSubmit, user }: UserDialog
           onCancel={onClose}
           initialValues={user ? toFormValues(user) : undefined}
           editMode={editMode}
+          onResetPassword={editMode ? onResetPassword : undefined}
+          onDelete={editMode ? onDelete : undefined}
         />
       </DialogContent>
     </Dialog>
