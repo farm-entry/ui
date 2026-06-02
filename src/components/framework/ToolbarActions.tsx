@@ -13,7 +13,7 @@ function ToolbarActions() {
   return (
     <Stack direction="row">
       <IconButton
-        sx={{ color: mode === "dark" ? "default" : "black" }}
+        sx={{ color: mode === "dark" ? "secondary" : "black" }}
         onClick={() => navigate("qrcode")}
       >
         <QrCode />
