@@ -4,14 +4,12 @@ import type { FilterMenuOption } from './store/types/user';
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import BuildIcon from "@mui/icons-material/Build";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import HistoryIcon from "@mui/icons-material/History";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import LibraryAddOutlinedIcon from "@mui/icons-material/LibraryAddOutlined";
 import LocalGasStationIcon from "@mui/icons-material/LocalGasStation";
 import PercentOutlinedIcon from "@mui/icons-material/PercentOutlined";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 import UpdateIcon from "@mui/icons-material/Update";
-import UploadFileIcon from "@mui/icons-material/UploadFile";
 import { SvgIconProps } from "@mui/material";
 import React from "react";
 import BabyBottleIcon from "./assets/BabyBottleIcon";
@@ -79,10 +77,6 @@ export const MAIN_ROUTES: RouteConfig[] = [
     title: "Data Post",
     description: "Upload CSV files and post data to Business Central.",
     Icon: CloudUploadIcon,
-    children: [
-      { segment: "upload", title: "Upload", Icon: UploadFileIcon },
-      { segment: "history", title: "History", Icon: HistoryIcon },
-    ],
   }
 ];
 
@@ -125,4 +119,4 @@ export const ALL_ROUTE_OPTIONS: FilterMenuOption[] = expandToMenuOptions(
 export type LeafSegment =
   | "livestock-activity" | "move" | "wean" | "gradeoff" | "mortality" | "purchase" | "quantityadj"
   | "scorecards" | "fuel" | "maintenance" | "inventory-consumption" | "job-header-updates"
-  | "qrcode" | "data-post" | "upload" | "history";
+  | "qrcode" | "data-post";

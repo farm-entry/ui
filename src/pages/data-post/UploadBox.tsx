@@ -5,16 +5,17 @@ import {
   Button,
   Card,
   CircularProgress,
+  Container,
   Divider,
   Step,
   StepLabel,
   Stepper,
   TextField,
-  Typography,
+  Typography
 } from "@mui/material";
 import { useRef, useState } from "react";
-import { useUserStore } from "../../store/userStore";
 import { dataloadApi, DataloadLog } from "../../services/dataloadApi";
+import { useUserStore } from "../../store/userStore";
 import ResultsDrawer from "./ResultsDrawer";
 
 type StepStatus = "idle" | "loading" | "success" | "error";
@@ -29,11 +30,10 @@ const STEP_LABELS = [
   "Validate filename",
   "Validate CSV headers",
   "Upload to S3",
-  "Post to Business Central",
+  "Post to Business Central"
 ];
 
-const initialSteps = (): UploadStep[] =>
-  STEP_LABELS.map((label) => ({ label, status: "idle" }));
+const initialSteps = (): UploadStep[] => STEP_LABELS.map((label) => ({ label, status: "idle" }));
 
 function parseHeaders(text: string): string[] {
   const firstLine = text.split("\n")[0] ?? "";
@@ -50,7 +50,6 @@ function extractEntitySet(filename: string): string {
 }
 
 export default function UploadBox() {
-  const { domain } = useUserStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [file, setFile] = useState<File | null>(null);
@@ -120,7 +119,7 @@ export default function UploadBox() {
   };
 
   const handleSubmit = async () => {
-    if (!file || !entitySet || !domain || isSubmitting) return;
+    if (!file || !entitySet || isSubmitting) return;
     setIsSubmitting(true);
     setSteps(initialSteps());
     setSuccessMsg(null);
@@ -146,7 +145,11 @@ export default function UploadBox() {
     }
     const headers = parseHeaders(text);
     if (!validateHeaders(headers)) {
-      updateStep(1, "error", "Headers must follow the format: i$FieldName, d$FieldName, s$FieldName");
+      updateStep(
+        1,
+        "error",
+        "Headers must follow the format: i$FieldName, d$FieldName, s$FieldName"
+      );
       setIsSubmitting(false);
       return;
     }
@@ -181,29 +184,34 @@ export default function UploadBox() {
   };
 
   return (
-    <>
-      <Card variant="outlined" sx={{ p: 3, maxWidth: 560 }}>
+    <Container sx={{ flexDirection: "column", alignItems: "center" }}>
+      <Card sx={{ p: 3 }}>
         {!file && (
           <Box
-            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragOver(true);
+            }}
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
             tabIndex={0}
             role="button"
             aria-label="Select CSV file"
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click(); }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click();
+            }}
             sx={{
               border: 2,
               borderStyle: "dashed",
               borderColor: dragOver ? "primary.main" : "divider",
               borderRadius: 2,
-              py: 6,
+              p: 3,
               textAlign: "center",
               cursor: "pointer",
               bgcolor: dragOver ? "action.hover" : "transparent",
               transition: "border-color 0.2s, background 0.2s",
-              "&:focus-visible": { outline: "2px solid", outlineColor: "primary.main" },
+              "&:focus-visible": { outline: "2px solid", outlineColor: "primary.main" }
             }}
           >
             <CloudUploadIcon sx={{ fontSize: 48, color: "text.secondary", mb: 1 }} />
@@ -215,7 +223,10 @@ export default function UploadBox() {
               type="file"
               accept=".csv"
               hidden
-              onChange={(e) => { const f = e.target.files?.[0]; if (f) selectFile(f); }}
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) selectFile(f);
+              }}
             />
           </Box>
         )}
@@ -240,21 +251,20 @@ export default function UploadBox() {
               sx={{ mb: 1 }}
             />
 
-            {domain && (
-              <Typography variant="caption" color="text.secondary">
-                Domain: <strong>{domain}</strong>
-              </Typography>
-            )}
-
-            <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
+            <Box sx={{ mt: 2, display: "flex", gap: 1, justifyContent: "center" }}>
               <Button
                 variant="contained"
-                disabled={!entitySet || !domain || isSubmitting}
+                disabled={!entitySet || isSubmitting}
                 onClick={handleSubmit}
               >
                 {isSubmitting ? "Submitting…" : "Submit"}
               </Button>
-              <Button variant="outlined" color="error" onClick={handleClear} disabled={isSubmitting}>
+              <Button
+                variant="outlined"
+                color="error"
+                onClick={handleClear}
+                disabled={isSubmitting}
+              >
                 Clear
               </Button>
             </Box>
@@ -272,7 +282,9 @@ export default function UploadBox() {
                     StepIconComponent={
                       step.status === "loading"
                         ? () => (
-                            <Box sx={{ display: "flex", alignItems: "center", width: 24, height: 24 }}>
+                            <Box
+                              sx={{ display: "flex", alignItems: "center", width: 24, height: 24 }}
+                            >
                               <CircularProgress size={20} />
                             </Box>
                           )
@@ -316,18 +328,15 @@ export default function UploadBox() {
         )}
       </Card>
 
-      {!domain && (
-        <Alert severity="warning" sx={{ mt: 2, maxWidth: 560 }}>
-          No domain is set for your account. Contact an administrator.
-        </Alert>
-      )}
-
       <ResultsDrawer
         log={selectedLog}
         loading={detailLoading}
         error={openDetailError}
-        onClose={() => { setSelectedLog(null); setOpenDetailError(null); }}
+        onClose={() => {
+          setSelectedLog(null);
+          setOpenDetailError(null);
+        }}
       />
-    </>
+    </Container>
   );
 }
