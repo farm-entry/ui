@@ -58,3 +58,11 @@ export const DEFAULT_USER_FILTERS: UserFilters = {
   postingGroups: { mode: 'INCLUDE', list: [] },
   menuOptions: { mode: 'INCLUDE', list: [] },
 };
+
+export interface UserPreferences {
+  domainColors: Record<string, string>;
+}
+
+export const DEFAULT_USER_PREFERENCES: UserPreferences = {
+  domainColors: {},
+};
