@@ -9,13 +9,13 @@ export interface TextFieldProps extends Omit<MuiTextFieldProps, "variant"> {
 }
 
 export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>((props, ref) => {
-  const { placeholder, helperText, value, slotProps, onFocus, ...rest } = props;
+  const { placeholder, helperText, value, type, slotProps, onFocus, ...rest } = props;
   const { formName } = useContext(FormAnalyticsContext);
 
   const shouldShrink = value !== undefined && value !== null && value !== "";
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    trackInputFocus(rest.name ?? "unknown", formName, "text");
+    trackInputFocus(rest.name ?? "unknown", formName, type ?? "text");
     onFocus?.(e);
   };
 
@@ -30,6 +30,7 @@ export const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>((pro
         helperText={helperText}
         fullWidth
         value={value}
+        type={type}
         onFocus={handleFocus}
         slotProps={{
           ...restSlotProps,
