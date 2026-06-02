@@ -88,7 +88,7 @@ class UserApi {
     return res.json();
   }
 
-  async createUser(payload: { email: string; password: string; role: string; domains: Record<string, string[]> }): Promise<UserType> {
+  async createUser(payload: { username: string; email: string; password: string; role: string; domains: Record<string, string[]>; firstName?: string; lastName?: string; isActive?: boolean; isEmailVerified?: boolean }): Promise<UserType> {
     const res = await apiFetch('/api/admin/users', {
       method: 'POST',
       body: JSON.stringify(payload),
@@ -97,7 +97,7 @@ class UserApi {
     return res.json();
   }
 
-  async updateUser(userId: string, payload: Partial<Pick<UserType, 'email' | 'firstName' | 'lastName' | 'domains' | 'role'>>): Promise<UserType> {
+  async updateUser(userId: string, payload: Partial<Pick<UserType, 'email' | 'firstName' | 'lastName' | 'domains' | 'role' | 'isActive' | 'isEmailVerified'>>): Promise<UserType> {
     const res = await apiFetch(`/api/admin/users/${userId}`, {
       method: 'PATCH',
       body: JSON.stringify(payload),
@@ -119,6 +119,14 @@ class UserApi {
     if (!res.ok) throw new Error('Failed to reset password');
   }
 
+  async changePassword(payload: { currentPassword: string; newPassword: string }): Promise<void> {
+    const res = await apiFetch('/api/auth/me/password', {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('Failed to change password');
+  }
+
   async getFilters(): Promise<UserFilters> {
     const res = await apiFetch('/api/user/filters');
     if (!res.ok) throw new Error('Failed to fetch filters');
@@ -131,6 +139,21 @@ class UserApi {
       body: JSON.stringify(filters),
     });
     if (!res.ok) throw new Error('Failed to save filters');
+    return res.json();
+  }
+
+  async getAdminUserFilters(userId: string): Promise<UserFilters> {
+    const res = await apiFetch(`/api/admin/users/${userId}/filters`);
+    if (!res.ok) throw new Error('Failed to fetch user filters');
+    return res.json();
+  }
+
+  async saveAdminUserFilters(userId: string, filters: UserFilters): Promise<UserFilters> {
+    const res = await apiFetch(`/api/admin/users/${userId}/filters`, {
+      method: 'POST',
+      body: JSON.stringify(filters),
+    });
+    if (!res.ok) throw new Error('Failed to save user filters');
     return res.json();
   }
 

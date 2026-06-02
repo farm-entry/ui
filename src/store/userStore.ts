@@ -25,7 +25,7 @@ interface UserState extends UserType {
   setUserDomain: (domain: DomainType) => void;
   setMenuOptions: (menuOptions: MenuOption[]) => void;
   updateProfile: (payload: { firstName?: string; lastName?: string; email?: string }) => Promise<void>;
-  changePassword: (newPassword: string) => Promise<void>;
+  changePassword: (payload: { currentPassword: string; newPassword: string }) => Promise<void>;
   switchDomain: (targetDomain: string) => Promise<void>;
   setFilters: (filters: UserFilters) => void;
   saveFilters: (filters: UserFilters) => Promise<void>;
@@ -40,6 +40,8 @@ const EMPTY_USER: UserType = {
   role: 'user',
   domain: null,
   domains: {},
+  isActive: true,
+  isEmailVerified: false,
   loginTime: '',
   menuOptions: [],
 };
@@ -58,6 +60,8 @@ export const useUserStore = create<UserState>()(
       role: get().role,
       domain: get().domain,
       domains: get().domains,
+      isActive: get().isActive,
+      isEmailVerified: get().isEmailVerified,
       loginTime: get().loginTime,
       menuOptions: get().menuOptions,
       filters: get().filters,
@@ -70,8 +74,8 @@ export const useUserStore = create<UserState>()(
       const updated = await userApi.updateMe(payload);
       set((state) => ({ ...state, ...updated }));
     },
-    changePassword: async (newPassword) => {
-      await userApi.resetPassword(get().username, newPassword);
+    changePassword: async ({ currentPassword, newPassword }) => {
+      await userApi.changePassword({ currentPassword, newPassword });
     },
     switchDomain: async (targetDomain: string) => {
       const { accessToken } = await userApi.switchDomain(targetDomain);

@@ -29,6 +29,7 @@ interface MoveFormData extends FormData {
   quantity: number | null;
   smallLivestockQuantity: number | null;
   totalWeight: number | null;
+  unitAmount: number | null;
   comments: string;
 }
 
@@ -44,6 +45,7 @@ const defaultValues: MoveFormData = {
   quantity: null,
   smallLivestockQuantity: null,
   totalWeight: null,
+  unitAmount: null,
   comments: ""
 };
 
@@ -55,7 +57,7 @@ const columns = [
 
 export default function MovePage() {
   const navigate = useNavigate();
-  const { getPostingGroups } = usePostingGroupsStore();
+  const { getPostingGroups, getPostingGroupDetails } = usePostingGroupsStore();
   const postingGroups = useFilteredPostingGroups();
   const { getEvents, eventTypes, currentTemplate } = useLivestockActivityStore();
   const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
@@ -151,6 +153,9 @@ export default function MovePage() {
       setValue(labelKey, null);
       setDeads({ ...deads, [label]: undefined } as any);
       setInventory({ ...inventory, [label]: undefined } as any);
+      if (label === "fromJob") {
+        setValue("unitAmount", null);
+      }
       return;
     }
 
@@ -160,6 +165,11 @@ export default function MovePage() {
       setValue(labelKey, value.label ?? null);
       setDeads({ ...deads, [label]: job.deadQuantity } as any);
       setInventory({ ...inventory, [label]: job.inventory } as any);
+      if (label === "fromJob") {
+        getPostingGroupDetails(value.value).then((details) =>
+          setValue("unitAmount", details?.personResponsible?.Unit_Price ?? null)
+        );
+      }
     }
   };
 
@@ -237,7 +247,7 @@ export default function MovePage() {
                   fieldName={"event"}
                   labelKey={"description"}
                   valueKey={"code"}
-                  valueList={eventTypes}
+                  valueList={[...eventTypes].sort((a, b) => Number(a.code) - Number(b.code))}
                   placeholder="Event Name"
                 />
                 {errors.event && <FormHelperText error>{errors.event.message}</FormHelperText>}
@@ -303,6 +313,16 @@ export default function MovePage() {
                   value={watch("totalWeight")}
                   error={!!errors.totalWeight}
                   helperText={errors.totalWeight?.message}
+                />
+              </Stack>
+              <Stack>
+                <TextField
+                  label="Unit Amount ($)"
+                  placeholder="Auto-populated from From Job"
+                  type="number"
+                  value={watch("unitAmount") ?? ""}
+                  {...register("unitAmount")}
+                  disabled
                 />
               </Stack>
               <Divider />

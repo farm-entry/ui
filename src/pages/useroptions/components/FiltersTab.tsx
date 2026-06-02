@@ -1,7 +1,6 @@
 import { AssignmentOutlined, MenuOutlined, PlaceOutlined, TuneOutlined } from "@mui/icons-material";
-import { Box, Button, CircularProgress, Stack, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Button, CircularProgress, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
-import CustomHeader from "../../../components/framework/CustomHeader";
 import { userApi } from "../../../services/userApi";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import type {
@@ -111,7 +110,10 @@ export function FiltersTab() {
 
   return (
     <Stack spacing={2}>
-      <CustomHeader icon={TuneOutlined} title="Filters" sx={{ mb: 0 }} />
+      <Stack direction="row" alignItems="center" spacing={1}>
+        <TuneOutlined color="primary" sx={{ fontSize: 24 }} />
+        <Typography variant="h6">Filters</Typography>
+      </Stack>
       <FilterAccordion<FilterLocation>
         title="Locations"
         icon={<PlaceOutlined fontSize="small" />}

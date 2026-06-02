@@ -103,21 +103,19 @@ export default function MaintenancePage() {
     if (value.value && value.value !== selectedMaintenanceAsset?.number) {
       setIsMaintenanceLoading(true);
       try {
-        const [asset, codes] = await Promise.all([
-          maintenanceService.getMaintenanceAssetDetails(String(value.value)),
-          maintenanceService.getMaintenanceAssetsByFANo(String(value.value))
-        ]);
+        const asset = await maintenanceService.getMaintenanceAssetDetails(String(value.value));
         if (asset) {
           setValue("asset", asset.number);
           setSelectedMaintenanceAsset(asset);
-        }
-        setMaintenanceCodes(codes);
-        if (codes.length === 1) {
-          setSelectedMaintenanceCode(codes[0]);
-          setValue("type", codes[0].code);
-        } else {
-          setSelectedMaintenanceCode(null);
-          setValue("type", "");
+          const codes = asset.codes ?? [];
+          setMaintenanceCodes(codes);
+          if (codes.length === 1) {
+            setSelectedMaintenanceCode(codes[0]);
+            setValue("type", codes[0].code);
+          } else {
+            setSelectedMaintenanceCode(null);
+            setValue("type", "");
+          }
         }
       } catch (error) {
         setAlert("error", error as Error);
@@ -167,7 +165,7 @@ export default function MaintenancePage() {
   };
 
   const mileageLabel = (() => {
-    const u = selectedMaintenanceCode?.unitType?.toUpperCase();
+    const u = selectedMaintenanceAsset?.unitType?.toUpperCase();
     if (u === "MILE" || u === "MILES") return "Current Mileage";
     if (u === "HOUR" || u === "HOURS") return "Current Hours";
     return "Current Mileage / Hours";
@@ -175,12 +173,12 @@ export default function MaintenancePage() {
 
   const isFuelRelated = selectedMaintenanceCode?.code === "FUEL";
   const hasOdometer = ["MILE", "MILES", "HOUR", "HOURS"].includes(
-    selectedMaintenanceCode?.unitType?.toUpperCase() ?? ""
+    selectedMaintenanceAsset?.unitType?.toUpperCase() ?? ""
   );
   const mileageRequired = isFuelRelated && hasOdometer;
 
   const odometerUnit = (() => {
-    const u = selectedMaintenanceCode?.unitType?.toUpperCase();
+    const u = selectedMaintenanceAsset?.unitType?.toUpperCase();
     return u === "HOUR" || u === "HOURS" ? "hours" : "miles";
   })();
   const odometerWarnThreshold = odometerUnit === "hours" ? ODOMETER_WARN_HOURS : ODOMETER_WARN_MILES;

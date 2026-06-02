@@ -95,6 +95,7 @@ export function FilterAccordion<TItem extends object>({
             label={title}
             options={options}
             multiselect
+            showDoneButton
             value={selectedKeys}
             onChange={handleChange}
           />
