@@ -25,9 +25,10 @@ export function initGA(): void {
   document.head.appendChild(script);
 
   window.dataLayer = window.dataLayer || [];
-  window.gtag = function (...args: any[]) {
-    window.dataLayer.push(args);
-  };
+  // Must use `arguments` (not rest params) — gtag.js checks instanceof IArguments
+  // to distinguish gtag commands from plain GTM dataLayer pushes.
+  // eslint-disable-next-line prefer-rest-params
+  window.gtag = function () { window.dataLayer.push(arguments); };
   window.gtag("js", new Date());
   window.gtag("config", id, { send_page_view: false });
 }
