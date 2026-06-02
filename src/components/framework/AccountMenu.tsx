@@ -53,7 +53,7 @@ export default function AccountMenu() {
     }
   };
 
-  const switchableDomains = domains.filter((d) => d !== domain);
+  const switchableDomains = Object.values(domains as Record<string, string[]>).flat().filter((d) => d !== domain);
   const displayName = firstName || username;
   const initials = displayName?.charAt(0).toUpperCase();
 

@@ -17,7 +17,7 @@ export interface UserType {
   /** Currently active domain — sent with every API request. */
   domain: DomainType;
   /** All domains this user is allowed to access / switch into. */
-  domains: string[];
+  domains: Record<string, string[]>;
   role: RolesType;
   menuOptions: MenuOption[];
   filters?: UserFilters;

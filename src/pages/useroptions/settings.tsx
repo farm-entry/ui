@@ -1,24 +1,53 @@
-import { ArrowBack, ExitToAppOutlined, Logout as LogoutIcon } from "@mui/icons-material";
 import {
+  ArrowBack,
+  FilterList,
+  Logout as LogoutIcon,
+  PersonOutline,
+  TuneOutlined
+} from "@mui/icons-material";
+import {
+  AppBar,
   Box,
-  Card,
-  Divider,
+  Button,
   IconButton,
-  Link,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText
+  Stack,
+  Tab,
+  Tabs,
+  Toolbar,
+  Typography
 } from "@mui/material";
-import { DashboardLayout } from "@toolpad/core/DashboardLayout";
-import { Outlet, useNavigate } from "react-router";
+import { Outlet, useLocation, useNavigate } from "react-router";
 import GlobalAlert from "../../components/framework/GlobalAlert";
 import { useAuth } from "../../hooks/useAuth";
-import { Button } from "../../components/inputs";
+import { useAnalyticsPageView } from "../../analytics";
+import { ProfileTab } from "./components/ProfileTab";
+import { PasswordTab } from "./components/PasswordTab";
 
-function SidebarFooter() {
-  const { logout } = useAuth();
+const TABS = [
+  { label: "Profile", path: "/settings/profile", icon: <PersonOutline /> },
+  { label: "Filters", path: "/settings/filters", icon: <FilterList /> },
+  { label: "Preferences", path: "/settings/preferences", icon: <TuneOutlined /> }
+] as const;
+
+export function ProfileSettingsTab() {
+  return (
+    <Stack spacing={3}>
+      <ProfileTab />
+      <PasswordTab />
+    </Stack>
+  );
+}
+
+export default function SettingsLayout() {
+  useAnalyticsPageView();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { logout } = useAuth();
+
+  const activeTab = Math.max(
+    0,
+    TABS.findIndex((t) => location.pathname.startsWith(t.path))
+  );
 
   const handleLogout = async () => {
     await logout();
@@ -26,47 +55,34 @@ function SidebarFooter() {
   };
 
   return (
-    <>
-      <Divider />
-      <List disablePadding sx={{ pb: 1, pt: 0.5 }}>
-        <ListItemButton
-          onClick={handleLogout}
-          sx={{
-            borderRadius: 1,
-            mx: 1,
-            color: "error.main",
-            "& .MuiListItemIcon-root": { color: "error.main" }
-          }}
-        >
-          <ListItemIcon sx={{ minWidth: 36 }}>
-            <LogoutIcon />
-          </ListItemIcon>
-          <ListItemText primary="Logout" />
-        </ListItemButton>
-      </List>
-    </>
-  );
-}
-
-export default function SettingsLayout() {
-  const navigate = useNavigate();
-
-  return (
-    <DashboardLayout
-      slots={{
-        toolbarActions: () => (
-          <Button variant="text" onClick={() => navigate("/")} endIcon={<ExitToAppOutlined />}>
-            Return
+    <Box sx={{ display: "flex", flexDirection: "column" }}>
+      <AppBar position="static" color="inherit" elevation={0}>
+        <Toolbar>
+          <IconButton edge="start" aria-label="Back to app" onClick={() => navigate("/")}>
+            <ArrowBack />
+          </IconButton>
+          <Typography variant="h6" component="div" flexGrow={1} ml={1}>
+            Settings
+          </Typography>
+          <Button color="inherit" startIcon={<LogoutIcon />} onClick={handleLogout}>
+            Log Out
           </Button>
-        ),
-        toolbarAccount: () => null,
-        sidebarFooter: SidebarFooter
-      }}
-    >
-      <Box sx={{ p: { xs: 2, md: 3 } }}>
+        </Toolbar>
+        <Tabs
+          value={activeTab}
+          onChange={(_, i) => navigate(TABS[i].path)}
+          variant="fullWidth"
+          aria-label="settings tabs"
+        >
+          {TABS.map((t) => (
+            <Tab key={t.path} icon={t.icon} label={t.label} />
+          ))}
+        </Tabs>
+      </AppBar>
+      <Box component="main" p={3}>
         <GlobalAlert />
         <Outlet />
       </Box>
-    </DashboardLayout>
+    </Box>
   );
 }

@@ -1,6 +1,4 @@
 import { ReactRouterAppProvider } from "@toolpad/core/react-router";
-import type { Navigation } from "@toolpad/core/AppProvider";
-import { FilterList, LockOutlined, PersonOutline } from "@mui/icons-material";
 import { createBrowserRouter, Navigate, Outlet } from "react-router";
 import type { RouteObject } from "react-router";
 import frontlineLogo from "./assets/frontlinesprout.svg";
@@ -30,9 +28,9 @@ import ScorecardsPage from "./pages/scorecards";
 import SignIn from "./pages/signin";
 import DataPostUploadPage from "./pages/data-post";
 import DataPostHistoryPage from "./pages/data-post/HistoryPage";
-import { ProfileTab } from "./pages/useroptions/components/ProfileTab";
-import { PasswordTab } from "./pages/useroptions/components/PasswordTab";
+import { ProfileSettingsTab } from "./pages/useroptions/settings";
 import { FiltersTab } from "./pages/useroptions/components/FiltersTab";
+import { PreferencesTab } from "./pages/useroptions/components/PreferencesTab";
 import { customTheme } from "./theme";
 import { MAIN_ROUTES, RouteConfig, LeafSegment } from "./routes";
 
@@ -42,13 +40,6 @@ const BRANDING = {
   logo: <Logo />,
   title: "Frontline Farms"
 };
-
-const SETTINGS_NAV: Navigation = [
-  { kind: "header", title: "Settings" },
-  { title: "Profile",  icon: <PersonOutline />,  segment: "settings/profile"  },
-  { title: "Password", icon: <LockOutlined />,    segment: "settings/password" },
-  { title: "Filters",  icon: <FilterList />,      segment: "settings/filters"  },
-];
 
 // Map segment → page component. Add an entry here when adding a new route to MAIN_ROUTES.
 // Typed as Record<LeafSegment, ...> so TypeScript errors if a segment is missing.
@@ -97,10 +88,8 @@ export default function App() {
 }
 
 function SettingsApp() {
-  useAnalyticsPageView();
-
   return (
-    <ReactRouterAppProvider navigation={SETTINGS_NAV} branding={BRANDING} theme={customTheme}>
+    <ReactRouterAppProvider theme={customTheme}>
       <RouteGuard>
         <SettingsLayout />
       </RouteGuard>
@@ -109,16 +98,14 @@ function SettingsApp() {
 }
 
 export const router = createBrowserRouter([
-  // Settings has its own ReactRouterAppProvider so the sidebar shows settings nav.
-  // Must come before the pathless App route so /settings/* matches here first.
   {
     path: "settings",
     Component: SettingsApp,
     children: [
       { index: true, element: <Navigate to="profile" replace /> },
-      { path: "profile",  Component: ProfileTab },
-      { path: "password", Component: PasswordTab },
-      { path: "filters",  Component: FiltersTab },
+      { path: "profile",      Component: ProfileSettingsTab },
+      { path: "filters",      Component: FiltersTab },
+      { path: "preferences",  Component: PreferencesTab },
     ]
   },
   {

@@ -22,7 +22,7 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const { setUser, resetUser } = useUserStore();
+  const { setUser, resetUser, loadFilters } = useUserStore();
   const { fetchDomains } = useConfigStore();
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastActivityRef = useRef<number>(Date.now());
@@ -85,7 +85,7 @@ export function useAuth() {
       return;
     }
     userApi.getMe()
-      .then((user) => {
+      .then(async (user) => {
         setUser({
           ...user,
           name: user.email,
@@ -93,6 +93,11 @@ export function useAuth() {
         });
         setIsAuthenticated(true);
         scheduleProactiveRefresh();
+        try {
+          await loadFilters();
+        } catch {
+          // Silent fallback — store retains DEFAULT_USER_FILTERS
+        }
       })
       .catch(() => {
         tokenStorage.clear();
@@ -118,6 +123,11 @@ export function useAuth() {
       setIsAuthenticated(true);
       scheduleProactiveRefresh();
       fetchDomains().catch(() => { });
+      try {
+        await loadFilters();
+      } catch {
+        // Silent fallback — store retains DEFAULT_USER_FILTERS
+      }
       return response;
     } catch (err) {
       setIsAuthenticated(false);
