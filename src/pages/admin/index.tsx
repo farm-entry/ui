@@ -3,12 +3,10 @@ import { Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import CustomHeader from "../../components/framework/CustomHeader";
 import { useAdminStore } from "../../store/adminStore";
-import { useConfirmationStore } from "../../store/confirmationStore";
 import { UserType } from "../../store/types/user";
 import { useUserStore } from "../../store/userStore";
-import ResetPasswordDialog from "./ResetPasswordDialog";
 import UserDialog, { UserDialogSubmitData } from "./UserDialog";
-import UserFiltersDialog from "./UserFiltersDialog";
+// import UserFiltersDialog from "./UserFiltersDialog";
 import UsersTable from "./UsersTable";
 
 export default function AdminPage() {
@@ -24,10 +22,7 @@ export default function AdminPage() {
     resetPassword
   } = useAdminStore();
 
-  const showConfirmation = useConfirmationStore((state) => state.showConfirmation);
-
   const [dialogUser, setDialogUser] = useState<UserType | "add" | null>(null);
-  const [resetUser, setResetUser] = useState<UserType | null>(null);
   const [filtersUser, setFiltersUser] = useState<UserType | null>(null);
 
   useEffect(() => {
@@ -45,12 +40,11 @@ export default function AdminPage() {
     }
   };
 
-  const handleDelete = (user: UserType) => {
-    showConfirmation(
-      "Delete User",
-      `Are you sure you want to delete ${user.username}? This cannot be undone.`,
-      () => deleteUser(user.username)
-    );
+  const handleDeleteFromDialog = () => {
+    if (dialogUser && dialogUser !== "add") {
+      setDialogUser(null);
+      deleteUser(dialogUser.username);
+    }
   };
 
   return (
@@ -65,8 +59,6 @@ export default function AdminPage() {
         <UsersTable
           users={users}
           onEdit={setDialogUser}
-          onResetPassword={setResetUser}
-          onDelete={handleDelete}
           onManageFilters={setFiltersUser}
         />
 
@@ -75,18 +67,14 @@ export default function AdminPage() {
           onClose={() => setDialogUser(null)}
           onSubmit={handleSubmit}
           user={dialogUser !== "add" && dialogUser ? dialogUser : undefined}
+          onResetPassword={resetPassword}
+          onDelete={handleDeleteFromDialog}
         />
 
-        <ResetPasswordDialog
-          user={resetUser}
-          onClose={() => setResetUser(null)}
-          onReset={resetPassword}
-        />
-
-        <UserFiltersDialog
+        {/* <UserFiltersDialog
           user={filtersUser}
           onClose={() => setFiltersUser(null)}
-        />
+        /> */}
 
       </Stack>
     </Stack>
