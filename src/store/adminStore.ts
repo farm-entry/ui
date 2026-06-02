@@ -10,8 +10,8 @@ interface AdminState {
   error: string | null;
   fetchUsers: (domain: string) => Promise<void>;
   fetchDomains: () => Promise<void>;
-  createUser: (payload: { email: string; password: string; role: string; domains: Record<string, string[]> }) => Promise<void>;
-  updateUser: (userId: string, payload: Partial<Pick<UserType, 'email' | 'firstName' | 'lastName' | 'domains' | 'role'>>) => Promise<void>;
+  createUser: (payload: { username: string; email: string; password: string; role: string; domains: Record<string, string[]>; firstName?: string; lastName?: string; isActive?: boolean; isEmailVerified?: boolean }) => Promise<void>;
+  updateUser: (userId: string, payload: Partial<Pick<UserType, 'email' | 'firstName' | 'lastName' | 'domains' | 'role' | 'isActive' | 'isEmailVerified'>>) => Promise<void>;
   deleteUser: (userId: string) => Promise<void>;
   resetPassword: (userId: string, newPassword: string) => Promise<void>;
   reset: () => void;
