@@ -1,16 +1,16 @@
 import {
   Alert,
+  Box,
   Button,
   Chip,
   Typography,
 } from '@mui/material';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useCallback, useEffect, useState } from 'react';
-import CustomPageContainer from '../../components/framework/CustomPageContainer';
 import { dataloadApi, DataloadLog } from '../../services/dataloadApi';
 import ResultsDrawer from './ResultsDrawer';
 
-export default function DataPostHistoryPage() {
+export default function HistoryTab() {
   const [logs, setLogs] = useState<DataloadLog[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -88,21 +88,21 @@ export default function DataPostHistoryPage() {
   ];
 
   return (
-    <CustomPageContainer
-      headerOptions={{
-        title: 'Upload History',
-        button: { label: 'Refresh', onClick: fetchLogs, variant: 'outlined' },
-      }}
-    >
+    <>
       {error && (
         <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
 
-      <Typography variant="caption" color="text.secondary">
-        {total} total upload{total !== 1 ? 's' : ''}
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+        <Typography variant="caption" color="text.secondary">
+          {total} total upload{total !== 1 ? 's' : ''}
+        </Typography>
+        <Button variant="outlined" size="small" onClick={fetchLogs}>
+          Refresh
+        </Button>
+      </Box>
 
       <DataGrid
         rows={logs}
@@ -112,7 +112,6 @@ export default function DataPostHistoryPage() {
         autoHeight
         pageSizeOptions={[25, 50]}
         initialState={{ pagination: { paginationModel: { pageSize: 25 } } }}
-        sx={{ mt: 1 }}
         disableRowSelectionOnClick
       />
 
@@ -121,6 +120,6 @@ export default function DataPostHistoryPage() {
         loading={detailLoading}
         onClose={() => setSelectedLog(null)}
       />
-    </CustomPageContainer>
+    </>
   );
 }

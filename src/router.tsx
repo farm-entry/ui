@@ -25,8 +25,7 @@ import PostSuccessPage from "./pages/post-success";
 import QRScanner from "./pages/qrscanner";
 import ScorecardsPage from "./pages/scorecards";
 import SignIn from "./pages/signin";
-import DataPostUploadPage from "./pages/data-post";
-import DataPostHistoryPage from "./pages/data-post/HistoryPage";
+import DataPostPage from "./pages/data-post";
 import SettingsLayout, { ProfileSettingsTab } from "./pages/useroptions/settings";
 import { FiltersTab } from "./pages/useroptions/components/FiltersTab";
 import { PreferencesTab } from "./pages/useroptions/components/PreferencesTab";
@@ -56,9 +55,7 @@ const PAGE_COMPONENTS: Record<LeafSegment, React.ComponentType> = {
   "inventory-consumption": InventoryConsumptionPage,
   "job-header-updates": JobHeaderUpdatesPage,
   qrcode: QRScanner,
-  "data-post": DataPostUploadPage,
-  upload: DataPostUploadPage,
-  history: DataPostHistoryPage
+  "data-post": DataPostPage,
 };
 
 function buildRouteObjects(routes: RouteConfig[]): RouteObject[] {
