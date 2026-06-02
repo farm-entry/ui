@@ -6,7 +6,6 @@ import { useAdminStore } from "../../store/adminStore";
 import { UserType } from "../../store/types/user";
 import { useUserStore } from "../../store/userStore";
 import UserDialog, { UserDialogSubmitData } from "./UserDialog";
-// import UserFiltersDialog from "./UserFiltersDialog";
 import UsersTable from "./UsersTable";
 
 export default function AdminPage() {
@@ -56,11 +55,7 @@ export default function AdminPage() {
       />
 
       <Stack spacing={2}>
-        <UsersTable
-          users={users}
-          onEdit={setDialogUser}
-          onManageFilters={setFiltersUser}
-        />
+        <UsersTable users={users} onEdit={setDialogUser} onManageFilters={setFiltersUser} />
 
         <UserDialog
           open={Boolean(dialogUser)}
@@ -70,17 +65,6 @@ export default function AdminPage() {
           onResetPassword={resetPassword}
           onDelete={handleDeleteFromDialog}
         />
-
-        {/* <UserFiltersDialog
-          user={filtersUser}
-          onClose={() => setFiltersUser(null)}
-        /> */}
-
-        <UserFiltersDialog
-          user={filtersUser}
-          onClose={() => setFiltersUser(null)}
-        />
-
       </Stack>
     </Stack>
   );
