@@ -1,5 +1,5 @@
-import { AssignmentOutlined, MenuOutlined, PlaceOutlined } from "@mui/icons-material";
-import { Box, Button, CircularProgress, Stack, useMediaQuery, useTheme } from "@mui/material";
+import { AssignmentOutlined, MenuOutlined, PlaceOutlined, TuneOutlined } from "@mui/icons-material";
+import { Box, Button, CircularProgress, Stack, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { userApi } from "../../../services/userApi";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
@@ -110,6 +110,10 @@ export function FiltersTab() {
 
   return (
     <Stack spacing={2}>
+      <Stack direction="row" alignItems="center" spacing={1}>
+        <TuneOutlined color="primary" sx={{ fontSize: 24 }} />
+        <Typography variant="h6">Filters</Typography>
+      </Stack>
       <FilterAccordion<FilterLocation>
         title="Locations"
         icon={<PlaceOutlined fontSize="small" />}

@@ -1,12 +1,11 @@
 import { ReactRouterAppProvider } from "@toolpad/core/react-router";
-import { createBrowserRouter, Outlet } from "react-router";
+import { createBrowserRouter, Navigate, Outlet } from "react-router";
 import type { RouteObject } from "react-router";
 import frontlineLogo from "./assets/frontlinesprout.svg";
 import RouteGuard from "./components/RouteGuard";
 import { useAnalyticsPageView } from "./analytics";
 import useDynamicNavigation from "./hooks/useDynamicNavigation";
 import CustomDashboardLayout from "./layouts/dashboard";
-import SettingsPage from "./pages/useroptions/SettingsPage";
 import DashboardPage from "./pages";
 import AdminPage from "./pages/admin";
 import FuelPage from "./pages/fuel";
@@ -28,6 +27,9 @@ import ScorecardsPage from "./pages/scorecards";
 import SignIn from "./pages/signin";
 import DataPostUploadPage from "./pages/data-post";
 import DataPostHistoryPage from "./pages/data-post/HistoryPage";
+import SettingsLayout, { ProfileSettingsTab } from "./pages/useroptions/settings";
+import { FiltersTab } from "./pages/useroptions/components/FiltersTab";
+import { PreferencesTab } from "./pages/useroptions/components/PreferencesTab";
 import { customTheme } from "./theme";
 import { MAIN_ROUTES, RouteConfig, LeafSegment } from "./routes";
 
@@ -84,7 +86,27 @@ export default function App() {
   );
 }
 
+function SettingsApp() {
+  return (
+    <ReactRouterAppProvider theme={customTheme}>
+      <RouteGuard>
+        <SettingsLayout />
+      </RouteGuard>
+    </ReactRouterAppProvider>
+  );
+}
+
 export const router = createBrowserRouter([
+  {
+    path: "settings",
+    Component: SettingsApp,
+    children: [
+      { index: true, element: <Navigate to="profile" replace /> },
+      { path: "profile",      Component: ProfileSettingsTab },
+      { path: "filters",      Component: FiltersTab },
+      { path: "preferences",  Component: PreferencesTab },
+    ]
+  },
   {
     Component: App,
     children: [
@@ -100,7 +122,6 @@ export const router = createBrowserRouter([
           ...buildRouteObjects(MAIN_ROUTES),
           // Routes not in MAIN_ROUTES (no nav entry, no dashboard card)
           { path: "post-success", Component: PostSuccessPage },
-          { path: "settings", Component: SettingsPage },
           {
             path: "admin",
             Component: () => (

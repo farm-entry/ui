@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {
+  Button,
   Checkbox,
   FormControl,
   FormHelperText,
@@ -26,10 +27,11 @@ export interface SelectProps extends Omit<MuiSelectProps, 'variant'> {
   helperText?: string;
   onClear?: () => void;
   multiselect?: boolean;
+  showDoneButton?: boolean;
 }
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>((props, ref) => {
-  const { label, options, helperText, onClear, value, multiselect, size, ...rest } = props;
+  const { label, options, helperText, onClear, value, multiselect, showDoneButton, size, ...rest } = props;
   const labelId = `${label}-label`;
 
   const renderMenuItems = (isMulti: boolean) => {
@@ -72,6 +74,8 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>((props, r
 
   if (multiselect) {
     const selected = (value ?? []) as Array<string | number>;
+    const [open, setOpen] = React.useState(false);
+    const controlled = showDoneButton ? { open, onOpen: () => setOpen(true), onClose: () => setOpen(false) } : {};
     return (
       <FormControl fullWidth size={size ?? 'small'}>
         <InputLabel id={labelId}>{label}</InputLabel>
@@ -90,9 +94,31 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>((props, r
             }
             return `${arr.length} selected`;
           }}
+          {...(showDoneButton && { MenuProps: { PaperProps: { sx: { maxHeight: 320 } } } })}
+          {...controlled}
           {...rest}
         >
           {renderMenuItems(true)}
+          {showDoneButton && (
+            <MenuItem
+              disableRipple
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => setOpen(false)}
+              sx={{
+                position: 'sticky',
+                bottom: 0,
+                bgcolor: 'background.paper',
+                borderTop: 1,
+                borderColor: 'divider',
+                justifyContent: 'flex-end',
+                py: 0.75,
+                zIndex: 1,
+                '&:hover': { bgcolor: 'background.paper' },
+              }}
+            >
+              <Button size="small" variant="text">Done</Button>
+            </MenuItem>
+          )}
         </MuiSelect>
         {helperText && <FormHelperText>{helperText}</FormHelperText>}
       </FormControl>

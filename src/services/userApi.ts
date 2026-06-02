@@ -119,6 +119,14 @@ class UserApi {
     if (!res.ok) throw new Error('Failed to reset password');
   }
 
+  async changePassword(payload: { currentPassword: string; newPassword: string }): Promise<void> {
+    const res = await apiFetch('/api/auth/me/password', {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error('Failed to change password');
+  }
+
   async getFilters(): Promise<UserFilters> {
     const res = await apiFetch('/api/user/filters');
     if (!res.ok) throw new Error('Failed to fetch filters');
