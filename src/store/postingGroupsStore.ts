@@ -25,18 +25,18 @@ interface PostingGroupsDataState {
 export const usePostingGroupsStore = create<PostingGroupsDataState>()(
   devtools(
     (set, get) => ({
-      postingGroupDetails: {}, // Initial state
-      postingGroups: [], // Initial state
+      postingGroupDetails: {} as PostingGroupDetails,
+      postingGroups: [] as PostingGroup[],
       isLoading: false,
       error: null,
 
-      getPostingGroupDetails: async (group: string) => {
+      getPostingGroupDetails: async (group: string | number) => {
         try {
           if (group != get().postingGroupDetails.number) {
             // Make API call
             set((state) => ({ ...state, isLoading: true }));
 
-            const postingGroupDetails = await api.fetchPostingGroup(group);
+            const postingGroupDetails = await api.fetchPostingGroup(String(group));
 
             // Update state with fetched data
             set((state) => ({

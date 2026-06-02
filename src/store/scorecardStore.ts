@@ -221,6 +221,18 @@ export const useScorecardStore = create<ScorecardStore>()(
       },
 
       // Loading state management
+      setLoading: (loading: boolean) => {
+        set((state) => ({ ...state, isLoading: loading }));
+      },
+
+      setTypesLoading: (loading: boolean) => {
+        set((state) => ({ ...state, isLoading: loading }));
+      },
+
+      setConfigLoading: (loading: boolean) => {
+        set((state) => ({ ...state, isLoading: loading }));
+      },
+
       setSubmitting: (submitting: boolean) => {
         set((state) => ({ ...state, isSubmitting: submitting }));
       },
