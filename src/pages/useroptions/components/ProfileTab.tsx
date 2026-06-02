@@ -1,8 +1,6 @@
 import { Button, Card, Stack } from "@mui/material";
-import { PersonOutlined } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import { TextField } from "../../../components/inputs";
-import CustomHeader from "../../../components/framework/CustomHeader";
 import { useGlobalAlertStore } from "../../../store/globalAlertStore";
 import { useUserStore } from "../../../store/userStore";
 
@@ -45,7 +43,6 @@ export function ProfileTab() {
   return (
     <Card variant="outlined" sx={{ p: 3 }}>
       <form onSubmit={handleSubmit(onSubmitProfile)}>
-      <CustomHeader icon={PersonOutlined} title="Profile" />
         <Stack spacing={3}>
           <TextField
             {...register("firstName")}

@@ -16,7 +16,7 @@ const StyledButton = styled(MuiButton)<{
   fullWidth?: boolean;
   fullHeight?: boolean;
   small?: boolean;
-}>(({ theme, center, fullWidth, fullHeight, small }) => ({
+}>(({ theme, center, fullWidth, fullHeight, small, ...rest }) => ({
   // borderRadius: 8,
   textTransform: "none",
   fontWeight: 600,
@@ -37,7 +37,7 @@ const StyledButton = styled(MuiButton)<{
   // Primary variant
   "&.variant-contained": {
     backgroundColor: theme.palette.primary.main,
-    color: theme.palette.primary.contrastText,
+    color: rest.color || theme.palette.primary.contrastText,
     "&:hover": {
       backgroundColor: theme.palette.primary.dark
     }
@@ -45,7 +45,7 @@ const StyledButton = styled(MuiButton)<{
   // Secondary variant
   "&.variant-outlined": {
     backgroundColor: "transparent",
-    color: theme.palette.primary.main,
+    color: rest.color || theme.palette.primary.main,
     border: `2px solid ${theme.palette.primary.main}`,
     "&:hover": {
       backgroundColor: theme.palette.action.hover
@@ -54,7 +54,7 @@ const StyledButton = styled(MuiButton)<{
   // Tertiary variant
   "&.variant-text": {
     backgroundColor: "transparent",
-    color: theme.palette.primary.main,
+    color: rest.color || theme.palette.primary.main,
     "&:hover": {
       backgroundColor: theme.palette.action.hover
     }
