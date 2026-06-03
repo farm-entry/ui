@@ -247,7 +247,9 @@ export default function MovePage() {
                   fieldName={"event"}
                   labelKey={"description"}
                   valueKey={"code"}
-                  valueList={[...eventTypes].sort((a, b) => Number(a.code) - Number(b.code))}
+                  valueList={[...eventTypes].sort((a, b) =>
+                    a.description.localeCompare(b.description)
+                  )}
                   placeholder="Event Name"
                 />
                 {errors.event && <FormHelperText error>{errors.event.message}</FormHelperText>}
@@ -341,7 +343,6 @@ export default function MovePage() {
               </Stack>
             </Stack>
           </form>
-
         </>
       )}
     </CustomFormsLayout>

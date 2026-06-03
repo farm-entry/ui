@@ -8,6 +8,7 @@ export interface MaintenanceAsset extends Record<string, unknown> {
   interval: number;
   unitType: string;
   maintenanceDesc: string;
+  location: string;
 }
 
 export interface MaintenanceHistoryAsset {

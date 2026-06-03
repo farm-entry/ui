@@ -39,16 +39,14 @@ import type {
   FilterPostingGroup,
   FilterCategory as FC,
   FilterLocation,
-  FilterMenuOption,
-  MenuOption,
 } from '../store/types/user';
 
-/** Filter a posting groups (jobs) list. Uses job.number → filter.code mapping. */
+/** Filter a posting groups (jobs) list. Uses job.postingGroup → filter.code mapping. */
 export function applyPostingGroupFilter(
   groups: PostingGroup[],
   filter: FC<FilterPostingGroup>,
 ): PostingGroup[] {
-  return applyInclusivityFilter(groups, filter, g => g.number, f => f.code);
+  return applyInclusivityFilter(groups, filter, g => g.postingGroup, f => f.code);
 }
 
 /** Filter a locations list. Uses location.code → filter.code mapping. */
@@ -59,10 +57,3 @@ export function applyLocationFilter<T extends { code: string }>(
   return applyInclusivityFilter(locations, filter, l => l.code, f => f.code);
 }
 
-/** Filter a menu options list. Uses menuOption.segment → filter.segment mapping. */
-export function applyMenuOptionFilter(
-  options: MenuOption[],
-  filter: FC<FilterMenuOption>,
-): MenuOption[] {
-  return applyInclusivityFilter(options, filter, o => o.segment, f => f.segment);
-}

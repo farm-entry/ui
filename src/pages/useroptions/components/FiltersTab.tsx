@@ -15,6 +15,12 @@ import { useUserStore } from "../../../store/userStore";
 import { MENU_OPTION_GROUPS, expandToMenuOptions, ALL_ROUTE_OPTIONS } from "../../../routes";
 import { FilterAccordion } from "./FilterAccordion";
 
+// ── Accordion keys ─────────────────────────────────────────────────────────────
+
+const ACCORDION_LOCATIONS = "locations";
+const ACCORDION_POSTING_GROUPS = "postingGroups";
+const ACCORDION_MENU_OPTIONS = "menuOptions";
+
 // ── Filters Tab ───────────────────────────────────────────────────────────────
 
 export function FiltersTab() {
@@ -43,6 +49,10 @@ export function FiltersTab() {
   const [availableLocations, setAvailableLocations] = useState<FilterLocation[]>([]);
   const [availablePostingGroups, setAvailablePostingGroups] = useState<FilterPostingGroup[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+
+  const [expandedSet, setExpandedSet] = useState<Set<string>>(
+    () => new Set([ACCORDION_LOCATIONS, ACCORDION_POSTING_GROUPS, ACCORDION_MENU_OPTIONS])
+  );
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -79,12 +89,27 @@ export function FiltersTab() {
     try {
       await saveFiltersToStore(localFilters);
       setAlert("success", "Filters saved successfully.");
+      setExpandedSet(new Set());
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setAlert("error", "Failed to save filters. Please try again.");
     } finally {
       setIsSaving(false);
     }
   };
+
+  // ── Accordion toggle helpers ─────────────────────────────────────────────────
+
+  const makeToggle = (key: string) => () =>
+    setExpandedSet((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
+      return next;
+    });
 
   // ── Mode handlers ────────────────────────────────────────────────────────────
 
@@ -121,7 +146,8 @@ export function FiltersTab() {
         availableOptions={availableLocations}
         getLabel={(l) => l.name}
         getKey={(l) => l.code}
-        defaultExpanded
+        expanded={expandedSet.has(ACCORDION_LOCATIONS)}
+        onToggle={makeToggle(ACCORDION_LOCATIONS)}
         onModeChange={handleLocationsMode}
         onChange={handleLocationsChange}
         isMobile={isMobile}
@@ -133,6 +159,8 @@ export function FiltersTab() {
         availableOptions={availablePostingGroups}
         getLabel={(pg) => (pg.description ? `${pg.code} – ${pg.description}` : pg.code)}
         getKey={(pg) => pg.code}
+        expanded={expandedSet.has(ACCORDION_POSTING_GROUPS)}
+        onToggle={makeToggle(ACCORDION_POSTING_GROUPS)}
         onModeChange={handlePostingGroupsMode}
         onChange={handlePostingGroupsChange}
         isMobile={isMobile}
@@ -146,6 +174,8 @@ export function FiltersTab() {
         getLabel={(mo) => mo.title}
         getKey={(mo) => mo.segment}
         getGroup={(mo) => MENU_OPTION_GROUPS[mo.segment] || "Other Forms"}
+        expanded={expandedSet.has(ACCORDION_MENU_OPTIONS)}
+        onToggle={makeToggle(ACCORDION_MENU_OPTIONS)}
         onModeChange={handleMenuOptionsMode}
         onChange={handleMenuOptionsChange}
         isMobile={isMobile}
