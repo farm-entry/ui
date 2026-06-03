@@ -7,6 +7,7 @@ export interface FuelAsset extends Record<string, unknown> {
   fuelType: string;
   fuelCost: number;
   unitOfMeasureCode: string;
+  location: string;
 }
 
 export interface FuelHistory {
