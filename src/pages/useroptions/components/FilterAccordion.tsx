@@ -1,17 +1,18 @@
 import { ExpandMore } from "@mui/icons-material";
-import type { SelectChangeEvent } from "@mui/material";
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Autocomplete,
+  Checkbox,
   Chip,
+  ListItemText,
   Stack,
+  TextField,
   ToggleButton,
   ToggleButtonGroup,
   Typography
 } from "@mui/material";
-import type { SelectOption } from "../../../components/inputs";
-import { Select } from "../../../components/inputs";
 import type { FilterCategory, InclusivityMode } from "../../../store/types/user";
 
 export interface FilterAccordionProps<TItem extends object> {
@@ -22,7 +23,8 @@ export interface FilterAccordionProps<TItem extends object> {
   getLabel: (item: TItem) => string;
   getKey: (item: TItem) => string;
   getGroup?: (item: TItem) => string | undefined;
-  defaultExpanded?: boolean;
+  expanded: boolean;
+  onToggle: () => void;
   onModeChange: (mode: InclusivityMode) => void;
   onChange: (newList: TItem[]) => void;
   isMobile: boolean;
@@ -36,29 +38,18 @@ export function FilterAccordion<TItem extends object>({
   getLabel,
   getKey,
   getGroup,
-  defaultExpanded = false,
+  expanded,
+  onToggle,
   onModeChange,
   onChange,
   isMobile
 }: FilterAccordionProps<TItem>) {
-  const options: SelectOption[] = availableOptions.map((item) => ({
-    value: getKey(item),
-    label: getLabel(item),
-    group: getGroup?.(item)
-  }));
-
-  const selectedKeys = category.list.map(getKey);
-
-  const handleChange = (e: SelectChangeEvent<unknown>) => {
-    const keys = e.target.value as string[];
-    const newList = keys
-      .map((key) => availableOptions.find((opt) => getKey(opt) === key))
-      .filter(Boolean) as TItem[];
-    onChange(newList);
-  };
+  const sortedOptions = [...availableOptions].sort((a, b) =>
+    getLabel(a).localeCompare(getLabel(b))
+  );
 
   return (
-    <Accordion defaultExpanded={defaultExpanded} disableGutters>
+    <Accordion expanded={expanded} onChange={onToggle} disableGutters>
       <AccordionSummary expandIcon={<ExpandMore />}>
         <Stack direction="row" alignItems="center" spacing={1} sx={{ width: "100%", pr: 1 }}>
           {icon}
@@ -91,13 +82,29 @@ export function FilterAccordion<TItem extends object>({
             </ToggleButton>
           </ToggleButtonGroup>
 
-          <Select
-            label={title}
-            options={options}
-            multiselect
-            showDoneButton
-            value={selectedKeys}
-            onChange={handleChange}
+          <Autocomplete<TItem, true>
+            multiple
+            disableCloseOnSelect
+            options={sortedOptions}
+            value={category.list}
+            getOptionLabel={getLabel}
+            getOptionKey={getKey}
+            groupBy={getGroup ? (option) => getGroup(option) ?? "" : undefined}
+            isOptionEqualToValue={(option, value) => getKey(option) === getKey(value)}
+            onChange={(_, newValue) => onChange(newValue)}
+            renderInput={(params) => (
+              <TextField {...params} label={title} size="small" />
+            )}
+            renderOption={(props, option, { selected }) => {
+              const { key, ...rest } = props;
+              return (
+                <li key={getKey(option)} {...rest}>
+                  <Checkbox checked={selected} size="small" sx={{ mr: 0.5 }} />
+                  <ListItemText primary={getLabel(option)} />
+                </li>
+              );
+            }}
+            renderTags={() => null}
           />
 
           {category.list.length > 0 && (

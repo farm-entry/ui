@@ -10,6 +10,7 @@ export interface PostingGroup extends Record<string, unknown> {
   location: string;
   status: string;
   startQuantity: number;
+  postingGroup: string;
 }
 
 // Detailed Posting Group with nested objects
