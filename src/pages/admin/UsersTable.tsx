@@ -48,7 +48,7 @@ export default function UsersTable({ users, onEdit, onManageFilters }: UsersTabl
       <DataGrid
         rows={users}
         columns={columns(onEdit)}
-        getRowId={(row) => row.username}
+        getRowId={(row) => row._id}
         showToolbar
         initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
         pageSizeOptions={[10, 25, 50]}
