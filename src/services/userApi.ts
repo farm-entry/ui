@@ -93,7 +93,19 @@ class UserApi {
       method: 'POST',
       body: JSON.stringify(payload),
     });
-    if (!res.ok) throw new Error('Failed to create user');
+    if (!res.ok) {
+      const err = await res.json().catch(() => null);
+      throw new Error(err?.error || 'Failed to create user');
+    }
+    return res.json();
+  }
+
+  async checkAvailability(params: { username?: string; email?: string }): Promise<{ usernameAvailable?: boolean; emailAvailable?: boolean }> {
+    const qs = new URLSearchParams();
+    if (params.username) qs.set('username', params.username);
+    if (params.email) qs.set('email', params.email);
+    const res = await apiFetch(`/api/admin/users/check-availability?${qs.toString()}`);
+    if (!res.ok) return {};
     return res.json();
   }
 

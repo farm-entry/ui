@@ -9,6 +9,7 @@ export interface MenuOption {
 }
 
 export interface UserType {
+  _id: string;
   loginTime: string;
   firstName?: string;
   lastName?: string;

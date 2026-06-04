@@ -25,6 +25,7 @@ import { useConfirmationStore } from "../../store/confirmationStore";
 import { useUserStore } from "../../store/userStore";
 import { RolesType } from "../../store/types/user";
 import { assignableRoles } from "../../utils/roles";
+import { userApi } from "../../services/userApi";
 
 export interface UserFormData {
   username: string;
@@ -278,6 +279,7 @@ export default function UserForm({
     setValue,
     formState: { errors, isSubmitting }
   } = useForm<UserFormData>({
+    mode: 'onBlur',
     defaultValues: {
       username: "",
       email: "",
@@ -300,7 +302,14 @@ export default function UserForm({
         </Typography>
 
         <TextField
-          {...register("username", { required: !editMode && "Username is required" })}
+          {...register("username", {
+            required: !editMode && "Username is required",
+            validate: async (value) => {
+              if (editMode || !value) return true;
+              const { usernameAvailable } = await userApi.checkAvailability({ username: value });
+              return usernameAvailable !== false || "Username is already taken";
+            }
+          })}
           value={watch("username")}
           label="Username"
           placeholder="Username"
@@ -312,7 +321,12 @@ export default function UserForm({
         <TextField
           {...register("email", {
             required: "Email is required",
-            pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Invalid email" }
+            pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: "Invalid email" },
+            validate: async (value) => {
+              if (editMode || !value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return true;
+              const { emailAvailable } = await userApi.checkAvailability({ email: value });
+              return emailAvailable !== false || "A user with this email already exists";
+            }
           })}
           value={watch("email")}
           label="Email"
