@@ -118,8 +118,13 @@ export default function JobHeaderUpdatesPage() {
         lastFetchedValues.current = fetched;
         reset(fetched);
         setJobDetail(detail);
+      } else {
+        setAlert("error", new Error("Job details not found."));
       }
     } catch (error) {
+      setJobDetail(null);
+      lastFetchedValues.current = null;
+      reset(emptyFormValues);
       setAlert("error", error as Error);
     } finally {
       setIsJobLoading(false);
