@@ -65,6 +65,13 @@ export default function JobHeaderUpdatesPage() {
     formState: { errors }
   } = useForm<TableEditJobFormData>({ defaultValues: emptyFormValues });
 
+  // Register jobNumber for RHF validation without spreading onChange/onBlur.
+  // Spreading the full register result onto TypeAhead attaches RHF's onBlur
+  // to the Autocomplete outer div; on focus-out that handler reads div.value
+  // (undefined) and wipes jobNumber from the form store. Value is managed
+  // exclusively via setValue/reset.
+  register("jobNumber", { required: "Job is required." });
+
   useEffect(() => {
     let isMounted = true;
     setInitLoading(true);
@@ -98,6 +105,7 @@ export default function JobHeaderUpdatesPage() {
     const jobNumber = String(value.value);
     if (jobNumber === watch("jobNumber")) return;
 
+    setValue("jobNumber", jobNumber);
     setIsJobLoading(true);
     try {
       const detail = await tableEditService.getJobDetail(jobNumber);
@@ -191,7 +199,6 @@ export default function JobHeaderUpdatesPage() {
             {/* Phase 1 — Job selection */}
             <Stack>
               <TypeAhead
-                {...register("jobNumber", { required: "Job is required." })}
                 handleChange={handleJobSelect}
                 watch={watch}
                 label="Job"

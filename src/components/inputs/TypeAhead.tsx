@@ -41,7 +41,7 @@ const useTypeAheadValue = (props: TypeAheadProps): TypeAheadOption | null => {
     const option = valueList && valueList.find((item) => item[valueKey] === fieldValue);
     return option
       ? ({
-          label: labelFormatter ? labelFormatter(option) : String(option[labelKey]),
+          label: labelFormatter ? labelFormatter(option) : (String(option[labelKey]) || String(option[valueKey])),
           value: option[valueKey]
         } as TypeAheadOption)
       : null;
