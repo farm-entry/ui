@@ -33,6 +33,7 @@ interface UserState extends UserType {
 }
 
 const EMPTY_USER: UserType = {
+  _id: '',
   email: '',
   firstName: '',
   lastName: '',
@@ -53,6 +54,7 @@ export const useUserStore = create<UserState>()(
     filters: { ...DEFAULT_USER_FILTERS },
     ...EMPTY_USER,
     getUser: () => ({
+      _id: get()._id,
       email: get().email,
       username: get().username,
       firstName: get().firstName,
