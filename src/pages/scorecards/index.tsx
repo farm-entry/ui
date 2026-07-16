@@ -181,7 +181,6 @@ export default function ScorecardsPage() {
                     type="submit"
                     variant="contained"
                     size="large"
-                    color="primary"
                     fullWidth
                     disabled={initLoading}
                     loading={initLoading}
