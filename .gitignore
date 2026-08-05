@@ -29,6 +29,5 @@ dist-ssr
 *.sw?
 *.tsbuildinfo
 
-tests/
 test-results/
 playwright-report/
