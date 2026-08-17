@@ -22,6 +22,7 @@ import {
   TableEditResource
 } from "../../store/types/tableEdit";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
+import { numberDescriptionPostingGroupFormatter } from "../../utils/strings";
 
 const emptyFormValues: TableEditJobFormData = {
   form: "JOB HEADER UPDATE",
@@ -206,6 +207,7 @@ export default function JobHeaderUpdatesPage() {
                 labelKey="description"
                 valueKey="number"
                 valueList={jobsAsOptions}
+                labelFormatter={numberDescriptionPostingGroupFormatter}
                 placeholder="Search by job number or description..."
                 noOptionsText="No jobs found."
               />
