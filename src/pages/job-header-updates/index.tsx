@@ -159,9 +159,65 @@ export default function JobHeaderUpdatesPage() {
     tableEditService
       .patchJob(jobNumber, patchFields)
       .then(() => {
+        const labelFromList = <T extends Record<string, unknown>>(
+          list: T[],
+          keyField: keyof T,
+          value: string,
+          labelField: keyof T
+        ) => (list.find((o) => String(o[keyField]) === value)?.[labelField] as string) ?? value;
+
         navigate("/post-success", {
           state: {
-            formData: { form: "JOB HEADER UPDATE", jobNumber },
+            formData: {
+              form: "JOB HEADER UPDATE",
+              jobNumber,
+              status: data.status,
+              startDate: data.startDate,
+              endDate: data.endDate,
+              description: data.description,
+              healthStatus: data.healthStatus,
+              healthStatusLabel: labelFromList(
+                jobDetail?.healthStatuses ?? [],
+                "code",
+                data.healthStatus,
+                "description"
+              ),
+              pigSourceFlow: data.pigSourceFlow,
+              pigSourceFlowLabel: labelFromList(
+                jobDetail?.pigSourceFlow ?? [],
+                "code",
+                data.pigSourceFlow,
+                "description"
+              ),
+              nutrition: data.nutrition,
+              nutritionLabel: labelFromList(
+                jobDetail?.nutrition ?? [],
+                "code",
+                data.nutrition,
+                "description"
+              ),
+              feedmill: data.feedmill,
+              feedmillLabel: labelFromList(
+                jobDetail?.feedmill ?? [],
+                "code",
+                data.feedmill,
+                "description"
+              ),
+              person: data.person,
+              personLabel: labelFromList(
+                jobDetail?.resources ?? [],
+                "number",
+                data.person,
+                "name"
+              ),
+              supervisor: data.supervisor,
+              supervisorLabel: labelFromList(
+                (jobDetail?.users ?? []) as unknown as Record<string, unknown>[],
+                "username",
+                data.supervisor,
+                "name"
+              )
+            },
             section: "job-header-updates"
           }
         });
@@ -394,7 +450,7 @@ export default function JobHeaderUpdatesPage() {
                       setValue("supervisor", option ? String(option.value) : "");
                     }}
                     watch={watch}
-                    label="Supervisor (Project Manager)"
+                    label="Supervisor"
                     fieldName="supervisor"
                     labelKey="name"
                     valueKey="username"
