@@ -51,7 +51,7 @@ export default function PostSuccessPage() {
 
   const renderFormFields = () => {
     return Object.entries(formData)
-      .filter(([key, value]) => value !== null && value !== "" && !["form", "eventLabel", "healthStatusLabel", "groupLabel", "fromJobLabel", "toJobLabel"].includes(key))
+      .filter(([key, value]) => value !== null && value !== "" && !["form", "eventLabel", "healthStatusLabel", "groupLabel", "fromJobLabel", "toJobLabel", "pigSourceFlowLabel", "nutritionLabel", "feedmillLabel", "personLabel", "supervisorLabel"].includes(key))
       .map(([key, value]) => {
         const description = formatFieldName(key);
         const labelOverrides: Record<string, string | null | undefined> = {
@@ -60,6 +60,11 @@ export default function PostSuccessPage() {
           group: formData.groupLabel,
           fromJob: formData.fromJobLabel,
           toJob: formData.toJobLabel,
+          pigSourceFlow: formData.pigSourceFlowLabel,
+          nutrition: formData.nutritionLabel,
+          feedmill: formData.feedmillLabel,
+          person: formData.personLabel,
+          supervisor: formData.supervisorLabel,
         };
         const displayValue =
           key in labelOverrides && labelOverrides[key]
