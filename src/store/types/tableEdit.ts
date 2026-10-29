@@ -55,6 +55,8 @@ export interface TableEditJobFormData {
   feedmill: string;
   nutrition: string;
   person: string;
+  /** NAV username of the supervisor (JobCard.Project_Manager). */
+  supervisor: string;
 }
 
 export type JobStatus = "Planning" | "Open" | "Completed";

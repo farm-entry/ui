@@ -161,7 +161,7 @@ export default function InventoryConsumptionPage() {
               helperText={errors.comments?.message}
             />
 
-            {isSubmitting && <LoadingSpinner />}
+            {(isLoading || isSubmitting) && <LoadingSpinner />}
 
             <Stack direction="row" spacing={2}>
               <Button

@@ -1,5 +1,3 @@
-import inventoryItemsData from "../mock/inventoryItems.json";
-import inventoryLookupData from "../mock/inventoryLookup.json";
 import { apiFetch } from "./apiFetch";
 import { HandleError } from "./handleError";
 import {
@@ -17,13 +15,66 @@ interface LocationsAndJobsResponse {
 
 class InventoryService {
   async getLocationsAndJobs(): Promise<LocationsAndJobsResponse> {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    return inventoryLookupData as LocationsAndJobsResponse;
+    try {
+      const [locationsResponse, jobsResponse] = await Promise.all([
+        apiFetch("/api/user/filters/locations", { method: "GET" }),
+        apiFetch("/api/jobs", { method: "GET" })
+      ]);
+
+      if (!locationsResponse.ok) {
+        await new HandleError().handleApiError(
+          locationsResponse,
+          "InventoryService.getLocationsAndJobs"
+        );
+      }
+      if (!jobsResponse.ok) {
+        await new HandleError().handleApiError(
+          jobsResponse,
+          "InventoryService.getLocationsAndJobs"
+        );
+      }
+
+      const locations: InventoryLocation[] = await locationsResponse.json();
+      const jobs: InventoryJob[] = await jobsResponse.json();
+
+      return { locations, jobs };
+    } catch (error) {
+      if (error && typeof error === "object" && "code" in error) {
+        throw error;
+      }
+
+      throw new HandleError().createError(
+        "FETCH_ERROR",
+        "Failed to fetch locations and jobs",
+        error instanceof Error ? error.message : "Unknown error occurred"
+      );
+    }
   }
 
-  async getItems(_locationCode: string, _jobNo: string): Promise<InventoryItem[]> {
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    return inventoryItemsData as InventoryItem[];
+  async getItems(locationCode: string, _jobNo: string): Promise<InventoryItem[]> {
+    try {
+      const response = await apiFetch(
+        `/api/inventory/items/${encodeURIComponent(locationCode)}`,
+        { method: "GET" }
+      );
+
+      if (!response.ok) {
+        await new HandleError().handleApiError(response, "InventoryService.getItems");
+      }
+
+      const data: InventoryItem[] = await response.json();
+      return data;
+    } catch (error) {
+      if (error && typeof error === "object" && "code" in error) {
+        throw error;
+      }
+
+      throw new HandleError().createError(
+        "FETCH_ERROR",
+        "Failed to fetch inventory items",
+        error instanceof Error ? error.message : "Unknown error occurred"
+      );
+    }
   }
 
   async postInventory(

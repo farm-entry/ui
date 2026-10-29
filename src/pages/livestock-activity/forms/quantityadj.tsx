@@ -36,7 +36,6 @@ interface QuantityAdjFormData extends FormData {
   eventLabel: string | null;
   postingDate: string | null;
   quantity: number | null;
-  unitAmount: number | null;
   totalWeight: number | null;
   comments: string;
 }
@@ -51,7 +50,6 @@ const defaultValues: QuantityAdjFormData = {
   eventLabel: null,
   postingDate: formatDateToYYYYMMDDNoTimestamp(new Date()),
   quantity: null,
-  unitAmount: null,
   totalWeight: null,
   comments: ""
 };
@@ -183,7 +181,14 @@ export default function QuantityAdjPage() {
     <CustomFormsLayout<QuantityAdjFormData>
       notice={{
         formType: QTYADJ_STORAGE_KEY,
-        onLoad: (data) => reset({ ...getValues(), ...data })
+        onLoad: (data) => {
+          // Drafts saved before the Unit Amount field was removed may still carry it;
+          // drop it so it never reaches the API or the post-success summary.
+          const { unitAmount: _legacyUnitAmount, ...draft } = data as QuantityAdjFormData & {
+            unitAmount?: unknown;
+          };
+          reset({ ...getValues(), ...draft });
+        }
       }}
       headerOptions={{ button: { label: "reset", onClick: handleReset } }}
     >
@@ -329,21 +334,6 @@ export default function QuantityAdjPage() {
 
             <Stack>
               <TextField
-                label="Unit Amount ($)"
-                placeholder="Unit Amount"
-                type="number"
-                value={watch("unitAmount") ?? ""}
-                {...register("unitAmount", {
-                  required: multiplier === 1 ? "Unit amount is required for positive adjustments" : false,
-                  min: { value: 0, message: "Unit amount cannot be negative" }
-                })}
-                error={!!errors.unitAmount}
-                helperText={errors.unitAmount?.message}
-              />
-            </Stack>
-
-            <Stack>
-              <TextField
                 {...register("totalWeight", {
                   required: "Total weight is required"
                 })}
@@ -377,7 +367,6 @@ export default function QuantityAdjPage() {
           </Stack>
         </form>
       )}
-
     </CustomFormsLayout>
   );
 }

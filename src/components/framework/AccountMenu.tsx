@@ -68,7 +68,7 @@ export default function AccountMenu() {
   };
 
   // const switchableDomains = getSwitchableDomains(role, domains, adminDomains, domain);
-  const switchableDomains = []
+  const switchableDomains: string[] = [];
   const displayName = firstName || username;
   const initials = displayName?.charAt(0).toUpperCase();
 

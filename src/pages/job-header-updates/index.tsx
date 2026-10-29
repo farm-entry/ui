@@ -3,12 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import LoadingSpinner from "../../components/framework/LoadingSpinner";
-import {
-  DatePicker,
-  TextField,
-  TypeAhead,
-  TypeAheadOption
-} from "../../components/inputs";
+import { DatePicker, TextField, TypeAhead, TypeAheadOption } from "../../components/inputs";
 import CustomFormsLayout from "../../layouts/forms";
 import { tableEditService } from "../../services/tableEditApi";
 import { useConfirmationStore } from "../../store/confirmationStore";
@@ -19,9 +14,11 @@ import {
   TableEditJob,
   TableEditJobDetailResponse,
   TableEditJobFormData,
-  TableEditResource
+  TableEditResource,
+  TableEditUser
 } from "../../store/types/tableEdit";
 import { formatDateToYYYYMMDDNoTimestamp, parseYYYYMMDDToLocalDate } from "../../utils/date";
+import { numberDescriptionPostingGroupFormatter } from "../../utils/strings";
 
 const emptyFormValues: TableEditJobFormData = {
   form: "JOB HEADER UPDATE",
@@ -34,7 +31,8 @@ const emptyFormValues: TableEditJobFormData = {
   pigSourceFlow: "",
   feedmill: "",
   nutrition: "",
-  person: ""
+  person: "",
+  supervisor: ""
 };
 
 const statusOptions: (TypeAheadOption & Record<string, unknown>)[] = JOB_STATUSES.map((s) => ({
@@ -121,7 +119,8 @@ export default function JobHeaderUpdatesPage() {
           pigSourceFlow: detail.job.pigSourceFlow,
           feedmill: detail.job.feedmill,
           nutrition: detail.job.nutrition,
-          person: detail.job.personResponsible
+          person: detail.job.personResponsible,
+          supervisor: detail.job.projectManager
         };
         lastFetchedValues.current = fetched;
         reset(fetched);
@@ -187,6 +186,14 @@ export default function JobHeaderUpdatesPage() {
     jobDetail?.feedmill ?? [];
   const resourceOptions: (TableEditResource & Record<string, unknown>)[] =
     jobDetail?.resources ?? [];
+  // NAV users are the supervisor (Project Manager) pool; skip entries with no display name.
+  const userOptions: (TableEditUser & Record<string, unknown>)[] = (jobDetail?.users ?? []).filter(
+    (u) => u.name
+  );
+
+  const supervisorValue = watch("supervisor");
+  const supervisorNotInList =
+    !!supervisorValue && !userOptions.some((u) => u.username === supervisorValue);
 
   const jobSelected = !!jobDetail;
 
@@ -206,6 +213,7 @@ export default function JobHeaderUpdatesPage() {
                 labelKey="description"
                 valueKey="number"
                 valueList={jobsAsOptions}
+                labelFormatter={numberDescriptionPostingGroupFormatter}
                 placeholder="Search by job number or description..."
                 noOptionsText="No jobs found."
               />
@@ -234,7 +242,10 @@ export default function JobHeaderUpdatesPage() {
                   <TypeAhead
                     {...register("status", { required: "Status is required." })}
                     handleChange={(option) => {
-                      setValue("status", option ? (option.value as "Planning" | "Open" | "Completed") : "");
+                      setValue(
+                        "status",
+                        option ? (option.value as "Planning" | "Open" | "Completed") : ""
+                      );
                     }}
                     watch={watch}
                     label="Status"
@@ -244,9 +255,7 @@ export default function JobHeaderUpdatesPage() {
                     valueList={statusOptions}
                     placeholder="Select a status..."
                   />
-                  {errors.status && (
-                    <FormHelperText error>{errors.status.message}</FormHelperText>
-                  )}
+                  {errors.status && <FormHelperText error>{errors.status.message}</FormHelperText>}
                 </Stack>
 
                 {/* 2. Start Date */}
@@ -377,14 +386,26 @@ export default function JobHeaderUpdatesPage() {
                   />
                 </Stack>
 
-                {/* 11. Supervisor / Project Manager — read-only */}
-                <Stack spacing={0.5}>
-                  <Typography variant="caption" color="text.secondary">
-                    Supervisor (Project Manager)
-                  </Typography>
-                  <Typography variant="body1">
-                    {jobDetail.job.projectManager || "—"}
-                  </Typography>
+                {/* 11. Supervisor / Project Manager */}
+                <Stack>
+                  <TypeAhead
+                    {...register("supervisor")}
+                    handleChange={(option) => {
+                      setValue("supervisor", option ? String(option.value) : "");
+                    }}
+                    watch={watch}
+                    label="Supervisor (Project Manager)"
+                    fieldName="supervisor"
+                    labelKey="name"
+                    valueKey="username"
+                    valueList={userOptions}
+                    placeholder="Select a supervisor..."
+                  />
+                  {supervisorNotInList && (
+                    <FormHelperText>
+                      Current supervisor "{supervisorValue}" is not in the user list.
+                    </FormHelperText>
+                  )}
                 </Stack>
               </>
             )}
