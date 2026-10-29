@@ -22,7 +22,7 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const { setUser, resetUser, loadFilters } = useUserStore();
+  const { setUser, resetUser, loadFilters, loadPreferences } = useUserStore();
   const { fetchDomains } = useConfigStore();
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastActivityRef = useRef<number>(Date.now());
@@ -98,6 +98,11 @@ export function useAuth() {
         } catch {
           // Silent fallback — store retains DEFAULT_USER_FILTERS
         }
+        try {
+          await loadPreferences();
+        } catch {
+          // Silent fallback — store retains DEFAULT_USER_PREFERENCES
+        }
       })
       .catch(() => {
         tokenStorage.clear();
@@ -127,6 +132,11 @@ export function useAuth() {
         await loadFilters();
       } catch {
         // Silent fallback — store retains DEFAULT_USER_FILTERS
+      }
+      try {
+        await loadPreferences();
+      } catch {
+        // Silent fallback — store retains DEFAULT_USER_PREFERENCES
       }
       return response;
     } catch (err) {

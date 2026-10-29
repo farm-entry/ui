@@ -1,5 +1,5 @@
 import { UserType } from '../store/types/user';
-import type { UserFilters, FilterLocation, FilterPostingGroup } from '../store/types/user';
+import type { UserFilters, FilterLocation, FilterPostingGroup, UserPreferences } from '../store/types/user';
 import type { DomainConfig } from '../store/types/config';
 import { apiFetch } from './apiFetch';
 import { tokenStorage } from './tokenStorage';
@@ -166,6 +166,21 @@ class UserApi {
       body: JSON.stringify(filters),
     });
     if (!res.ok) throw new Error('Failed to save user filters');
+    return res.json();
+  }
+
+  async getPreferences(): Promise<UserPreferences> {
+    const res = await apiFetch('/api/user/preferences');
+    if (!res.ok) throw new Error('Failed to fetch preferences');
+    return res.json();
+  }
+
+  async savePreferences(preferences: UserPreferences): Promise<UserPreferences> {
+    const res = await apiFetch('/api/user/preferences', {
+      method: 'POST',
+      body: JSON.stringify(preferences),
+    });
+    if (!res.ok) throw new Error('Failed to save preferences');
     return res.json();
   }
 
